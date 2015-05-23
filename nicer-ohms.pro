@@ -13,6 +13,7 @@ TEMPLATE = app
 
 include(gui.pri)
 include(data.pri)
+include(hardware.pri)
 
 SOURCES += main.cpp
 
