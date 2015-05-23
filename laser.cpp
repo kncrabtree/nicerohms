@@ -10,6 +10,7 @@ Laser::Laser(QObject *parent) :
 	HardwareObject(parent), d_slewing(false), d_currentPos(0.0), d_slewStep(1.0), d_slewInterval(100)
 {
 	p_slewTimer = new QTimer(this);
+	d_key = QString("laser");
 }
 
 Laser::~Laser()

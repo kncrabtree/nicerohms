@@ -72,6 +72,7 @@
      <string>Settings</string>
     </property>
     <addaction name="actionCommunication"/>
+    <addaction name="actionTest"/>
    </widget>
    <addaction name="menuSettings"/>
   </widget>
@@ -90,6 +91,11 @@
    </property>
    <property name="toolTip">
     <string>Configure IO settings for GPIB, RS232, and TCP socket connections</string>
+   </property>
+  </action>
+  <action name="actionTest">
+   <property name="text">
+    <string>Test</string>
    </property>
   </action>
  </widget>

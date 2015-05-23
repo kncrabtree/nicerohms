@@ -3,6 +3,7 @@
 #include <QSettings>
 
 #include "hardwareobject.h"
+#include "laser.h"
 
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
 {
@@ -27,6 +28,13 @@ HardwareManager::~HardwareManager()
 
 void HardwareManager::initialize()
 {    
+	//Laser does not need its own thread
+	p_laser = new LaserHardware();
+	connect(p_laser,&Laser::laserPosChanged,this,&HardwareManager::laserPosUpdate);
+	connect(p_laser,&Laser::slewStarting,this,&HardwareManager::laserSlewStarted);
+	connect(p_laser,&Laser::slewComplete,this,&HardwareManager::laserSlewComplete);
+	d_hardwareList.append(qMakePair(p_laser,nullptr));
+
 	//write arrays of the connected devices for use in the Hardware Settings menu
 	//first array is for all objects accessible to the hardware manager
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
@@ -193,7 +201,12 @@ void HardwareManager::testObjectConnection(const QString type, const QString key
 void HardwareManager::getPointData()
 {
     for(int i=0; i<d_hardwareList.size(); i++)
-	   QMetaObject::invokeMethod(d_hardwareList.at(i).first,"readPointData");
+	    QMetaObject::invokeMethod(d_hardwareList.at(i).first,"readPointData");
+}
+
+void HardwareManager::test()
+{
+	p_laser->slewToPosition(10.0);
 }
 
 void HardwareManager::checkStatus()

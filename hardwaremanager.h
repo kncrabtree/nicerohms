@@ -13,6 +13,7 @@
 #include "scan.h"
 
 class HardwareObject;
+class Laser;
 
 class HardwareManager : public QObject
 {
@@ -39,6 +40,10 @@ signals:
     void pointData(const QList<QPair<QString,QVariant>>);
     void readPointData();
 
+    void laserPosUpdate(double);
+    void laserSlewStarted();
+    void laserSlewComplete();
+
 public slots:
     void initialize();
 
@@ -64,9 +69,13 @@ public slots:
 
     void getPointData();
 
+    void test();
+
 private:
     QHash<QString,bool> d_status;
     void checkStatus();
+
+    Laser *p_laser;
 
     QList<QPair<HardwareObject*,QThread*> > d_hardwareList;
 

@@ -38,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	d_threadObjectList.append(qMakePair(hwmThread,p_hwm));
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
+	connect(ui->actionTest,&QAction::triggered,p_hwm,&HardwareManager::test);
+
+	hwmThread->start();
 }
 
 MainWindow::~MainWindow()

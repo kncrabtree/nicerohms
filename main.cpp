@@ -12,6 +12,8 @@
 #include <signal.h>
 #endif
 
+#include "datastructs.h"
+
 int main(int argc, char *argv[])
 {
     //all files (besides lock file) created with this program should have 664 permissions (directories 775)
@@ -107,6 +109,7 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<QVector<QPointF> >("QVector<QPointF>");
     qRegisterMetaType<QList<QPair<QString,QVariant> >>("QList<QPair<QString,QVariant> >");
+    qRegisterMetaType<NicerOhms::LogMessageCode>("NicerOhms::LogMessageCode");
 
 
     MainWindow w;
