@@ -4,7 +4,8 @@ HEADERS += \
     $$PWD/communicationprotocol.h \
     $$PWD/rs232instrument.h \
     $$PWD/tcpinstrument.h \
-    $$PWD/virtualinstrument.h
+    $$PWD/virtualinstrument.h \
+    $$PWD/laser.h
 
 SOURCES += \
     $$PWD/hardwaremanager.cpp \
@@ -12,4 +13,5 @@ SOURCES += \
     $$PWD/communicationprotocol.cpp \
     $$PWD/rs232instrument.cpp \
     $$PWD/tcpinstrument.cpp \
-    $$PWD/virtualinstrument.cpp
+    $$PWD/virtualinstrument.cpp \
+    $$PWD/laser.cpp
