@@ -8,7 +8,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport
 
-TARGET = nicer-ohms
+TARGET = nicerohms
 TEMPLATE = app
 
 include(gui.pri)
@@ -19,6 +19,14 @@ include(implementations.pri)
 SOURCES += main.cpp
 
 unix:!macx: LIBS += -lqwt
+
+#Hardware configuration
+#Set the following variables to select hardware implementations
+#Note: if you change the config, you need to rebuild the whole project!
+
+#Laser. 0 = virtual, 1 = PZT control via MTD694B
+DEFINES += NICEROHMS_LASER=0
+
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3

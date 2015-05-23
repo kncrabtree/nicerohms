@@ -119,10 +119,10 @@ void HardwareManager::initialize()
 void HardwareManager::connectionResult(HardwareObject *obj, bool success, QString msg)
 {
     if(success)
-        emit logMessage(obj->name().append(QString(" connected successfully.")));
+	   emit logMessage(obj->name().append(QString(": Connected successfully.")));
     else
     {
-	   emit logMessage(obj->name().append(QString(" connection failed!")),NicerOhms::LogError);
+	   emit logMessage(obj->name().append(QString(": Failed to connect.")),NicerOhms::LogError);
 	   emit logMessage(msg,NicerOhms::LogError);
     }
 
@@ -206,7 +206,7 @@ void HardwareManager::getPointData()
 
 void HardwareManager::test()
 {
-	p_laser->slewToPosition(10.0);
+	p_laser->slewToPosition(15.6);
 }
 
 void HardwareManager::checkStatus()

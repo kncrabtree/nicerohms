@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //QSettings information
-    const QString appName = QString("NICER OHMS");
+    const QString appName = QString("NICEROHMS");
     const QString lockFileName = QString("nicerohms.lock");
     const QString appDataPath = QString("/home/data");
 
