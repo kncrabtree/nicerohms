@@ -3,6 +3,12 @@
 
 #include <QMainWindow>
 
+#include <QList>
+#include <QPair>
+
+class QThread;
+class LogHandler;
+
 namespace Ui {
 class MainWindow;
 }
@@ -17,6 +23,10 @@ public:
 
 private:
 	Ui::MainWindow *ui;
+
+	LogHandler *p_lh;
+
+	QList<QPair<QThread*,QObject*>> d_threadObjectList;
 };
 
 #endif // MAINWINDOW_H
