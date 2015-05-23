@@ -28,12 +28,17 @@
        <enum>QTabWidget::East</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="displayTab">
        <attribute name="title">
         <string>Display</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="DataPlotViewWidget" name="dataPlotWidget" native="true"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="logTab">
        <attribute name="title">
@@ -74,6 +79,14 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>DataPlotViewWidget</class>
+   <extends>QWidget</extends>
+   <header>dataplotviewwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
