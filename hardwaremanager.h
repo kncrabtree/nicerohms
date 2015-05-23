@@ -15,6 +15,7 @@
 class HardwareObject;
 class Laser;
 class LockIn;
+class Wavemeter;
 
 class HardwareManager : public QObject
 {
@@ -44,6 +45,9 @@ signals:
     void laserPosUpdate(double);
     void laserSlewStarted();
     void laserSlewComplete();
+
+    void wavemeterPumpUpdate(double);
+    void wavemeterSignalUpdate(double);
 
 public slots:
     void initialize();
@@ -78,6 +82,7 @@ private:
 
     Laser *p_laser;
     LockIn *p_lockIn1, *p_lockIn2;
+    Wavemeter *p_wavemeter;
 
     QList<QPair<HardwareObject*,QThread*> > d_hardwareList;
 

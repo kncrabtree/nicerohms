@@ -6,7 +6,8 @@ HEADERS += \
     $$PWD/tcpinstrument.h \
     $$PWD/virtualinstrument.h \
     $$PWD/laser.h \
-    $$PWD/lockin.h
+    $$PWD/lockin.h \
+    $$PWD/wavemeter.h
 
 SOURCES += \
     $$PWD/hardwaremanager.cpp \
@@ -16,4 +17,5 @@ SOURCES += \
     $$PWD/tcpinstrument.cpp \
     $$PWD/virtualinstrument.cpp \
     $$PWD/laser.cpp \
-    $$PWD/lockin.cpp
+    $$PWD/lockin.cpp \
+    $$PWD/wavemeter.cpp

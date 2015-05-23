@@ -5,6 +5,7 @@
 #include "hardwareobject.h"
 #include "laser.h"
 #include "lockin.h"
+#include "wavemeter.h"
 
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
 {
@@ -42,6 +43,12 @@ void HardwareManager::initialize()
 	d_hardwareList.append(qMakePair(p_lockIn1,new QThread(this)));
 	d_hardwareList.append(qMakePair(p_lockIn2,new QThread(this)));
 
+	//wavemeter unlikely to need its own thread unless reads are very slow
+	//calls are designed generally to be asynchronous
+	p_wavemeter = new WavemeterHardware();
+	connect(p_wavemeter,&Wavemeter::pumpUpdate,this,&HardwareManager::wavemeterPumpUpdate);
+	connect(p_wavemeter,&Wavemeter::signalUpdate,this,&HardwareManager::wavemeterSignalUpdate);
+	d_hardwareList.append(qMakePair(p_wavemeter,nullptr));
 
 	//write arrays of the connected devices for use in the Hardware Settings menu
 	//first array is for all objects accessible to the hardware manager
