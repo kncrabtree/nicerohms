@@ -6,6 +6,7 @@
 #include "laser.h"
 #include "lockin.h"
 #include "wavemeter.h"
+#include "cavitypztdriver.h"
 
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
 {
@@ -49,6 +50,11 @@ void HardwareManager::initialize()
 	connect(p_wavemeter,&Wavemeter::pumpUpdate,this,&HardwareManager::wavemeterPumpUpdate);
 	connect(p_wavemeter,&Wavemeter::signalUpdate,this,&HardwareManager::wavemeterSignalUpdate);
 	d_hardwareList.append(qMakePair(p_wavemeter,nullptr));
+
+	//cavity pzt driver probably does not need to be in its own thread
+	p_cavityPZT = new CavityPZTHardware();
+	connect(p_cavityPZT,&CavityPZTDriver::cavityPZTUpdate,this,&HardwareManager::cavityPZTUpdate);
+	d_hardwareList.append(qMakePair(p_cavityPZT,nullptr));
 
 	//write arrays of the connected devices for use in the Hardware Settings menu
 	//first array is for all objects accessible to the hardware manager

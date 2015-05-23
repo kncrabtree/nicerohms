@@ -97,7 +97,12 @@ signals:
      */
     void hardwareFailure(bool abort = true);
 
+    //data read at each scan point. to be plotted and logged to disk
     void pointDataRead(const QList<QPair<QString,QVariant>>);
+
+    //data read at each scan point. Logged to disk, but not plotted
+    void pointDataReadNoPlot(const QList<QPair<QString,QVariant>>);
+
 	
 public slots:
     /*!

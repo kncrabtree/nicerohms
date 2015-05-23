@@ -16,6 +16,7 @@ class HardwareObject;
 class Laser;
 class LockIn;
 class Wavemeter;
+class CavityPZTDriver;
 
 class HardwareManager : public QObject
 {
@@ -48,6 +49,8 @@ signals:
 
     void wavemeterPumpUpdate(double);
     void wavemeterSignalUpdate(double);
+
+    void cavityPZTUpdate(double);
 
 public slots:
     void initialize();
@@ -83,6 +86,7 @@ private:
     Laser *p_laser;
     LockIn *p_lockIn1, *p_lockIn2;
     Wavemeter *p_wavemeter;
+    CavityPZTDriver *p_cavityPZT;
 
     QList<QPair<HardwareObject*,QThread*> > d_hardwareList;
 

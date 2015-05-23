@@ -7,7 +7,8 @@ HEADERS += \
     $$PWD/virtualinstrument.h \
     $$PWD/laser.h \
     $$PWD/lockin.h \
-    $$PWD/wavemeter.h
+    $$PWD/wavemeter.h \
+    $$PWD/cavitypztdriver.h
 
 SOURCES += \
     $$PWD/hardwaremanager.cpp \
@@ -18,4 +19,5 @@ SOURCES += \
     $$PWD/virtualinstrument.cpp \
     $$PWD/laser.cpp \
     $$PWD/lockin.cpp \
-    $$PWD/wavemeter.cpp
+    $$PWD/wavemeter.cpp \
+    $$PWD/cavitypztdriver.cpp

@@ -48,7 +48,9 @@ void VirtualLaser::endAcquisition()
 
 void VirtualLaser::readPointData()
 {
-
+	QList<QPair<QString,QVariant>> out;
+	out.append(qMakePair(QString("laser"),QVariant::fromValue(d_currentPos)));
+	emit pointDataReadNoPlot(out);
 }
 
 double VirtualLaser::readPosition()

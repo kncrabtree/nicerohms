@@ -33,9 +33,9 @@ protected:
 };
 
 #if NICEROHMS_LASER == 1
-#include "mtd694b.h"
-class MDT694B;
-typedef MDT694B LaserHardware;
+#include "lasermtd694b.h"
+class LaserMDT694B;
+typedef LaserMDT694B LaserHardware;
 #else
 #include "virtuallaser.h"
 class VirtualLaser;

@@ -27,6 +27,16 @@ unix:!macx: LIBS += -lqwt
 #Laser. 0 = virtual, 1 = PZT control via MTD694B
 DEFINES += NICEROHMS_LASER=0
 
+#Lockins. 0 = virtual, 1 = Stanford SR530
+DEFINES += NICEROHMS_LOCKIN1=0 NICERHOMS_LOCKIN2=0
+
+#Wavemeter. 0 = virtual, 1 = Bristol 621
+DEFINES += NICEROHMS_WAVEMETER=0
+
+#Cavity PZT Driver. 0 = virtual, 1 = MTD694B
+DEFINES += NICEROHMS_CAVITYPZT=0
+
+
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3
