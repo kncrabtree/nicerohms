@@ -5,7 +5,8 @@ HEADERS += \
     $$PWD/rs232instrument.h \
     $$PWD/tcpinstrument.h \
     $$PWD/virtualinstrument.h \
-    $$PWD/laser.h
+    $$PWD/laser.h \
+    $$PWD/lockin.h
 
 SOURCES += \
     $$PWD/hardwaremanager.cpp \
@@ -14,4 +15,5 @@ SOURCES += \
     $$PWD/rs232instrument.cpp \
     $$PWD/tcpinstrument.cpp \
     $$PWD/virtualinstrument.cpp \
-    $$PWD/laser.cpp
+    $$PWD/laser.cpp \
+    $$PWD/lockin.cpp

@@ -14,6 +14,7 @@
 
 class HardwareObject;
 class Laser;
+class LockIn;
 
 class HardwareManager : public QObject
 {
@@ -76,6 +77,7 @@ private:
     void checkStatus();
 
     Laser *p_laser;
+    LockIn *p_lockIn1, *p_lockIn2;
 
     QList<QPair<HardwareObject*,QThread*> > d_hardwareList;
 

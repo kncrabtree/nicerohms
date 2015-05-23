@@ -4,6 +4,7 @@
 
 #include "hardwareobject.h"
 #include "laser.h"
+#include "lockin.h"
 
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
 {
@@ -34,6 +35,13 @@ void HardwareManager::initialize()
 	connect(p_laser,&Laser::slewStarting,this,&HardwareManager::laserSlewStarted);
 	connect(p_laser,&Laser::slewComplete,this,&HardwareManager::laserSlewComplete);
 	d_hardwareList.append(qMakePair(p_laser,nullptr));
+
+	//Lock ins may need their own threads since comms might be slow
+	p_lockIn1 = new LockIn1Hardware(1);
+	p_lockIn2 = new LockIn2Hardware(2);
+	d_hardwareList.append(qMakePair(p_lockIn1,new QThread(this)));
+	d_hardwareList.append(qMakePair(p_lockIn2,new QThread(this)));
+
 
 	//write arrays of the connected devices for use in the Hardware Settings menu
 	//first array is for all objects accessible to the hardware manager
