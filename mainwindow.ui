@@ -67,6 +67,13 @@
      <height>19</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionCommunication"/>
+   </widget>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -77,6 +84,14 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionCommunication">
+   <property name="text">
+    <string>Communication</string>
+   </property>
+   <property name="toolTip">
+    <string>Configure IO settings for GPIB, RS232, and TCP socket connections</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
