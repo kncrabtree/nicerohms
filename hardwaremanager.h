@@ -44,6 +44,7 @@ signals:
     void pointData(const QList<QPair<QString,QVariant>>);
     void readPointData();
 
+    void slewLaser(double);
     void laserPosUpdate(double);
     void laserSlewStarted();
     void laserSlewComplete();
@@ -54,6 +55,9 @@ signals:
     void cavityPZTUpdate(double);
 
     void relockComplete(bool);
+    void lockStateUpdate(bool);
+    void lockStateCheck(bool locked, double cavityVoltage);
+    void autoRelock();
 
 public slots:
     void initialize();
@@ -79,6 +83,10 @@ public slots:
     void testObjectConnection(const QString type, const QString key);
 
     void getPointData();
+
+
+    void checkLock();
+    double checkCavityVoltage();
 
     void test();
 

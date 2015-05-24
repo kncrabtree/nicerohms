@@ -13,6 +13,7 @@ public:
 signals:
 	void mirrorFlipped();
 	void relockComplete(bool success);
+	void lockState(bool);
 
 public slots:
 	virtual void flipWavemeterMirror() =0;

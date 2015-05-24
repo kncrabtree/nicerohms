@@ -1,5 +1,7 @@
 #include "acquisitionmanager.h"
 
+#include <QTimer>
+
 AcquisitionManager::AcquisitionManager(QObject *parent) : QObject(parent), d_currentState(Idle)
 {
 
@@ -61,10 +63,26 @@ void AcquisitionManager::beginPoint()
 	}
 }
 
-void AcquisitionManager::laserReady(bool locked)
+void AcquisitionManager::laserReady()
 {
 	if(d_currentState == WaitingForLaser)
 	{
+		d_currentState = WaitingForLockCheck;
+		QTimer::singleShot(d_currentScan.laserDelay(),this,&AcquisitionManager::checkLock);
+	}
+}
+
+void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
+{
+	if(d_currentState == WaitingForLockCheck)
+	{
+		if(d_currentScan.isAutoLockEnabled() && locked)
+		{
+			auto range = d_currentScan.cavityPZTRange();
+			if(cavityVoltage < range.first || cavityVoltage > range.second)
+				locked = false;
+		}
+
 		if(locked)
 		{
 			d_currentState = Acquiring;
@@ -143,6 +161,7 @@ void AcquisitionManager::checkScanComplete()
 
 void AcquisitionManager::endAcquisition()
 {
+	emit endAcquisition();
 	d_currentState = Idle;
 }
 

@@ -17,6 +17,7 @@ public:
 		Idle,
 		Acquiring,
 		WaitingForLaser,
+		WaitingForLockCheck,
 		WaitingForAutoLock,
 		WaitingForManualLock
 	};
@@ -27,6 +28,7 @@ signals:
 	void beginAcquisition();
 	void scanComplete(Scan);
 	void startPoint(double);
+	void checkLock();
 	void requestAutoLock();
 	void requestManualLock();
 	void getPointData();
@@ -37,7 +39,8 @@ public slots:
 	void beginScan(Scan s);
 	void processData(QList<QPair<QString,QVariant>> l);
 	void beginPoint();
-	void laserReady(bool locked);
+	void laserReady();
+	void lockCheckComplete(bool locked, double cavityVoltage);
 	void autoLockComplete(bool success);
 	void manualLockComplete(bool abort);
 	void abortScan();

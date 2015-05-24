@@ -31,6 +31,8 @@ public:
 	double currentLaserPos() const;
 	bool isAutoLockEnabled() const;
 	bool isAbortOnUnlock() const;
+	bool laserDelay() const;
+	QPair<double,double> cavityPZTRange() const;
 
 
 	void setHardwareFailed();
@@ -49,7 +51,7 @@ class ScanData : public QSharedData
 {
 public:
 	ScanData() : number(0), isInitialized(false), hardwareSuccess(true), aborted(false), completedPoints(0), autoLockEnabled(false),
-	abortOnUnlock(false) {}
+	cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), laserDelay(0) {}
 
 	int number;
 	bool isInitialized;
@@ -58,7 +60,9 @@ public:
 	QDateTime startTime;
 	int completedPoints;
 	bool autoLockEnabled;
+	double cavityMin, cavityMax;
 	bool abortOnUnlock;
+	int laserDelay;
 
 	QString errorString;
 	QMap<QString,QPair<double,double>> abortConditions;

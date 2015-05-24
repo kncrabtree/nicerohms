@@ -34,6 +34,7 @@ void HardwareManager::initialize()
 {    
 	//Laser does not need its own thread
 	p_laser = new LaserHardware();
+	connect(this,&HardwareManager::slewLaser,p_laser,&Laser::slewToPosition);
 	connect(p_laser,&Laser::laserPosChanged,this,&HardwareManager::laserPosUpdate);
 	connect(p_laser,&Laser::slewStarting,this,&HardwareManager::laserSlewStarted);
 	connect(p_laser,&Laser::slewComplete,this,&HardwareManager::laserSlewComplete);
@@ -62,6 +63,8 @@ void HardwareManager::initialize()
 	connect(p_iob,&IOBoard::relockComplete,this,&HardwareManager::relockComplete);
 	connect(p_iob,&IOBoard::mirrorFlipped,p_wavemeter,&Wavemeter::switchComplete);
 	connect(p_wavemeter,&Wavemeter::switchRequest,p_iob,&IOBoard::flipWavemeterMirror);
+	connect(p_iob,&IOBoard::lockState,this,&HardwareManager::lockStateUpdate);
+	connect(this,&HardwareManager::autoRelock,p_iob,&IOBoard::relock);
 	d_hardwareList.append(qMakePair(p_iob,nullptr));
 
 	//write arrays of the connected devices for use in the Hardware Settings menu
@@ -232,6 +235,34 @@ void HardwareManager::getPointData()
 {
     for(int i=0; i<d_hardwareList.size(); i++)
 	    QMetaObject::invokeMethod(d_hardwareList.at(i).first,"readPointData");
+}
+
+void HardwareManager::checkLock()
+{
+	bool locked = false;
+	if(p_iob->thread() == thread())
+		locked = p_iob->readCavityLocked();
+	else
+		QMetaObject::invokeMethod(p_iob,"readCavityLocked",Qt::BlockingQueuedConnection,Q_RETURN_ARG(bool,locked));
+
+	if(!locked)
+		emit lockStateCheck(locked,-1.0);
+	else
+	{
+		double v = checkCavityVoltage();
+		emit lockStateCheck(locked,v);
+	}
+}
+
+double HardwareManager::checkCavityVoltage()
+{
+	double out = 0.0;
+	if(p_cavityPZT->thread() == thread())
+		out = p_cavityPZT->readVoltage();
+	else
+		QMetaObject::invokeMethod(p_iob,"readVoltage",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
+
+	return out;
 }
 
 void HardwareManager::test()

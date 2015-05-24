@@ -58,6 +58,7 @@ void VirtualIOBoard::flipWavemeterMirror()
 
 bool VirtualIOBoard::readCavityLocked()
 {
+	emit lockState(true);
 	return true;
 }
 

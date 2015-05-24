@@ -6,6 +6,8 @@
 #include <QList>
 #include <QPair>
 
+#include "scan.h"
+
 class QThread;
 class LogHandler;
 class HardwareManager;
@@ -26,8 +28,12 @@ public:
 public slots:
 	void launchCommunicationDialog();
 
+	void manualRelock();
+	void scanInitialized(const Scan s);
+
 signals:
     void statusMessage(const QString);
+    void manualRelockComplete(bool abort);
 
 private:
 	Ui::MainWindow *ui;

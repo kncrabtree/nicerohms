@@ -75,6 +75,16 @@ bool Scan::isAbortOnUnlock() const
 	return data->abortOnUnlock;
 }
 
+bool Scan::laserDelay() const
+{
+	return data->laserDelay;
+}
+
+QPair<double, double> Scan::cavityPZTRange() const
+{
+	return qMakePair(data->cavityMin,data->cavityMax);
+}
+
 void Scan::setHardwareFailed()
 {
 	data->hardwareSuccess = false;
