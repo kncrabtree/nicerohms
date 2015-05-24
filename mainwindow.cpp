@@ -9,10 +9,13 @@
 #include "communicationdialog.h"
 #include "hardwaremanager.h"
 #include "acquisitionmanager.h"
+#include "batchmanager.h"
+
+#include "batchsingle.h"
 
 MainWindow::MainWindow(QWidget *parent) :
      QMainWindow(parent),
-     ui(new Ui::MainWindow)
+	ui(new Ui::MainWindow), d_hardwareConnected(false)
 {
 	ui->setupUi(this);
 
@@ -43,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	p_am = new AcquisitionManager;
 	connect(p_am,&AcquisitionManager::logMessage,p_lh,&LogHandler::logMessage);
 	connect(p_am,&AcquisitionManager::statusMessage,statusLabel,&QLabel::setText);
+	connect(p_am,&AcquisitionManager::pointComplete,ui->scanProgressBar,&QProgressBar::setValue);
 	connect(p_am,&AcquisitionManager::requestManualLock,this,&MainWindow::manualRelock);
 	connect(this,&MainWindow::manualRelockComplete,p_am,&AcquisitionManager::manualLockComplete);
 	connect(p_am,&AcquisitionManager::beginAcquisition,p_hwm,&HardwareManager::beginAcquisition);
@@ -65,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
 	connect(ui->actionTest,&QAction::triggered,p_hwm,&HardwareManager::test);
+
+	p_batchThread = new QThread(this);
 
 	hwmThread->start();
 	amThread->start();
@@ -92,6 +98,12 @@ void MainWindow::launchCommunicationDialog()
 	d.exec();
 }
 
+void MainWindow::hardwareConnected(bool connected)
+{
+	d_hardwareConnected = connected;
+	configureUi(d_currentState);
+}
+
 void MainWindow::manualRelock()
 {
 	int ret = QMessageBox::question(this,QString("Manual Relock"),QString("Laser-cavity lock has been lost. Press ok when the lock is restored, or press abort to terminate the scan."),QMessageBox::Ok|QMessageBox::Abort, QMessageBox::Ok);
@@ -105,4 +117,67 @@ void MainWindow::manualRelock()
 void MainWindow::scanInitialized(const Scan s)
 {
 	Q_UNUSED(s)
+}
+
+void MainWindow::batchComplete(bool aborted)
+{
+	disconnect(p_hwm,&HardwareManager::lockStateUpdate,p_am,&AcquisitionManager::lockStateUpdate);
+	disconnect(p_am,&AcquisitionManager::plotData,ui->dataPlotWidget,&DataPlotViewWidget::pointUpdated);
+
+	if(aborted)
+	    emit statusMessage(QString("Scan aborted"));
+	else
+	    emit statusMessage(QString("Scan complete"));
+
+	configureUi(Idle);
+
+}
+
+void MainWindow::beginBatch(BatchManager *bm)
+{
+	connect(p_batchThread,&QThread::started,bm,&BatchManager::beginNextScan);
+	connect(bm,&BatchManager::logMessage,p_lh,&LogHandler::logMessage);
+	connect(bm,&BatchManager::beginScan,p_hwm,&HardwareManager::initializeScan);
+	connect(p_am,&AcquisitionManager::scanComplete,bm,&BatchManager::scanComplete);
+	connect(bm,&BatchManager::batchComplete,this,&MainWindow::batchComplete);
+	connect(bm,&BatchManager::batchComplete,p_batchThread,&QThread::quit);
+	connect(p_batchThread,&QThread::finished,bm,&BatchManager::deleteLater);
+
+	connect(p_hwm,&HardwareManager::lockStateUpdate,p_am,&AcquisitionManager::lockStateUpdate,Qt::UniqueConnection);
+	connect(p_am,&AcquisitionManager::plotData,ui->dataPlotWidget,&DataPlotViewWidget::pointUpdated,Qt::UniqueConnection);
+
+//	if(sleepWhenDone)
+//	{
+//		//connect to sleep action
+//	}
+
+	ui->dataPlotWidget->initializeForExperiment();
+	configureUi(Acquiring);
+	bm->moveToThread(p_batchThread);
+	p_batchThread->start();
+
+}
+
+void MainWindow::configureUi(MainWindow::UiState s)
+{
+	if(!d_hardwareConnected)
+		s = Disconnected;
+
+	switch(s)
+	{
+	case Acquiring:
+		break;
+	case Slewing:
+		break;
+	case Disconnected:
+		break;
+	case Asleep:
+		break;
+	case Idle:
+	default:
+		break;
+	}
+
+	if(s != Disconnected)
+		d_currentState = s;
 }

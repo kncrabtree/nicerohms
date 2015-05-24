@@ -35,6 +35,7 @@ void VirtualCavityPZT::initialize()
 
 Scan VirtualCavityPZT::prepareForScan(Scan scan)
 {
+	scan.addNumDataPoints(1);
 	return scan;
 }
 

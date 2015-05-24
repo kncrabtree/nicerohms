@@ -131,7 +131,8 @@ void HardwareManager::initialize()
         });
         connect(obj,&HardwareObject::connected,[=](bool success, QString msg){ connectionResult(obj,success,msg); });
         connect(obj,&HardwareObject::hardwareFailure,[=](bool abort){ hardwareFailure(obj,abort); });
-	   connect(obj,&HardwareObject::pointDataRead,this,&HardwareManager::pointData);
+	   connect(obj,&HardwareObject::pointDataRead,[=](QList<QPair<QString,QVariant>> l){ emit pointData(l,true);});
+	   connect(obj,&HardwareObject::pointDataReadNoPlot,[=](QList<QPair<QString,QVariant>> l){ emit pointData(l,false);});
         connect(this,&HardwareManager::beginAcquisition,obj,&HardwareObject::beginAcquisition);
         connect(this,&HardwareManager::endAcquisition,obj,&HardwareObject::endAcquisition);
 	   connect(this,&HardwareManager::readPointData,obj,&HardwareObject::readPointData);

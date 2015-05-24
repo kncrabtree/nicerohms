@@ -19,7 +19,8 @@ public:
 		WaitingForLaser,
 		WaitingForLockCheck,
 		WaitingForAutoLock,
-		WaitingForManualLock
+		WaitingForManualLock,
+		WaitingForRedo
 	};
 
 signals:
@@ -33,21 +34,24 @@ signals:
 	void requestManualLock();
 	void getPointData();
 	void pointComplete(int);
+	void plotData(QList<QPair<QString,QVariant>>);
 
 public slots:
 	void initialize();
 	void beginScan(Scan s);
-	void processData(QList<QPair<QString,QVariant>> l);
+	void processData(QList<QPair<QString,QVariant>> l, bool plot);
 	void beginPoint();
 	void laserReady();
 	void lockCheckComplete(bool locked, double cavityVoltage);
 	void autoLockComplete(bool success);
 	void manualLockComplete(bool abort);
 	void abortScan();
+	void lockStateUpdate(bool locked);
 
 private:
 	Scan d_currentScan;
 	AcquisitionState d_currentState;
+	QList<QPair<QString,QVariant>> d_plotDataCache;
 
 	void checkScanComplete();
 	void endAcquisition();

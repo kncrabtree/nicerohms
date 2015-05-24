@@ -36,10 +36,13 @@ void AcquisitionManager::beginScan(Scan s)
 	beginPoint();
 }
 
-void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l)
+void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool plot)
 {
-	if(d_currentState == Acquiring)
+	if(d_currentState != Idle)
 	{
+		if(plot)
+			d_plotDataCache.append(l);
+
 		if(!d_currentScan.validateData(l))
 			abortScan();
 		else
@@ -47,8 +50,14 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l)
 			//addPointData returns true if point is now complete
 			if(d_currentScan.addPointData(l))
 			{
-				emit pointComplete(d_currentScan.completedPoints());
-				checkScanComplete();
+				if(d_currentState == WaitingForRedo)
+					beginPoint();
+				else
+				{
+					emit plotData(d_plotDataCache);
+					emit pointComplete(d_currentScan.completedPoints());
+					checkScanComplete();
+				}
 			}
 		}
 	}
@@ -56,8 +65,9 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l)
 
 void AcquisitionManager::beginPoint()
 {
-	if(d_currentState == Acquiring)
+	if(d_currentState == Acquiring || d_currentState == WaitingForRedo)
 	{
+		d_plotDataCache.clear();
 		d_currentState = WaitingForLaser;
 		emit startPoint(d_currentScan.currentLaserPos());
 	}
@@ -151,6 +161,15 @@ void AcquisitionManager::abortScan()
 	}
 }
 
+void AcquisitionManager::lockStateUpdate(bool locked)
+{
+	if(d_currentState == Acquiring && !locked)
+	{
+		d_currentState = WaitingForRedo;
+		d_currentScan.setPointRedo();
+	}
+}
+
 void AcquisitionManager::checkScanComplete()
 {
 	if(d_currentScan.isComplete())
@@ -161,7 +180,7 @@ void AcquisitionManager::checkScanComplete()
 
 void AcquisitionManager::endAcquisition()
 {
-	emit endAcquisition();
+	emit scanComplete(d_currentScan);
 	d_currentState = Idle;
 }
 

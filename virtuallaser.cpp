@@ -34,6 +34,8 @@ void VirtualLaser::initialize()
 Scan VirtualLaser::prepareForScan(Scan scan)
 {
 	readSlewParameters();
+	scan.addNumDataPoints(1);
+
 	return scan;
 }
 

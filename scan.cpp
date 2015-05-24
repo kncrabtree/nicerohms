@@ -40,6 +40,11 @@ bool Scan::isComplete() const
 	return data->completedPoints >= totalPoints();
 }
 
+bool Scan::isAborted() const
+{
+	return data->aborted;
+}
+
 QString Scan::errorString() const
 {
 	return data->errorString;
@@ -83,6 +88,16 @@ bool Scan::laserDelay() const
 QPair<double, double> Scan::cavityPZTRange() const
 {
 	return qMakePair(data->cavityMin,data->cavityMax);
+}
+
+QString Scan::endLogMessage() const
+{
+	return data->endLogMessage;
+}
+
+NicerOhms::LogMessageCode Scan::endLogCode() const
+{
+	return data->endLogCode;
 }
 
 void Scan::setHardwareFailed()
@@ -149,8 +164,48 @@ bool Scan::validateData(const QList<QPair<QString, QVariant> > l)
 
 bool Scan::addPointData(const QList<QPair<QString, QVariant> > l)
 {
-	Q_UNUSED(l)
-	//need to figure out whether all data are in
+	data->dataCache.append(l);
+
+	if(data->dataCache.size() == data->numDataPoints)
+	{
+		if(!data->redo)
+			saveData();
+	}
+
+	data->redo = false;
+	data->dataCache.clear();
 	return true;
+}
+
+void Scan::addNumDataPoints(int n)
+{
+	data->numDataPoints += n;
+}
+
+void Scan::setPointRedo()
+{
+	data->redo = true;
+}
+
+void Scan::saveData()
+{
+	for(int i=0; i<data->dataCache.size(); i++)
+	{
+		QString key = data->dataCache.at(i).first;
+		QVariant value = data->dataCache.at(i).second;
+
+		if(data->scanData.contains(key))
+			data->scanData[key].append(value);
+		else
+		{
+			QVector<QVariant> d;
+			d.reserve(totalPoints());
+			d.append(value);
+			data->scanData.insert(key,d);
+		}
+	}
+
+	//iterate over data->scanData and write items to disk
+
 }
 

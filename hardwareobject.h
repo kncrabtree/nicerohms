@@ -92,7 +92,6 @@ signals:
 
     /*!
      * \brief Signal emitted if communication to hardware is lost.
-     * \param HardwareObject* This pointer
      * \param abort If an acquisition is underway, this will begin the abort routine if true
      */
     void hardwareFailure(bool abort = true);

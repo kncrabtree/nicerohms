@@ -45,6 +45,7 @@ void VirtualWavemeter::initialize()
 
 Scan VirtualWavemeter::prepareForScan(Scan scan)
 {
+	scan.addNumDataPoints(1);
 	return scan;
 }
 
