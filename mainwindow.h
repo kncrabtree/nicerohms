@@ -9,6 +9,7 @@
 class QThread;
 class LogHandler;
 class HardwareManager;
+class AcquisitionManager;
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +34,7 @@ private:
 
 	LogHandler *p_lh;
 	HardwareManager *p_hwm;
+	AcquisitionManager *p_am;
 
 	QList<QPair<QThread*,QObject*>> d_threadObjectList;
 };

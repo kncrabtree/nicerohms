@@ -11,10 +11,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport
 TARGET = nicerohms
 TEMPLATE = app
 
+include(acquisition.pri)
 include(gui.pri)
 include(data.pri)
 include(hardware.pri)
 include(implementations.pri)
+
 
 SOURCES += main.cpp
 
@@ -44,3 +46,4 @@ DEFINES += NICEROHMS_IOBOARD=0
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3
 QMAKE_CXXFLAGS += -std=c++11
+

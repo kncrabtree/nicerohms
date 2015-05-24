@@ -7,6 +7,7 @@
 #include "loghandler.h"
 #include "communicationdialog.h"
 #include "hardwaremanager.h"
+#include "acquisitionmanager.h"
 
 MainWindow::MainWindow(QWidget *parent) :
      QMainWindow(parent),
@@ -37,10 +38,20 @@ MainWindow::MainWindow(QWidget *parent) :
 	p_hwm->moveToThread(hwmThread);
 	d_threadObjectList.append(qMakePair(hwmThread,p_hwm));
 
+	p_am = new AcquisitionManager;
+	//connect signals/slots
+
+	QThread *amThread = new QThread(this);
+	connect(amThread,&QThread::started,p_am,&AcquisitionManager::initialize);
+	connect(amThread,&QThread::finished,p_am,&AcquisitionManager::deleteLater);
+	p_am->moveToThread(amThread);
+	d_threadObjectList.append(qMakePair(amThread,p_am));
+
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
 	connect(ui->actionTest,&QAction::triggered,p_hwm,&HardwareManager::test);
 
 	hwmThread->start();
+	amThread->start();
 }
 
 MainWindow::~MainWindow()
