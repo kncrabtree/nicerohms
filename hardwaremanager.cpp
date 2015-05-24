@@ -7,6 +7,7 @@
 #include "lockin.h"
 #include "wavemeter.h"
 #include "cavitypztdriver.h"
+#include "ioboard.h"
 
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
 {
@@ -55,6 +56,13 @@ void HardwareManager::initialize()
 	p_cavityPZT = new CavityPZTHardware();
 	connect(p_cavityPZT,&CavityPZTDriver::cavityPZTUpdate,this,&HardwareManager::cavityPZTUpdate);
 	d_hardwareList.append(qMakePair(p_cavityPZT,nullptr));
+
+	//ioboard probably does not need its own thread
+	p_iob = new IOBoardHardware();
+	connect(p_iob,&IOBoard::relockComplete,this,&HardwareManager::relockComplete);
+	connect(p_iob,&IOBoard::mirrorFlipped,p_wavemeter,&Wavemeter::switchComplete);
+	connect(p_wavemeter,&Wavemeter::switchRequest,p_iob,&IOBoard::flipWavemeterMirror);
+	d_hardwareList.append(qMakePair(p_iob,nullptr));
 
 	//write arrays of the connected devices for use in the Hardware Settings menu
 	//first array is for all objects accessible to the hardware manager
@@ -113,6 +121,7 @@ void HardwareManager::initialize()
         HardwareObject *obj = d_hardwareList.at(i).first;
 
         s.setValue(QString("%1/prettyName").arg(obj->key()),obj->name());
+	   s.setValue(QString("%1/subKey").arg(obj->key()),obj->subKey());
 
 	   connect(obj,&HardwareObject::logMessage,[=](QString msg, NicerOhms::LogMessageCode mc){
             emit logMessage(QString("%1: %2").arg(obj->name()).arg(msg),mc);

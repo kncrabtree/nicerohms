@@ -1,7 +1,7 @@
 #include "wavemeter.h"
 
 Wavemeter::Wavemeter(QObject *parent) :
-	HardwareObject(parent)
+	HardwareObject(parent), d_scanActive(false)
 {
 	p_timer = new QTimer(this);
 	connect(p_timer,&QTimer::timeout,this,&Wavemeter::read);
@@ -19,13 +19,19 @@ void Wavemeter::readSignal()
 		read();
 		break;
 	case Pump:
+		if(!d_scanActive)
+			p_timer->stop();
 		emit switchRequest();
 		break;
 	case Unknown:
 	default:
+		if(!d_scanActive)
+			p_timer->stop();
 		read();
 		if(d_currentState == Pump)
 			emit switchRequest();
+		else if(!d_scanActive)
+			p_timer->start();
 		break;
 	}
 }
@@ -37,13 +43,19 @@ void Wavemeter::readPump()
 		read();
 		break;
 	case Signal:
+		if(!d_scanActive)
+			p_timer->stop();
 		emit switchRequest();
 		break;
 	case Unknown:
 	default:
+		if(!d_scanActive)
+			p_timer->stop();
 		read();
 		if(d_currentState == Signal)
 			emit switchRequest();
+		else if(!d_scanActive)
+			p_timer->start();
 		break;
 	}
 }
@@ -57,6 +69,9 @@ void Wavemeter::switchComplete()
 
 	//if the state is unknown, it will be determined in the read call if possible
 	read();
+
+	if(!d_scanActive)
+		p_timer->start();
 }
 
 void Wavemeter::readTimerInterval()
@@ -66,3 +81,16 @@ void Wavemeter::readTimerInterval()
 	p_timer->setInterval(timerInterval);
 }
 
+
+
+void Wavemeter::beginAcquisition()
+{
+	p_timer->stop();
+	d_scanActive = true;
+}
+
+void Wavemeter::endAcquisition()
+{
+	p_timer->start();
+	d_scanActive = false;
+}

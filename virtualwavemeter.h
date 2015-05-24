@@ -15,8 +15,6 @@ public slots:
 	bool testConnection();
 	void initialize();
 	Scan prepareForScan(Scan scan);
-	void beginAcquisition();
-	void endAcquisition();
 	void readPointData();
 
 	// Wavemeter interface

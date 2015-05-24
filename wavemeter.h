@@ -38,6 +38,12 @@ protected:
 
 	virtual double read() =0;
 	QTimer *p_timer;
+	bool d_scanActive;
+
+	// HardwareObject interface
+public slots:
+	virtual void beginAcquisition();
+	virtual void endAcquisition();
 };
 
 #if NICEROHMS_WAVEMETER == 1

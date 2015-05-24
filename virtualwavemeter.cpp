@@ -48,16 +48,6 @@ Scan VirtualWavemeter::prepareForScan(Scan scan)
 	return scan;
 }
 
-void VirtualWavemeter::beginAcquisition()
-{
-	p_timer->stop();
-}
-
-void VirtualWavemeter::endAcquisition()
-{
-	p_timer->start();
-}
-
 void VirtualWavemeter::readPointData()
 {
 	readPump();
