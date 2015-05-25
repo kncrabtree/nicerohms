@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::logMessage,p_lh,&LogHandler::logMessage);
 	connect(p_hwm,&HardwareManager::statusMessage,statusLabel,&QLabel::setText);
 	connect(p_hwm,&HardwareManager::scanInitialized,this,&MainWindow::scanInitialized);
+	connect(p_hwm,&HardwareManager::laserPosUpdate,ui->laserDoubleSpinBox,&QDoubleSpinBox::setValue);
 
 	QThread *hwmThread = new QThread(this);
 	connect(hwmThread,&QThread::started,p_hwm,&HardwareManager::initialize);
@@ -70,6 +71,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionTest,&QAction::triggered,this,&MainWindow::test);
 
 	p_batchThread = new QThread(this);
+
+	ui->scanNumberSpinBox->blockSignals(true);
+	ui->laserDoubleSpinBox->blockSignals(true);
 
 	hwmThread->start();
 	amThread->start();
@@ -137,7 +141,7 @@ void MainWindow::batchComplete(bool aborted)
 void MainWindow::test()
 {
 	Scan s;
-	s.setLaserParams(100.0,1.0,5.1,50);
+	s.setLaserParams(100.0,1.0,5.1,500);
 
 	BatchManager *bm = new BatchSingle(s);
 	beginBatch(bm);

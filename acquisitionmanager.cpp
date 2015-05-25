@@ -55,6 +55,8 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 				{
 					emit plotData(d_plotDataCache,x);
 					emit pointComplete(d_currentScan.completedPoints());
+					emit statusMessage(QString("Acquiring (%1/%2)").arg(d_currentScan.completedPoints())
+								    .arg(d_currentScan.totalPoints()));
 					checkScanComplete();
 				}
 			}

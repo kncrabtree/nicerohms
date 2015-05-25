@@ -59,7 +59,7 @@ void VirtualIOBoard::flipWavemeterMirror()
 bool VirtualIOBoard::readCavityLocked()
 {
 	emit lockState(true);
-	return true;
+	return qrand() % 2;
 }
 
 void VirtualIOBoard::setCavityPZTVoltage(double v)
