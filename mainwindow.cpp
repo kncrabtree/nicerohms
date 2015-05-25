@@ -4,6 +4,9 @@
 #include <QThread>
 #include <QLabel>
 #include <QMessageBox>
+#include <QSettings>
+#include <QApplication>
+#include <QActionGroup>
 
 #include "loghandler.h"
 #include "communicationdialog.h"
@@ -41,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::laserPosUpdate,ui->laserDoubleSpinBox,&QDoubleSpinBox::setValue);
 	connect(p_hwm,&HardwareManager::lockStateUpdate,ui->lockLed,&Led::setState);
 	connect(p_hwm,&HardwareManager::lockStateCheck,ui->lockLed,&Led::setState);
+	connect(p_hwm,&HardwareManager::wavemeterPumpUpdate,this,&MainWindow::pumpUpdate);
+	connect(p_hwm,&HardwareManager::wavemeterSignalUpdate,this,&MainWindow::signalUpdate);
 
 	QThread *hwmThread = new QThread(this);
 	connect(hwmThread,&QThread::started,p_hwm,&HardwareManager::initialize);
@@ -78,6 +83,29 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->scanNumberSpinBox->blockSignals(true);
 	ui->laserDoubleSpinBox->blockSignals(true);
+	ui->pumpDoubleSpinBox->blockSignals(true);
+	ui->signalDoubleSpinBox->blockSignals(true);
+	ui->idlerDoubleSpinBox->blockSignals(true);
+
+	readWavemeterSettings();
+	QActionGroup *wmActions = new QActionGroup(this);
+	wmActions->addAction(ui->actionGHz);
+	wmActions->addAction(ui->actionWavenumbers);
+	wmActions->setExclusive(true);
+	switch (d_wmUnits) {
+	case NicerOhms::WmWavenumbers:
+		ui->actionWavenumbers->setChecked(true);
+		break;
+	case NicerOhms::WmGHz:
+		ui->actionGHz->setChecked(true);
+		break;
+	}
+
+	connect(ui->actionGHz,&QAction::triggered,this,&MainWindow::setWavemeterUnitsGHz);
+	connect(ui->actionWavenumbers,&QAction::triggered,this,&MainWindow::setWavemeterUnitsWavenumbers);
+
+	ui->menuUnits->addAction(ui->actionGHz);
+	ui->menuUnits->addAction(ui->actionWavenumbers);
 
 	hwmThread->start();
 	amThread->start();
@@ -154,6 +182,109 @@ void MainWindow::test()
 
 	BatchManager *bm = new BatchSingle(s);
 	beginBatch(bm);
+}
+
+void MainWindow::setWavemeterUnitsGHz()
+{
+	QSettings s(QSettings::SystemScope, QApplication::organizationName(), QApplication::applicationName());
+	s.setValue(QString("wmUnits"),NicerOhms::WmGHz);
+	s.sync();
+	readWavemeterSettings();
+}
+
+void MainWindow::setWavemeterUnitsWavenumbers()
+{
+	QSettings s(QSettings::SystemScope, QApplication::organizationName(), QApplication::applicationName());
+	s.setValue(QString("wmUnits"),NicerOhms::WmWavenumbers);
+	s.sync();
+	readWavemeterSettings();
+}
+
+void MainWindow::readWavemeterSettings()
+{
+	QSettings s(QSettings::SystemScope, QApplication::organizationName(), QApplication::applicationName());
+	NicerOhms::WmDisplayUnits units = static_cast<NicerOhms::WmDisplayUnits>
+			(s.value(QString("wmUnits"),NicerOhms::WmWavenumbers).toInt());
+
+	switch(units)
+	{
+	case NicerOhms::WmWavenumbers:
+		ui->pumpDoubleSpinBox->setSuffix(QString::fromUtf16(u" cm⁻¹"));
+		ui->signalDoubleSpinBox->setSuffix(QString::fromUtf16(u" cm⁻¹"));
+		ui->idlerDoubleSpinBox->setSuffix(QString::fromUtf16(u" cm⁻¹"));
+		ui->pumpDoubleSpinBox->setDecimals(6);
+		ui->signalDoubleSpinBox->setDecimals(6);
+		ui->idlerDoubleSpinBox->setDecimals(6);
+		if(d_wmUnits == NicerOhms::WmGHz)
+		{
+			double newPump = ui->pumpDoubleSpinBox->value()/29.9792458;
+			double newSignal = ui->signalDoubleSpinBox->value()/29.9792458;
+			double newIdler = ui->idlerDoubleSpinBox->value()/29.9792458;
+			ui->pumpDoubleSpinBox->setMaximum(10000.0);
+			ui->pumpDoubleSpinBox->setValue(newPump);
+			ui->signalDoubleSpinBox->setMaximum(10000.0);
+			ui->signalDoubleSpinBox->setValue(newSignal);
+			ui->idlerDoubleSpinBox->setMaximum(10000.0);
+			ui->idlerDoubleSpinBox->setValue(newIdler);
+		}
+		break;
+	case NicerOhms::WmGHz:
+		ui->pumpDoubleSpinBox->setSuffix(QString(" GHz"));
+		ui->signalDoubleSpinBox->setSuffix(QString(" GHz"));
+		ui->idlerDoubleSpinBox->setSuffix(QString(" GHz"));
+		ui->pumpDoubleSpinBox->setDecimals(5);
+		ui->signalDoubleSpinBox->setDecimals(5);
+		ui->idlerDoubleSpinBox->setDecimals(5);
+		if(d_wmUnits == NicerOhms::WmWavenumbers)
+		{
+			double newPump = ui->pumpDoubleSpinBox->value()*29.9792458;
+			double newSignal = ui->signalDoubleSpinBox->value()*29.9792458;
+			double newIdler = ui->idlerDoubleSpinBox->value()*29.9792458;
+			ui->pumpDoubleSpinBox->setMaximum(1000000.0);
+			ui->pumpDoubleSpinBox->setValue(newPump);
+			ui->signalDoubleSpinBox->setMaximum(1000000.0);
+			ui->signalDoubleSpinBox->setValue(newSignal);
+			ui->idlerDoubleSpinBox->setMaximum(1000000.0);
+			ui->idlerDoubleSpinBox->setValue(newIdler);
+		}
+		break;
+	}
+
+	d_wmUnits = units;
+}
+
+void MainWindow::pumpUpdate(double f)
+{
+	double freq;
+	switch (d_wmUnits) {
+	case NicerOhms::WmWavenumbers:
+		freq = f/29979245800.0;
+		break;
+	case NicerOhms::WmGHz:
+		freq = f/1e9;
+		break;
+	}
+
+	ui->pumpDoubleSpinBox->setValue(freq);
+	if(!qFuzzyCompare(1.0 + ui->signalDoubleSpinBox->value(), 1.0))
+		ui->idlerDoubleSpinBox->setValue(freq - ui->signalDoubleSpinBox->value());
+}
+
+void MainWindow::signalUpdate(double f)
+{
+	double freq;
+	switch (d_wmUnits) {
+	case NicerOhms::WmWavenumbers:
+		freq = f/29979245800.0;
+		break;
+	case NicerOhms::WmGHz:
+		freq = f/1e9;
+		break;
+	}
+
+	ui->signalDoubleSpinBox->setValue(freq);
+	if(ui->pumpDoubleSpinBox->value() - freq > 0.0)
+		ui->idlerDoubleSpinBox->setValue(ui->pumpDoubleSpinBox->value() - freq);
 }
 
 void MainWindow::beginBatch(BatchManager *bm)

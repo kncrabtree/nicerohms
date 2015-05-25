@@ -42,6 +42,12 @@ public slots:
 	void batchComplete(bool aborted);
 
 	void test();
+	void setWavemeterUnitsGHz();
+	void setWavemeterUnitsWavenumbers();
+	void readWavemeterSettings();
+	void pumpUpdate(double f);
+	void signalUpdate(double f);
+
 
 signals:
     void statusMessage(const QString);
@@ -50,6 +56,7 @@ signals:
 private:
 	Ui::MainWindow *ui;
 	UiState d_currentState;
+	NicerOhms::WmDisplayUnits d_wmUnits;
 	bool d_hardwareConnected;
 
 	LogHandler *p_lh;
@@ -63,5 +70,7 @@ private:
 	void beginBatch(BatchManager *bm);
 	void configureUi(UiState s);
 };
+
+
 
 #endif // MAINWINDOW_H

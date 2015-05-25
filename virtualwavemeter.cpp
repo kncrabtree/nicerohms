@@ -25,8 +25,8 @@ bool VirtualWavemeter::testConnection()
 	p_timer->stop();
 
 	d_currentState = Pump;
-	d_pumpFreq = 1e12;
-	d_signalFreq = 1e11;
+	d_pumpFreq = 2.8175983e14;
+	d_signalFreq = 2.0e14;
 
 	readPump();
 	readSignal();
