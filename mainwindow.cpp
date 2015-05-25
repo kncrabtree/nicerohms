@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QApplication>
 #include <QActionGroup>
+#include <QCloseEvent>
 
 #include "loghandler.h"
 #include "communicationdialog.h"
@@ -324,4 +325,13 @@ void MainWindow::configureUi(MainWindow::UiState s)
 
 	if(s != Disconnected)
 		d_currentState = s;
+}
+
+void MainWindow::closeEvent(QCloseEvent *ev)
+{
+	if(p_batchThread->isRunning())
+	    ev->ignore();
+	else
+	    ev->accept();
+
 }

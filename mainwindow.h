@@ -68,6 +68,9 @@ private:
 
 	void beginBatch(BatchManager *bm);
 	void configureUi(UiState s);
+
+protected:
+	void closeEvent(QCloseEvent *ev);
 };
 
 
