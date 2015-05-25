@@ -148,22 +148,32 @@
         </spacer>
        </item>
        <item>
-        <layout class="QFormLayout" name="formLayout_2">
-         <property name="rowWrapPolicy">
-          <enum>QFormLayout::DontWrapRows</enum>
-         </property>
-         <property name="formAlignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-         </property>
+        <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0,1">
+         <item row="0" column="2">
+          <widget class="QLabel" name="slewLabel">
+           <property name="text">
+            <string>Slew</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="lockLabel">
            <property name="text">
             <string>Lock</string>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
           </widget>
          </item>
          <item row="0" column="1">
           <widget class="Led" name="lockLed" native="true"/>
+         </item>
+         <item row="0" column="3">
+          <widget class="Led" name="slewLed" native="true"/>
          </item>
         </layout>
        </item>

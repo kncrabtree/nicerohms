@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+
+
 	QLabel *statusLabel = new QLabel(this);
 	statusLabel->setText(QString("Waiting for hardware..."));
 	connect(this,&MainWindow::statusMessage,statusLabel,&QLabel::setText);
@@ -46,6 +48,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::lockStateCheck,ui->lockLed,&Led::setState);
 	connect(p_hwm,&HardwareManager::wavemeterPumpUpdate,this,&MainWindow::pumpUpdate);
 	connect(p_hwm,&HardwareManager::wavemeterSignalUpdate,this,&MainWindow::signalUpdate);
+	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ ui->slewLed->setState(true);});
+	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ ui->slewLed->setState(false);});
 
 	QThread *hwmThread = new QThread(this);
 	connect(hwmThread,&QThread::started,p_hwm,&HardwareManager::initialize);
