@@ -46,34 +46,35 @@ void Laser::slewToPosition(double target)
 		d_slewing = true;
 		emit slewStarting();
 
-		double direction = target > d_currentPos ? 1.0 : -1.0;
-		double nextPos = d_currentPos + direction*d_slewStep;
-		setPosition(nextPos);
-
-		std::unique_ptr<QMetaObject::Connection> pconn{new QMetaObject::Connection};
-		QMetaObject::Connection &conn = *pconn;
-		conn = connect(p_slewTimer,&QTimer::timeout,this,[=](){
-			if(qAbs(d_currentPos - realTarget) > d_slewStep)
-			{
-				double direction = realTarget > d_currentPos ? 1.0 : -1.0;
-				double nextPos = d_currentPos + direction*d_slewStep;
-				setPosition(nextPos);
-			}
-			else
-			{
-				d_slewing = false;
-				p_slewTimer->stop();
-				disconnect(conn);
-				setPosition(realTarget);
-				emit slewComplete();
-			}
-		});
-		p_slewTimer->start();
+		d_slewTarget = realTarget;
+		nextSlewPoint();
 	}
 	else
 	{
 		setPosition(realTarget);
 		emit slewComplete();
 	}
+}
+
+void Laser::nextSlewPoint()
+{
+	double direction = d_slewTarget > d_currentPos ? 1.0 : -1.0;
+	double nextPos = d_currentPos + direction*d_slewStep;
+
+	if(direction>0.0)
+		nextPos = qMin(nextPos,d_slewTarget);
+	else
+		nextPos = qMax(nextPos,d_slewTarget);
+
+	setPosition(nextPos);
+
+	if(qFuzzyCompare(nextPos,d_slewTarget))
+	{
+		d_slewing = false;
+		emit slewComplete();
+	}
+	else
+		QTimer::singleShot(d_slewInterval,this,&Laser::nextSlewPoint);
+
 }
 

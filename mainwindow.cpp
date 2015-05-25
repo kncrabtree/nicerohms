@@ -56,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_am,&AcquisitionManager::scanComplete,p_hwm,&HardwareManager::endAcquisition);
 	connect(p_am,&AcquisitionManager::requestAutoLock,p_hwm,&HardwareManager::autoRelock);
 	connect(p_hwm,&HardwareManager::scanInitialized,p_am,&AcquisitionManager::beginScan);
-	connect(p_hwm,&HardwareManager::laserSlewComplete,p_am,&AcquisitionManager::laserReady);
 	connect(p_hwm,&HardwareManager::lockStateCheck,p_am,&AcquisitionManager::lockCheckComplete);
 	connect(p_hwm,&HardwareManager::pointData,p_am,&AcquisitionManager::processData);
 	connect(p_hwm,&HardwareManager::relockComplete,p_am,&AcquisitionManager::autoLockComplete);
@@ -124,6 +123,7 @@ void MainWindow::batchComplete(bool aborted)
 {
 	disconnect(p_hwm,&HardwareManager::lockStateUpdate,p_am,&AcquisitionManager::lockStateUpdate);
 	disconnect(p_am,&AcquisitionManager::plotData,ui->dataPlotWidget,&DataPlotViewWidget::pointUpdated);
+	disconnect(p_hwm,&HardwareManager::laserSlewComplete,p_am,&AcquisitionManager::laserReady);
 
 	if(aborted)
 	    emit statusMessage(QString("Scan aborted"));
@@ -137,7 +137,7 @@ void MainWindow::batchComplete(bool aborted)
 void MainWindow::test()
 {
 	Scan s;
-	s.setLaserParams(1.0,100.0,0.1,50);
+	s.setLaserParams(100.0,1.0,5.1,50);
 
 	BatchManager *bm = new BatchSingle(s);
 	beginBatch(bm);
@@ -153,6 +153,7 @@ void MainWindow::beginBatch(BatchManager *bm)
 	connect(bm,&BatchManager::batchComplete,p_batchThread,&QThread::quit);
 	connect(p_batchThread,&QThread::finished,bm,&BatchManager::deleteLater);
 
+	connect(p_hwm,&HardwareManager::laserSlewComplete,p_am,&AcquisitionManager::laserReady,Qt::UniqueConnection);
 	connect(p_hwm,&HardwareManager::lockStateUpdate,p_am,&AcquisitionManager::lockStateUpdate,Qt::UniqueConnection);
 	connect(p_am,&AcquisitionManager::plotData,ui->dataPlotWidget,&DataPlotViewWidget::pointUpdated,Qt::UniqueConnection);
 

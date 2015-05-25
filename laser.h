@@ -20,11 +20,12 @@ signals:
 public slots:
 	void readSlewParameters();
 	void slewToPosition(double target);
+	void nextSlewPoint();
 	virtual double readPosition() =0;
 
 protected:
 	bool d_slewing;
-	double d_currentPos, d_slewStep;
+	double d_currentPos, d_slewStep, d_slewTarget;
 	int d_slewInterval;
 	virtual double setPosition(double target) =0;
 
