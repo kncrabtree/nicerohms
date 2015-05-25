@@ -34,7 +34,7 @@ public:
 	double currentLaserPos() const;
 	bool isAutoLockEnabled() const;
 	bool isAbortOnUnlock() const;
-	bool laserDelay() const;
+	int laserDelay() const;
 	QPair<double,double> cavityPZTRange() const;
 	QString endLogMessage() const;
 	NicerOhms::LogMessageCode endLogCode() const;
@@ -48,6 +48,7 @@ public:
 	bool addPointData(const QList<QPair<QString,QVariant>> l);
 	void addNumDataPoints(int n);
 	void setPointRedo();
+	void setLaserParams(double start, double stop, double step, int delay);
 
 private:
 	QSharedDataPointer<ScanData> data;
@@ -59,8 +60,9 @@ private:
 class ScanData : public QSharedData
 {
 public:
-	ScanData() : number(0), isInitialized(false), hardwareSuccess(true), aborted(false), completedPoints(0), autoLockEnabled(false),
-	cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), laserDelay(0), numDataPoints(0), redo(false) {}
+	ScanData() : number(0), isInitialized(false), hardwareSuccess(true), aborted(false), completedPoints(0), totalPoints(0),
+		autoLockEnabled(false), cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), laserDelay(0), numDataPoints(0), redo(false),
+		laserStart(0.0), laserStop(0.0), laserStep(0.0) {}
 
 	int number;
 	bool isInitialized;
@@ -68,12 +70,16 @@ public:
 	bool aborted;
 	QDateTime startTime;
 	int completedPoints;
+	int totalPoints;
 	bool autoLockEnabled;
 	double cavityMin, cavityMax;
 	bool abortOnUnlock;
 	int laserDelay;
 	int numDataPoints;
 	bool redo;
+	double laserStart;
+	double laserStop;
+	double laserStep;
 
 	QList<QPair<QString,QVariant>> dataCache;
 	QMap<QString,QVector<QVariant>> scanData;

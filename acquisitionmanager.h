@@ -34,7 +34,7 @@ signals:
 	void requestManualLock();
 	void getPointData();
 	void pointComplete(int);
-	void plotData(QList<QPair<QString,QVariant>>);
+	void plotData(QList<QPair<QString,QVariant>>,double);
 
 public slots:
 	void initialize();

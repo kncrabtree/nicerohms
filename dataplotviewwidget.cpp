@@ -49,9 +49,8 @@ void DataPlotViewWidget::initializeForExperiment()
     }
 }
 
-void DataPlotViewWidget::pointUpdated(const QList<QPair<QString, QVariant> > list)
+void DataPlotViewWidget::pointUpdated(const QList<QPair<QString, QVariant> > list, double x)
 {
-    double x = QwtDate::toDouble(QDateTime::currentDateTime());
     if(d_plotCurves.isEmpty())
     {
         d_xRange.first = x;

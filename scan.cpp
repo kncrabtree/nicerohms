@@ -57,7 +57,7 @@ QString Scan::startString() const
 
 int Scan::totalPoints() const
 {
-	return 100;
+	return data->totalPoints;
 }
 
 int Scan::completedPoints() const
@@ -67,7 +67,13 @@ int Scan::completedPoints() const
 
 double Scan::currentLaserPos() const
 {
-	return 10.0;
+	double pos = data->laserStart + static_cast<double>(data->completedPoints)*data->laserStep;
+	if(data->laserStep > 0)
+		pos = qMin(pos,data->laserStop);
+	else
+		pos = qMax(pos,data->laserStop);
+
+	return pos;
 }
 
 bool Scan::isAutoLockEnabled() const
@@ -80,7 +86,7 @@ bool Scan::isAbortOnUnlock() const
 	return data->abortOnUnlock;
 }
 
-bool Scan::laserDelay() const
+int Scan::laserDelay() const
 {
 	return data->laserDelay;
 }
@@ -114,10 +120,15 @@ void Scan::setInitialized()
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
 	int num = s.value(QString("scanNum"),1).toInt();
 	data->number = num;
+
+	data->endLogMessage = QString("Scan %1 complete.").arg(data->number);
+	data->endLogCode = NicerOhms::LogHighlight;
 }
 
 void Scan::setAborted()
 {
+	data->endLogMessage = QString("Scan %1 aborted.").arg(data->number);
+	data->endLogCode = NicerOhms::LogError;
 	data->aborted = true;
 }
 
@@ -170,11 +181,14 @@ bool Scan::addPointData(const QList<QPair<QString, QVariant> > l)
 	{
 		if(!data->redo)
 			saveData();
+		data->redo = false;
+		data->dataCache.clear();
+		return true;
 	}
 
-	data->redo = false;
-	data->dataCache.clear();
-	return true;
+	return false;
+
+
 }
 
 void Scan::addNumDataPoints(int n)
@@ -185,6 +199,24 @@ void Scan::addNumDataPoints(int n)
 void Scan::setPointRedo()
 {
 	data->redo = true;
+}
+
+void Scan::setLaserParams(double start, double stop, double step, int delay)
+{
+	data->laserStart = start;
+	data->laserStop = stop;
+	data->laserDelay = delay;
+
+	if(stop > start)
+		data->laserStep = fabs(step);
+	else
+		data->laserStep = -fabs(step);
+
+	int points = static_cast<int>(floor(fabs((data->laserStart - data->laserStop)/data->laserStep))) + 2;
+	if(qFuzzyCompare(1.0 + data->laserStart + static_cast<double>(points - 1)*data->laserStep,1.0 + data->laserStop + data->laserStep))
+		points -= 1;
+
+	data->totalPoints = points;
 }
 
 void Scan::saveData()
@@ -206,6 +238,8 @@ void Scan::saveData()
 	}
 
 	//iterate over data->scanData and write items to disk
+
+	data->completedPoints++;
 
 }
 

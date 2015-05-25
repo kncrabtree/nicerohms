@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	d_threadObjectList.append(qMakePair(amThread,p_am));
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
-	connect(ui->actionTest,&QAction::triggered,p_hwm,&HardwareManager::test);
+	connect(ui->actionTest,&QAction::triggered,this,&MainWindow::test);
 
 	p_batchThread = new QThread(this);
 
@@ -116,7 +116,8 @@ void MainWindow::manualRelock()
 
 void MainWindow::scanInitialized(const Scan s)
 {
-	Q_UNUSED(s)
+	ui->scanProgressBar->setValue(0);
+	ui->scanProgressBar->setMaximum(s.totalPoints());
 }
 
 void MainWindow::batchComplete(bool aborted)
@@ -131,6 +132,15 @@ void MainWindow::batchComplete(bool aborted)
 
 	configureUi(Idle);
 
+}
+
+void MainWindow::test()
+{
+	Scan s;
+	s.setLaserParams(1.0,100.0,0.1,50);
+
+	BatchManager *bm = new BatchSingle(s);
+	beginBatch(bm);
 }
 
 void MainWindow::beginBatch(BatchManager *bm)

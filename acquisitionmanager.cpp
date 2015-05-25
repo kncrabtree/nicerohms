@@ -21,10 +21,8 @@ void AcquisitionManager::beginScan(Scan s)
 {
 	if(!s.isInitialized())
 	{
-		if(!s.errorString().isEmpty())
-			emit logMessage(s.errorString(),NicerOhms::LogError);
-
 		emit scanComplete(s);
+		return;
 	}
 
 	d_currentScan = s;
@@ -40,6 +38,7 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 {
 	if(d_currentState != Idle)
 	{
+		double x = d_currentScan.currentLaserPos();
 		if(plot)
 			d_plotDataCache.append(l);
 
@@ -54,7 +53,7 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 					beginPoint();
 				else
 				{
-					emit plotData(d_plotDataCache);
+					emit plotData(d_plotDataCache,x);
 					emit pointComplete(d_currentScan.completedPoints());
 					checkScanComplete();
 				}

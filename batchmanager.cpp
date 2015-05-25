@@ -13,28 +13,32 @@ BatchManager::~BatchManager()
 
 void BatchManager::scanComplete(const Scan s)
 {
-    if(!s.isInitialized())
-    {
-        writeReport();
-        emit batchComplete(true);
-        return;
-    }
+	if(!s.errorString().isEmpty())
+		emit logMessage(s.errorString(),NicerOhms::LogError);
 
-    emit logMessage(s.endLogMessage(),s.endLogCode());
+	if(!s.isInitialized())
+	{
+		writeReport();
+		emit batchComplete(true);
+		return;
+	}
 
-    processScan(s);
-    if(!s.isAborted() && !isComplete())
-	   beginNextScan();
-    else
-    {
-        writeReport();
-	   emit batchComplete(s.isAborted());
-    }
+
+	emit logMessage(s.endLogMessage(),s.endLogCode());
+
+	processScan(s);
+	if(!s.isAborted() && !isComplete())
+		beginNextScan();
+	else
+	{
+		writeReport();
+		emit batchComplete(s.isAborted());
+	}
 
 }
 
 void BatchManager::beginNextScan()
 {
-    emit beginScan(nextScan());
+	emit beginScan(nextScan());
 }
 

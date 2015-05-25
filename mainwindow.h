@@ -42,6 +42,8 @@ public slots:
 	void scanInitialized(const Scan s);
 	void batchComplete(bool aborted);
 
+	void test();
+
 signals:
     void statusMessage(const QString);
     void manualRelockComplete(bool abort);

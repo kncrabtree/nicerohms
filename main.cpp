@@ -110,6 +110,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QVector<QPointF> >("QVector<QPointF>");
     qRegisterMetaType<QList<QPair<QString,QVariant> >>("QList<QPair<QString,QVariant> >");
     qRegisterMetaType<NicerOhms::LogMessageCode>("NicerOhms::LogMessageCode");
+    qRegisterMetaType<Scan>("Scan");
 
 
     MainWindow w;
