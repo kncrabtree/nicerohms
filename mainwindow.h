@@ -43,8 +43,6 @@ public slots:
 	void batchComplete(bool aborted);
 
 	void test();
-	void setWavemeterUnits(NicerOhms::WmDisplayUnits u);
-	void readWavemeterSettings();
 	void pumpUpdate(double f);
 	void signalUpdate(double f);
 
@@ -56,7 +54,6 @@ signals:
 private:
 	Ui::MainWindow *ui;
 	UiState d_currentState;
-	NicerOhms::WmDisplayUnits d_wmUnits;
 	bool d_hardwareConnected;
 
 	LogHandler *p_lh;

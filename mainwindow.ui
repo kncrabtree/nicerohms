@@ -87,8 +87,14 @@
            <property name="buttonSymbols">
             <enum>QAbstractSpinBox::NoButtons</enum>
            </property>
+           <property name="specialValueText">
+            <string>Unknown</string>
+           </property>
+           <property name="suffix">
+            <string> GHz</string>
+           </property>
            <property name="maximum">
-            <double>100000000.000000000000000</double>
+            <double>1000000.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -107,8 +113,14 @@
            <property name="buttonSymbols">
             <enum>QAbstractSpinBox::NoButtons</enum>
            </property>
+           <property name="specialValueText">
+            <string>Unknown</string>
+           </property>
+           <property name="suffix">
+            <string> GHz</string>
+           </property>
            <property name="maximum">
-            <double>100000000.000000000000000</double>
+            <double>1000000.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -127,8 +139,14 @@
            <property name="buttonSymbols">
             <enum>QAbstractSpinBox::NoButtons</enum>
            </property>
+           <property name="specialValueText">
+            <string>Unknown</string>
+           </property>
+           <property name="suffix">
+            <string> GHz</string>
+           </property>
            <property name="maximum">
-            <double>100000000.000000000000000</double>
+            <double>1000000.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -246,20 +264,8 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <widget class="QMenu" name="menuWavemeter">
-     <property name="title">
-      <string>Wavemeter</string>
-     </property>
-     <widget class="QMenu" name="menuUnits">
-      <property name="title">
-       <string>Units</string>
-      </property>
-     </widget>
-     <addaction name="menuUnits"/>
-    </widget>
     <addaction name="actionCommunication"/>
     <addaction name="actionTest"/>
-    <addaction name="menuWavemeter"/>
    </widget>
    <addaction name="menuSettings"/>
   </widget>
@@ -283,22 +289,6 @@
   <action name="actionTest">
    <property name="text">
     <string>Test</string>
-   </property>
-  </action>
-  <action name="actionWavenumbers">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Wavenumbers</string>
-   </property>
-  </action>
-  <action name="actionGHz">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>GHz</string>
    </property>
   </action>
  </widget>

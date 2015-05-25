@@ -13,13 +13,6 @@ enum LogMessageCode {
     LogDebug
 };
 
-enum WmDisplayUnits {
-	WmWavenumbers,
-	WmGHz
-};
-
 }
-
-Q_DECLARE_METATYPE(NicerOhms::WmDisplayUnits)
 
 #endif // DATASTRUCTS_H
