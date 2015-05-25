@@ -42,8 +42,7 @@ public slots:
 	void batchComplete(bool aborted);
 
 	void test();
-	void setWavemeterUnitsGHz();
-	void setWavemeterUnitsWavenumbers();
+	void setWavemeterUnits(NicerOhms::WmDisplayUnits u);
 	void readWavemeterSettings();
 	void pumpUpdate(double f);
 	void signalUpdate(double f);

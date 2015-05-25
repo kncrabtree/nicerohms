@@ -101,8 +101,8 @@ MainWindow::MainWindow(QWidget *parent) :
 		break;
 	}
 
-	connect(ui->actionGHz,&QAction::triggered,this,&MainWindow::setWavemeterUnitsGHz);
-	connect(ui->actionWavenumbers,&QAction::triggered,this,&MainWindow::setWavemeterUnitsWavenumbers);
+	connect(ui->actionGHz,&QAction::triggered,[=](){ setWavemeterUnits(NicerOhms::WmGHz); });
+	connect(ui->actionWavenumbers,&QAction::triggered,[=](){ setWavemeterUnits(NicerOhms::WmWavenumbers); });
 
 	ui->menuUnits->addAction(ui->actionGHz);
 	ui->menuUnits->addAction(ui->actionWavenumbers);
@@ -184,18 +184,10 @@ void MainWindow::test()
 	beginBatch(bm);
 }
 
-void MainWindow::setWavemeterUnitsGHz()
+void MainWindow::setWavemeterUnits(NicerOhms::WmDisplayUnits u)
 {
 	QSettings s(QSettings::SystemScope, QApplication::organizationName(), QApplication::applicationName());
-	s.setValue(QString("wmUnits"),NicerOhms::WmGHz);
-	s.sync();
-	readWavemeterSettings();
-}
-
-void MainWindow::setWavemeterUnitsWavenumbers()
-{
-	QSettings s(QSettings::SystemScope, QApplication::organizationName(), QApplication::applicationName());
-	s.setValue(QString("wmUnits"),NicerOhms::WmWavenumbers);
+	s.setValue(QString("wmUnits"),u);
 	s.sync();
 	readWavemeterSettings();
 }
