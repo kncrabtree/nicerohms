@@ -36,6 +36,7 @@ public:
 public slots:
 	void launchCommunicationDialog();
 	void hardwareConnected(bool connected);
+	void configForSlew(bool slewing);
 
 	void manualRelock();
 	void scanInitialized(const Scan s);

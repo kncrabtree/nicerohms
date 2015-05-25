@@ -49,8 +49,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::lockStateCheck,ui->lockLed,&Led::setState);
 	connect(p_hwm,&HardwareManager::wavemeterPumpUpdate,this,&MainWindow::pumpUpdate);
 	connect(p_hwm,&HardwareManager::wavemeterSignalUpdate,this,&MainWindow::signalUpdate);
-	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ ui->slewLed->setState(true);});
-	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ ui->slewLed->setState(false);});
+	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
+	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
 
 	QThread *hwmThread = new QThread(this);
 	connect(hwmThread,&QThread::started,p_hwm,&HardwareManager::initialize);
@@ -146,6 +146,18 @@ void MainWindow::hardwareConnected(bool connected)
 		emit statusMessage(QString("Hardware is not all connected."));
 	d_hardwareConnected = connected;
 	configureUi(d_currentState);
+}
+
+void MainWindow::configForSlew(bool slewing)
+{
+	ui->slewLed->setState(slewing);
+	if(p_batchThread->isRunning())
+		return;
+
+	if(slewing)
+		configureUi(Slewing);
+	else
+		configureUi(Idle);
 }
 
 void MainWindow::manualRelock()
