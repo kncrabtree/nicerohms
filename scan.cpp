@@ -45,6 +45,11 @@ bool Scan::isAborted() const
 	return data->aborted;
 }
 
+int Scan::number() const
+{
+	return data->number;
+}
+
 QString Scan::errorString() const
 {
 	return data->errorString;

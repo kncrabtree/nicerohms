@@ -15,11 +15,12 @@
 
 MainWindow::MainWindow(QWidget *parent) :
      QMainWindow(parent),
-	ui(new Ui::MainWindow), d_hardwareConnected(false)
+	ui(new Ui::MainWindow), d_currentState(Idle), d_hardwareConnected(false)
 {
 	ui->setupUi(this);
 
 	QLabel *statusLabel = new QLabel(this);
+	statusLabel->setText(QString("Waiting for hardware..."));
 	connect(this,&MainWindow::statusMessage,statusLabel,&QLabel::setText);
 	ui->statusBar->addWidget(statusLabel);
 
@@ -35,8 +36,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	p_hwm = new HardwareManager;
 	connect(p_hwm,&HardwareManager::logMessage,p_lh,&LogHandler::logMessage);
 	connect(p_hwm,&HardwareManager::statusMessage,statusLabel,&QLabel::setText);
+	connect(p_hwm,&HardwareManager::allHardwareConnected,this,&MainWindow::hardwareConnected);
 	connect(p_hwm,&HardwareManager::scanInitialized,this,&MainWindow::scanInitialized);
 	connect(p_hwm,&HardwareManager::laserPosUpdate,ui->laserDoubleSpinBox,&QDoubleSpinBox::setValue);
+	connect(p_hwm,&HardwareManager::lockStateUpdate,ui->lockLed,&Led::setState);
+	connect(p_hwm,&HardwareManager::lockStateCheck,ui->lockLed,&Led::setState);
 
 	QThread *hwmThread = new QThread(this);
 	connect(hwmThread,&QThread::started,p_hwm,&HardwareManager::initialize);
@@ -103,6 +107,10 @@ void MainWindow::launchCommunicationDialog()
 
 void MainWindow::hardwareConnected(bool connected)
 {
+	if(connected)
+		emit statusMessage(QString("Hardware connected successfully."));
+	else
+		emit statusMessage(QString("Hardware is not all connected."));
 	d_hardwareConnected = connected;
 	configureUi(d_currentState);
 }
@@ -119,6 +127,7 @@ void MainWindow::manualRelock()
 
 void MainWindow::scanInitialized(const Scan s)
 {
+	ui->scanNumberSpinBox->setValue(s.number());
 	ui->scanProgressBar->setValue(0);
 	ui->scanProgressBar->setMaximum(s.totalPoints());
 }
@@ -161,11 +170,6 @@ void MainWindow::beginBatch(BatchManager *bm)
 	connect(p_hwm,&HardwareManager::lockStateUpdate,p_am,&AcquisitionManager::lockStateUpdate,Qt::UniqueConnection);
 	connect(p_am,&AcquisitionManager::plotData,ui->dataPlotWidget,&DataPlotViewWidget::pointUpdated,Qt::UniqueConnection);
 
-//	if(sleepWhenDone)
-//	{
-//		//connect to sleep action
-//	}
-
 	ui->dataPlotWidget->initializeForExperiment();
 	configureUi(Acquiring);
 	bm->moveToThread(p_batchThread);
@@ -185,8 +189,6 @@ void MainWindow::configureUi(MainWindow::UiState s)
 	case Slewing:
 		break;
 	case Disconnected:
-		break;
-	case Asleep:
 		break;
 	case Idle:
 	default:

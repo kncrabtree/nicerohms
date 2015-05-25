@@ -88,9 +88,32 @@
         </spacer>
        </item>
        <item>
+        <layout class="QFormLayout" name="formLayout_2">
+         <property name="rowWrapPolicy">
+          <enum>QFormLayout::DontWrapRows</enum>
+         </property>
+         <property name="formAlignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="lockLabel">
+           <property name="text">
+            <string>Lock</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Led" name="lockLed" native="true"/>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QLabel" name="label">
          <property name="text">
           <string>Scan Progress</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -187,6 +210,12 @@
    <class>DataPlotViewWidget</class>
    <extends>QWidget</extends>
    <header>dataplotviewwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Led</class>
+   <extends>QWidget</extends>
+   <header>led.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

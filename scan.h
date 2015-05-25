@@ -27,6 +27,7 @@ public:
 	bool hardwareSuccess() const;
 	bool isComplete() const;
 	bool isAborted() const;
+	int number() const;
 	QString errorString() const;
 	QString startString() const;
 	int totalPoints() const;

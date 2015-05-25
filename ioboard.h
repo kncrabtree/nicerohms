@@ -3,6 +3,8 @@
 
 #include "hardwareobject.h"
 
+#include <QTimer>
+
 class IOBoard : public HardwareObject
 {
 	Q_OBJECT
@@ -19,13 +21,17 @@ public slots:
 	virtual void flipWavemeterMirror() =0;
 	virtual bool readCavityLocked() =0;
 	void relock();
-	void readRelockSettings();
+	void readIOSettings();
 
 protected:
 	double d_lastCavityVoltage, d_relockStep;
+	int d_readLockInterval;
+	QTimer *p_lockReadTimer;
 
 	virtual void setCavityPZTVoltage(double v) =0;
 	virtual void setCavityLockOverride(bool unlock) =0;
+
+
 
 };
 

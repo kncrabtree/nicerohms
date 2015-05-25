@@ -28,6 +28,7 @@ void AcquisitionManager::beginScan(Scan s)
 	d_currentScan = s;
 
 	d_currentState = Acquiring;
+	emit statusMessage(QString("Slewing laser to starting position"));
 	emit logMessage(s.startString(),NicerOhms::LogHighlight);
 	emit beginAcquisition();
 
@@ -166,6 +167,7 @@ void AcquisitionManager::lockStateUpdate(bool locked)
 {
 	if(d_currentState == Acquiring && !locked)
 	{
+		emit statusMessage(QString("Lost lock, redoing point after relock."));
 		d_currentState = WaitingForRedo;
 		d_currentScan.setPointRedo();
 	}

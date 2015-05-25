@@ -22,8 +22,11 @@ VirtualIOBoard::~VirtualIOBoard()
 
 bool VirtualIOBoard::testConnection()
 {
-	readRelockSettings();
+	p_lockReadTimer->stop();
+	readIOSettings();
+	readCavityLocked();
 
+	p_lockReadTimer->start();
 	emit connected();
 	return true;
 }
@@ -35,6 +38,7 @@ void VirtualIOBoard::initialize()
 
 Scan VirtualIOBoard::prepareForScan(Scan scan)
 {
+	readIOSettings();
 	return scan;
 }
 
@@ -58,8 +62,9 @@ void VirtualIOBoard::flipWavemeterMirror()
 
 bool VirtualIOBoard::readCavityLocked()
 {
-	emit lockState(true);
-	return qrand() % 2;
+	bool on = qrand() % 1000;
+	emit lockState(on);
+	return on;
 }
 
 void VirtualIOBoard::setCavityPZTVoltage(double v)

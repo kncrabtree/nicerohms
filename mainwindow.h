@@ -30,8 +30,7 @@ public:
 		Idle,
 		Acquiring,
 		Slewing,
-		Disconnected,
-		Asleep
+		Disconnected
 	};
 
 public slots:
