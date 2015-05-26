@@ -53,6 +53,7 @@ signals:
 
     void wavemeterPumpUpdate(double);
     void wavemeterSignalUpdate(double);
+    void updateWavemeterTimer();
 
     void cavityPZTUpdate(double);
 

@@ -56,6 +56,7 @@ void HardwareManager::initialize()
 	p_wavemeter = new WavemeterHardware();
 	connect(p_wavemeter,&Wavemeter::pumpUpdate,this,&HardwareManager::wavemeterPumpUpdate);
 	connect(p_wavemeter,&Wavemeter::signalUpdate,this,&HardwareManager::wavemeterSignalUpdate);
+	connect(this,&HardwareManager::updateWavemeterTimer,p_wavemeter,&Wavemeter::readTimerInterval);
 	d_hardwareList.append(qMakePair(p_wavemeter,nullptr));
 
 	//cavity pzt driver probably does not need to be in its own thread

@@ -7,6 +7,7 @@ IOBoard::IOBoard(QObject *parent) :
 
 	p_lockReadTimer = new QTimer(this);
 	connect(p_lockReadTimer,&QTimer::timeout,this,&IOBoard::readCavityLocked);
+	connect(this,&IOBoard::hardwareFailure,p_lockReadTimer,&QTimer::stop);
 }
 
 IOBoard::~IOBoard()

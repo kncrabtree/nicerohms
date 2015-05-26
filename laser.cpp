@@ -1,7 +1,5 @@
 #include "laser.h"
 
-#include <memory>
-
 #include <QSettings>
 #include <QApplication>
 #include <QTimer>
@@ -9,7 +7,6 @@
 Laser::Laser(QObject *parent) :
 	HardwareObject(parent), d_slewing(false), d_currentPos(0.0), d_slewStep(1.0), d_slewInterval(100)
 {
-	p_slewTimer = new QTimer(this);
 	d_key = QString("laser");
 }
 
@@ -27,7 +24,6 @@ void Laser::readSlewParameters()
 	d_slewStep = s.value(QString("%1/%2/slewStep").arg(d_key).arg(d_subKey),1.0).toDouble();
 	d_slewInterval = s.value(QString("%1/%2/slewInterval").arg(d_key).arg(d_subKey),100).toInt();
 
-	p_slewTimer->setInterval(d_slewInterval);
 }
 
 void Laser::slewToPosition(double target)

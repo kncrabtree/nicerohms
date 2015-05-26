@@ -7,6 +7,7 @@ Wavemeter::Wavemeter(QObject *parent) :
 
 	p_timer = new QTimer(this);
 	connect(p_timer,&QTimer::timeout,this,&Wavemeter::read);
+	connect(this,&HardwareObject::hardwareFailure,p_timer,&QTimer::stop);
 }
 
 Wavemeter::~Wavemeter()
