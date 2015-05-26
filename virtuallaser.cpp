@@ -58,7 +58,6 @@ void VirtualLaser::readPointData()
 
 double VirtualLaser::readPosition()
 {
-	emit logMessage(QString("Pos: %1").arg(d_currentPos));
 	emit laserPosChanged(d_currentPos);
 	return d_currentPos;
 }
