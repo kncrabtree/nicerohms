@@ -98,6 +98,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	hwmThread->start();
 	amThread->start();
+
+	configureUi(Idle);
 }
 
 MainWindow::~MainWindow()
