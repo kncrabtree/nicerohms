@@ -200,11 +200,14 @@ void HardwareManager::initialize()
 void HardwareManager::connectionResult(HardwareObject *obj, bool success, QString msg)
 {
     if(success)
-	   emit logMessage(obj->name().append(QString(": Connected successfully.")));
+	    emit logMessage(obj->name().append(QString(": Connected successfully.")));
     else
     {
-	   emit logMessage(obj->name().append(QString(": Failed to connect.")),NicerOhms::LogError);
-	   emit logMessage(msg,NicerOhms::LogError);
+	    emit logMessage(obj->name().append(QString(": Failed to connect.")),NicerOhms::LogError);
+	    if(obj->isCritical())
+		    emit logMessage(msg,NicerOhms::LogError);
+	    else
+		    emit logMessage(msg,NicerOhms::LogWarning);
     }
 
     bool ok = success;
@@ -229,12 +232,12 @@ void HardwareManager::hardwareFailure(HardwareObject *obj, bool abort)
     if(abort)
         emit abortAcquisition();
 
-    if(!obj->isCritical())
-        return;
-
     QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
     s.setValue(QString("%1/connected").arg(obj->key()),false);
     s.sync();
+
+    if(!obj->isCritical())
+	   return;
 
     d_status[obj->key()] = false;
     checkStatus();
