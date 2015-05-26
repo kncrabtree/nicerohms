@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::wavemeterSignalUpdate,this,&MainWindow::signalUpdate);
 	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
 	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
+	connect(p_hwm,&HardwareManager::aomSynthUpdate,ui->aomDoubleSpinBox,&QDoubleSpinBox::setValue);
 
 	QThread *hwmThread = new QThread(this);
 	connect(hwmThread,&QThread::started,p_hwm,&HardwareManager::initialize);
@@ -91,6 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->pumpDoubleSpinBox->blockSignals(true);
 	ui->signalDoubleSpinBox->blockSignals(true);
 	ui->idlerDoubleSpinBox->blockSignals(true);
+	ui->aomDoubleSpinBox->blockSignals(true);
 
 	hwmThread->start();
 	amThread->start();

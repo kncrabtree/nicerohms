@@ -11,6 +11,8 @@ VirtualAomSynthesizer::VirtualAomSynthesizer(GpibController *c, QObject *parent)
 	p_comm = new GpibInstrument(d_key,d_subKey,c,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualAomSynthesizer::logMessage);
 	connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
+
+	d_frequency = 185.0;
 }
 
 VirtualAomSynthesizer::~VirtualAomSynthesizer()

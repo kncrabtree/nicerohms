@@ -150,6 +150,32 @@
            </property>
           </widget>
          </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="aomLabel">
+           <property name="text">
+            <string>AOM</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QDoubleSpinBox" name="aomDoubleSpinBox">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="suffix">
+            <string> MHz</string>
+           </property>
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="maximum">
+            <double>1000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
