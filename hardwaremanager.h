@@ -50,6 +50,7 @@ signals:
     void laserPosUpdate(double);
     void laserSlewStarted();
     void laserSlewComplete();
+    void abortSlew();
 
     void wavemeterPumpUpdate(double);
     void wavemeterSignalUpdate(double);

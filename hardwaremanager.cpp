@@ -43,6 +43,7 @@ void HardwareManager::initialize()
 	connect(p_laser,&Laser::laserPosChanged,this,&HardwareManager::laserPosUpdate);
 	connect(p_laser,&Laser::slewStarting,this,&HardwareManager::laserSlewStarted);
 	connect(p_laser,&Laser::slewComplete,this,&HardwareManager::laserSlewComplete);
+	connect(this,&HardwareManager::abortSlew,p_laser,&Laser::abortSlew);
 	d_hardwareList.append(qMakePair(p_laser,nullptr));
 
 	//Lock ins may need their own threads since comms might be slow

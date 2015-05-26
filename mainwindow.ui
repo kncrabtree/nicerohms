@@ -291,8 +291,16 @@
      <string>Settings</string>
     </property>
     <addaction name="actionCommunication"/>
-    <addaction name="actionTest"/>
    </widget>
+   <widget class="QMenu" name="menuAcquisition">
+    <property name="title">
+     <string>Acquisition</string>
+    </property>
+    <addaction name="actionStart_Laser_Scan"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbort"/>
+   </widget>
+   <addaction name="menuAcquisition"/>
    <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -302,6 +310,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionStart_Laser_Scan"/>
+   <addaction name="actionAbort"/>
+   <addaction name="actionTest"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionCommunication">
@@ -315,6 +326,16 @@
   <action name="actionTest">
    <property name="text">
     <string>Test</string>
+   </property>
+  </action>
+  <action name="actionStart_Laser_Scan">
+   <property name="text">
+    <string>Start Laser Scan</string>
+   </property>
+  </action>
+  <action name="actionAbort">
+   <property name="text">
+    <string>Abort</string>
    </property>
   </action>
  </widget>

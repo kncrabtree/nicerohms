@@ -54,6 +54,12 @@ void Laser::slewToPosition(double target)
 
 void Laser::nextSlewPoint()
 {
+	if(!d_slewing)
+	{
+		emit slewComplete();
+		return;
+	}
+
 	double direction = d_slewTarget > d_currentPos ? 1.0 : -1.0;
 	double nextPos = d_currentPos + direction*d_slewStep;
 
@@ -72,5 +78,10 @@ void Laser::nextSlewPoint()
 	else
 		QTimer::singleShot(d_slewInterval,this,&Laser::nextSlewPoint);
 
+}
+
+void Laser::abortSlew()
+{
+	d_slewing = false;
 }
 
