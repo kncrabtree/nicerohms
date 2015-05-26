@@ -161,6 +161,7 @@ void HardwareManager::initialize()
 
         s.setValue(QString("%1/prettyName").arg(obj->key()),obj->name());
 	   s.setValue(QString("%1/subKey").arg(obj->key()),obj->subKey());
+	   s.setValue(QString("%1/connected").arg(obj->key()),false);
 
 	   connect(obj,&HardwareObject::logMessage,[=](QString msg, NicerOhms::LogMessageCode mc){
             emit logMessage(QString("%1: %2").arg(obj->name()).arg(msg),mc);
@@ -214,7 +215,9 @@ void HardwareManager::connectionResult(HardwareObject *obj, bool success, QStrin
     else
         d_status.insert(obj->key(),ok);
 
-
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    s.setValue(QString("%1/connected").arg(obj->key()),success);
+    s.sync();
 
     emit testComplete(obj->name(),success,msg);
     checkStatus();
@@ -227,6 +230,10 @@ void HardwareManager::hardwareFailure(HardwareObject *obj, bool abort)
 
     if(!obj->isCritical())
         return;
+
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    s.setValue(QString("%1/connected").arg(obj->key()),false);
+    s.sync();
 
     d_status[obj->key()] = false;
     checkStatus();
