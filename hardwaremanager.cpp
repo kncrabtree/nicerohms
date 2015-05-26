@@ -162,6 +162,7 @@ void HardwareManager::initialize()
         s.setValue(QString("%1/prettyName").arg(obj->key()),obj->name());
 	   s.setValue(QString("%1/subKey").arg(obj->key()),obj->subKey());
 	   s.setValue(QString("%1/connected").arg(obj->key()),false);
+	   s.setValue(QString("%1/critical").arg(obj->key()),obj->isCritical());
 
 	   connect(obj,&HardwareObject::logMessage,[=](QString msg, NicerOhms::LogMessageCode mc){
             emit logMessage(QString("%1: %2").arg(obj->name()).arg(msg),mc);

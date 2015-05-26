@@ -4,6 +4,7 @@ Wavemeter::Wavemeter(QObject *parent) :
 	HardwareObject(parent), d_scanActive(false)
 {
 	d_key = QString("wavemeter");
+	d_isCritical = false;
 
 	p_timer = new QTimer(this);
 	connect(p_timer,&QTimer::timeout,this,&Wavemeter::read);
