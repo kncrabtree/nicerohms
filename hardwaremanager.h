@@ -87,6 +87,7 @@ public slots:
     void initializeScan(Scan s);
 
     void testObjectConnection(const QString type, const QString key);
+    void testAllConnections();
 
     void getPointData();
 

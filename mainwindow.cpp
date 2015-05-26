@@ -86,6 +86,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionTest,&QAction::triggered,this,&MainWindow::test);
 	connect(ui->actionAbort,&QAction::triggered,p_hwm,&HardwareManager::abortSlew);
 	connect(ui->actionAbort,&QAction::triggered,p_am,&AcquisitionManager::abortScan);
+	connect(ui->actionTest_All_Connections,&QAction::triggered,p_hwm,&HardwareManager::testAllConnections);
 
 	p_batchThread = new QThread(this);
 
@@ -236,19 +237,27 @@ void MainWindow::configureUi(MainWindow::UiState s)
 	case Acquiring:
 		ui->actionStart_Laser_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(true);
+		ui->actionCommunication->setEnabled(false);
+		ui->actionTest_All_Connections->setEnabled(false);
 		break;
 	case Slewing:
 		ui->actionStart_Laser_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(true);
+		ui->actionCommunication->setEnabled(false);
+		ui->actionTest_All_Connections->setEnabled(false);
 		break;
 	case Disconnected:
 		ui->actionStart_Laser_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(false);
+		ui->actionCommunication->setEnabled(true);
+		ui->actionTest_All_Connections->setEnabled(true);
 		break;
 	case Idle:
 	default:
 		ui->actionStart_Laser_Scan->setEnabled(true);
 		ui->actionAbort->setEnabled(false);
+		ui->actionCommunication->setEnabled(true);
+		ui->actionTest_All_Connections->setEnabled(true);
 		break;
 	}
 

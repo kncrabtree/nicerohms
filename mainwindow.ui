@@ -291,6 +291,7 @@
      <string>Settings</string>
     </property>
     <addaction name="actionCommunication"/>
+    <addaction name="actionTest_All_Connections"/>
    </widget>
    <widget class="QMenu" name="menuAcquisition">
     <property name="title">
@@ -336,6 +337,11 @@
   <action name="actionAbort">
    <property name="text">
     <string>Abort</string>
+   </property>
+  </action>
+  <action name="actionTest_All_Connections">
+   <property name="text">
+    <string>Test All Connections</string>
    </property>
   </action>
  </widget>

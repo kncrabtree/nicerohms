@@ -282,7 +282,13 @@ void HardwareManager::testObjectConnection(const QString type, const QString key
     if(obj == nullptr)
         emit testComplete(key,false,QString("Device not found!"));
     else
-        QMetaObject::invokeMethod(obj,"testConnection");
+	    QMetaObject::invokeMethod(obj,"testConnection");
+}
+
+void HardwareManager::testAllConnections()
+{
+	for(int i=0; i<d_hardwareList.size(); i++)
+		QMetaObject::invokeMethod(d_hardwareList.at(i).first,"testConnection");
 }
 
 void HardwareManager::getPointData()
