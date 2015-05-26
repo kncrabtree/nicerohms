@@ -18,6 +18,8 @@ class LockIn;
 class Wavemeter;
 class CavityPZTDriver;
 class IOBoard;
+class GpibController;
+class AomSynthesizer;
 
 class HardwareManager : public QObject
 {
@@ -59,6 +61,8 @@ signals:
     void lockStateCheck(bool locked, double cavityVoltage);
     void autoRelock();
 
+    void aomSynthUpdate(double);
+
 public slots:
     void initialize();
 
@@ -99,6 +103,8 @@ private:
     Wavemeter *p_wavemeter;
     CavityPZTDriver *p_cavityPZT;
     IOBoard *p_iob;
+    GpibController *p_gpibController;
+    AomSynthesizer *p_aomSynth;
 
     QList<QPair<HardwareObject*,QThread*> > d_hardwareList;
 

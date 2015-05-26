@@ -8,9 +8,9 @@ VirtualLaser::VirtualLaser(QObject *parent) :
 	d_subKey = QString("virtual");
 	d_prettyName = QString("Virtual Laser");
 
-	d_comm = new VirtualInstrument(d_key,this);
-	connect(d_comm,&CommunicationProtocol::logMessage,this,&VirtualLaser::logMessage);
-	connect(d_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
+	p_comm = new VirtualInstrument(d_key,this);
+	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualLaser::logMessage);
+	connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
 }
 
 VirtualLaser::~VirtualLaser()

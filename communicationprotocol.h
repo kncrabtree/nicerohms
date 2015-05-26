@@ -13,9 +13,10 @@ class CommunicationProtocol : public QObject
     Q_OBJECT
 public:
     enum CommType {
-        Virtual,
-        Tcp,
-        Rs232
+	    Virtual,
+	    Tcp,
+	    Rs232,
+	    Gpib
     };
 
     explicit CommunicationProtocol(CommType type, QString key, QString subKey, QObject *parent = nullptr);

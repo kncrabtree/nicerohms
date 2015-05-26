@@ -9,7 +9,10 @@ HEADERS += \
     $$PWD/lockin.h \
     $$PWD/wavemeter.h \
     $$PWD/cavitypztdriver.h \
-    $$PWD/ioboard.h
+    $$PWD/ioboard.h \
+    $$PWD/gpibcontroller.h \
+    $$PWD/gpibinstrument.h \
+    $$PWD/aomsynthesizer.h
 
 SOURCES += \
     $$PWD/hardwaremanager.cpp \
@@ -22,4 +25,7 @@ SOURCES += \
     $$PWD/lockin.cpp \
     $$PWD/wavemeter.cpp \
     $$PWD/cavitypztdriver.cpp \
-    $$PWD/ioboard.cpp
+    $$PWD/ioboard.cpp \
+    $$PWD/gpibcontroller.cpp \
+    $$PWD/gpibinstrument.cpp \
+    $$PWD/aomsynthesizer.cpp

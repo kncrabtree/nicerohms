@@ -8,9 +8,9 @@ VirtualLockIn::VirtualLockIn(int num, QObject *parent) :
 	d_subKey = QString("virtual");
 	d_prettyName = QString("Virtual LockIn %1").arg(d_id);
 
-	d_comm = new VirtualInstrument(d_key,this);
-	connect(d_comm,&CommunicationProtocol::logMessage,this,&VirtualLockIn::logMessage);
-	connect(d_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
+	p_comm = new VirtualInstrument(d_key,this);
+	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualLockIn::logMessage);
+	connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
 }
 
 VirtualLockIn::~VirtualLockIn()

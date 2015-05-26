@@ -8,6 +8,8 @@
 #include "wavemeter.h"
 #include "cavitypztdriver.h"
 #include "ioboard.h"
+#include "gpibcontroller.h"
+#include "aomsynthesizer.h"
 
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
 {
@@ -22,8 +24,11 @@ HardwareManager::~HardwareManager()
         QPair<HardwareObject*,QThread*> p = d_hardwareList.takeFirst();
         if(p.second != nullptr)
         {
-            p.second->quit();
-            p.second->wait();
+		   if(p.second->isRunning())
+		   {
+			   p.second->quit();
+			   p.second->wait();
+		   }
         }
         else
             p.first->deleteLater();
@@ -66,6 +71,18 @@ void HardwareManager::initialize()
 	connect(p_iob,&IOBoard::lockState,this,&HardwareManager::lockStateUpdate);
 	connect(this,&HardwareManager::autoRelock,p_iob,&IOBoard::relock);
 	d_hardwareList.append(qMakePair(p_iob,nullptr));
+
+	//GPIB controller may need its own thread, but may not...
+	//If GPIB controller has its own thread, then all GPIB instruments MUST be in that same thread
+	p_gpibController = new GpibControllerHardware();
+	QThread *gpibThread = nullptr;
+	d_hardwareList.append(qMakePair(p_gpibController,gpibThread));
+
+	//Assuming AOM synth is a GPIB instrument...
+	p_aomSynth = new AomSynthesizerHardware(p_gpibController);
+	connect(p_aomSynth,&AomSynthesizer::frequencyUpdate,this,&HardwareManager::aomSynthUpdate);
+	d_hardwareList.append(qMakePair(p_aomSynth,gpibThread));
+
 
 	//write arrays of the connected devices for use in the Hardware Settings menu
 	//first array is for all objects accessible to the hardware manager
@@ -116,6 +133,23 @@ void HardwareManager::initialize()
 	s.endArray();
 	s.endGroup();
 
+	//now an array for all GPIB instruments
+	s.beginGroup(QString("gpib"));
+	s.remove("");
+	s.beginWriteArray("instruments");
+	index=0;
+	for(int i=0;i<d_hardwareList.size();i++)
+	{
+	   if(d_hardwareList.at(i).first->type() == CommunicationProtocol::Gpib)
+		{
+			s.setArrayIndex(index);
+			s.setValue(QString("key"),d_hardwareList.at(i).first->key());
+			index++;
+		}
+	}
+	s.endArray();
+	s.endGroup();
+
 	s.sync();
 
     for(int i=0;i<d_hardwareList.size();i++)
@@ -142,11 +176,20 @@ void HardwareManager::initialize()
             connect(thread,&QThread::started,obj,&HardwareObject::initialize);
             connect(thread,&QThread::finished,obj,&HardwareObject::deleteLater);
             obj->moveToThread(thread);
-            thread->start();
         }
         else
             obj->initialize();
+    }
 
+    //now, start all threads
+    for(int i=0;i<d_hardwareList.size();i++)
+    {
+	   QThread *thread = d_hardwareList.at(i).second;
+	   if(thread != nullptr)
+	   {
+		   if(!thread->isRunning())
+			   thread->start();
+	   }
     }
 }
 
