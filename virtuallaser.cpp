@@ -34,7 +34,8 @@ void VirtualLaser::initialize()
 Scan VirtualLaser::prepareForScan(Scan scan)
 {
 	readSlewParameters();
-	scan.addNumDataPoints(1);
+	if(d_isActive)
+		scan.addNumDataPoints(1);
 
 	return scan;
 }
@@ -51,9 +52,12 @@ void VirtualLaser::endAcquisition()
 
 void VirtualLaser::readPointData()
 {
-	QList<QPair<QString,QVariant>> out;
-	out.append(qMakePair(QString("laser"),QVariant::fromValue(d_currentPos)));
-	emit pointDataReadNoPlot(out);
+	if(d_isActive)
+	{
+		QList<QPair<QString,QVariant>> out;
+		out.append(qMakePair(QString("laser"),readPosition()));
+		emit pointDataReadNoPlot(out);
+	}
 }
 
 double VirtualLaser::readPosition()

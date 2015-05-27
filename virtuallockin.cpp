@@ -33,7 +33,9 @@ void VirtualLockIn::initialize()
 
 Scan VirtualLockIn::prepareForScan(Scan scan)
 {
-	scan.addNumDataPoints(2);
+	if(d_isActive)
+		scan.addNumDataPoints(2);
+
 	return scan;
 }
 
@@ -47,12 +49,15 @@ void VirtualLockIn::endAcquisition()
 
 void VirtualLockIn::readPointData()
 {
-	double x = (static_cast<double>(qrand() % 2000)-1000.0)/100.0;
-	double y = (static_cast<double>(qrand() % 2000)-1000.0)/100.0;
+	if(d_isActive)
+	{
+		double x = (static_cast<double>(qrand() % 2000)-1000.0)/100.0;
+		double y = (static_cast<double>(qrand() % 2000)-1000.0)/100.0;
 
-	QList<QPair<QString,QVariant>> out;
-	out.append(qMakePair(QString("%1X").arg(d_key),QVariant::fromValue(x)));
-	out.append(qMakePair(QString("%1Y").arg(d_key),QVariant::fromValue(y)));
+		QList<QPair<QString,QVariant>> out;
+		out.append(qMakePair(QString("%1X").arg(d_key),QVariant::fromValue(x)));
+		out.append(qMakePair(QString("%1Y").arg(d_key),QVariant::fromValue(y)));
 
-	emit pointDataRead(out);
+		emit pointDataRead(out);
+	}
 }

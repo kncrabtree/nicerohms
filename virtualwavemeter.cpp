@@ -45,16 +45,20 @@ void VirtualWavemeter::initialize()
 
 Scan VirtualWavemeter::prepareForScan(Scan scan)
 {
-	scan.addNumDataPoints(1);
+	if(d_isActive)
+		scan.addNumDataPoints(1);
 	return scan;
 }
 
 void VirtualWavemeter::readPointData()
 {
-	readPump();
-	QList<QPair<QString,QVariant>> out;
-	out.append(qMakePair(QString("wavemeter"),QVariant::fromValue(d_pumpFreq/29979245800)));
-	emit pointDataRead(out);
+	if(d_isActive)
+	{
+		readPump();
+		QList<QPair<QString,QVariant>> out;
+		out.append(qMakePair(QString("wavemeter"),QVariant::fromValue(d_pumpFreq/29979245800)));
+		emit pointDataRead(out);
+	}
 }
 
 double VirtualWavemeter::read()

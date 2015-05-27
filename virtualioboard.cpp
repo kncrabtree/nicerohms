@@ -39,6 +39,7 @@ void VirtualIOBoard::initialize()
 Scan VirtualIOBoard::prepareForScan(Scan scan)
 {
 	readIOSettings();
+
 	return scan;
 }
 

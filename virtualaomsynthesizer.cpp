@@ -52,7 +52,9 @@ void VirtualAomSynthesizer::initialize()
 
 Scan VirtualAomSynthesizer::prepareForScan(Scan scan)
 {
-	scan.addNumDataPoints(1);
+	if(d_isActive)
+		scan.addNumDataPoints(1);
+
 	return scan;
 }
 
@@ -66,10 +68,13 @@ void VirtualAomSynthesizer::endAcquisition()
 
 void VirtualAomSynthesizer::readPointData()
 {
-	QList<QPair<QString,QVariant>> out;
-	out.append(qMakePair(QString("aom"),readFrequency()));
-	//consider whether AOM frequency needs to be plotted?
-	emit pointDataRead(out);
+	if(d_isActive)
+	{
+		QList<QPair<QString,QVariant>> out;
+		out.append(qMakePair(QString("aom"),readFrequency()));
+		//consider whether AOM frequency needs to be plotted?
+		emit pointDataRead(out);
+	}
 }
 
 void VirtualAomSynthesizer::setFrequency(double f)

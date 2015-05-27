@@ -39,6 +39,7 @@ public:
 	QPair<double,double> cavityPZTRange() const;
 	QString endLogMessage() const;
 	NicerOhms::LogMessageCode endLogCode() const;
+	bool isHardwareActive(QString key);
 
 
 	void setHardwareFailed();
@@ -50,6 +51,7 @@ public:
 	void addNumDataPoints(int n);
 	void setPointRedo();
 	void setLaserParams(double start, double stop, double step, int delay);
+	void addHardwareItem(QString key, bool active);
 
 private:
 	QSharedDataPointer<ScanData> data;
@@ -83,6 +85,7 @@ public:
 	double laserStep;
 
 	QList<QPair<QString,QVariant>> dataCache;
+	QMap<QString,bool> activeHardware;
 	QMap<QString,QVector<QVariant>> scanData;
 	QString errorString;
 	QString endLogMessage;

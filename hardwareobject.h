@@ -122,11 +122,16 @@ public slots:
      */
 	virtual void sleep(bool b);
 
+    //when this function is called, the hardware manager has already set the d_isActive variable
+    //this function must call Scan::addNumDataPoints if it will be emitting any data (if !d_isActive, then this will be 0)
+    //if some failure happens, call Scan::setHardwareFailure
+    //return the scan object when done
     virtual Scan prepareForScan(Scan scan) =0;
 
     virtual void beginAcquisition() =0;
     virtual void endAcquisition() =0;
     virtual void readPointData() =0;
+    void setActive(bool active) { d_isActive = active; }
 
 protected:
     QString d_prettyName; /*!< Name to be displayed on UI */
@@ -135,8 +140,12 @@ protected:
 
     CommunicationProtocol *p_comm;
 
-
+    //if critical, scans cannot be run if device is disconnected
+    //otherwise, scans can run, but some features may be disabled
     bool d_isCritical;
+
+    //refers to whether a device is used during a scan
+    bool d_isActive;
 
 
 	

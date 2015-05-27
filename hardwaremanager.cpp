@@ -94,9 +94,13 @@ void HardwareManager::initialize()
 	s.beginWriteArray("instruments");
 	for(int i=0;i<d_hardwareList.size();i++)
 	{
+		HardwareObject *obj = d_hardwareList.at(i).first;
 		s.setArrayIndex(i);
-		s.setValue(QString("key"),d_hardwareList.at(i).first->key());
-        s.setValue(QString("type"),d_hardwareList.at(i).first->subKey());
+		s.setValue(QString("key"),obj->key());
+		s.setValue(QString("subKey"),obj->subKey());
+		s.setValue(QString("prettyName"),obj->name());
+		s.setValue(QString("connected"),false);
+		s.setValue(QString("critical"),obj->isCritical());
 	}
 	s.endArray();
 	s.endGroup();
@@ -252,10 +256,17 @@ void HardwareManager::initializeScan(Scan s)
     {
         QThread *t = d_hardwareList.at(i).second;
         HardwareObject *obj = d_hardwareList.at(i).first;
+	   bool active = s.isHardwareActive(obj->key());
         if(t != nullptr)
-		  QMetaObject::invokeMethod(obj,"prepareForScan",Qt::BlockingQueuedConnection,Q_RETURN_ARG(Scan,s),Q_ARG(Scan,s));
+	   {
+		   QMetaObject::invokeMethod(obj,"setActive",Qt::BlockingQueuedConnection,Q_ARG(bool,active));
+		   QMetaObject::invokeMethod(obj,"prepareForScan",Qt::BlockingQueuedConnection,Q_RETURN_ARG(Scan,s),Q_ARG(Scan,s));
+	   }
         else
-		  s = obj->prepareForScan(s);
+	   {
+		   obj->setActive(active);
+		   s = obj->prepareForScan(s);
+	   }
 
 	   if(!s.hardwareSuccess())
         {

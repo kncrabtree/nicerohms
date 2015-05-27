@@ -111,6 +111,12 @@ NicerOhms::LogMessageCode Scan::endLogCode() const
 	return data->endLogCode;
 }
 
+bool Scan::isHardwareActive(QString key)
+{
+	//if key is not found, assume hardware is inactive
+	return data->activeHardware.value(key,false);
+}
+
 void Scan::setHardwareFailed()
 {
 	data->hardwareSuccess = false;
@@ -222,6 +228,11 @@ void Scan::setLaserParams(double start, double stop, double step, int delay)
 		points -= 1;
 
 	data->totalPoints = points;
+}
+
+void Scan::addHardwareItem(QString key, bool active)
+{
+	data->activeHardware.insert(key,active);
 }
 
 void Scan::saveData()

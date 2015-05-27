@@ -5,6 +5,7 @@
 
 class VirtualLockIn : public LockIn
 {
+	Q_OBJECT
 public:
 	VirtualLockIn(int num, QObject *parent = nullptr);
 	~VirtualLockIn();

@@ -181,10 +181,23 @@ void MainWindow::batchComplete(bool aborted)
 
 void MainWindow::test()
 {
-	Scan s;
-	s.setLaserParams(100.0,1.0,5.1,500);
+	Scan scan;
+	scan.setLaserParams(100.0,1.0,5.1,500);
 
-	BatchManager *bm = new BatchSingle(s);
+	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+	s.beginGroup(QString("hardware"));
+	int n = s.beginReadArray(QString("instruments"));
+	for(int i=0; i<n; i++)
+	{
+		s.setArrayIndex(i);
+		QString key = s.value(QString("key"),QString("")).toString();
+		if(!key.isEmpty())
+			scan.addHardwareItem(key,true);
+	}
+	s.endArray();
+	s.endGroup();
+
+	BatchManager *bm = new BatchSingle(scan);
 	beginBatch(bm);
 }
 

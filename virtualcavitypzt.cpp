@@ -35,7 +35,9 @@ void VirtualCavityPZT::initialize()
 
 Scan VirtualCavityPZT::prepareForScan(Scan scan)
 {
-	scan.addNumDataPoints(1);
+	if(d_isActive)
+		scan.addNumDataPoints(1);
+
 	return scan;
 }
 
@@ -49,9 +51,12 @@ void VirtualCavityPZT::endAcquisition()
 
 void VirtualCavityPZT::readPointData()
 {
-	QList<QPair<QString,QVariant>> out;
-	out.append(qMakePair(QString("CavityPZT"),readVoltage()));
-	emit pointDataRead(out);
+	if(d_isActive)
+	{
+		QList<QPair<QString,QVariant>> out;
+		out.append(qMakePair(QString("CavityPZT"),readVoltage()));
+		emit pointDataRead(out);
+	}
 }
 
 double VirtualCavityPZT::readVoltage()
