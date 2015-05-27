@@ -8,12 +8,14 @@
 #include <QApplication>
 #include <QActionGroup>
 #include <QCloseEvent>
+#include <QWidgetAction>
 
 #include "loghandler.h"
 #include "communicationdialog.h"
 #include "hardwaremanager.h"
 #include "acquisitionmanager.h"
 #include "batchmanager.h"
+#include "laserslewaction.h"
 
 #include "batchsingle.h"
 
@@ -81,6 +83,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(amThread,&QThread::finished,p_am,&AcquisitionManager::deleteLater);
 	p_am->moveToThread(amThread);
 	d_threadObjectList.append(qMakePair(amThread,p_am));
+
+    p_laserSlewAction = new LaserSlewAction(this);
+    connect(p_laserSlewAction,&LaserSlewAction::slewSignal,p_hwm,&HardwareManager::slewLaser);
+    QWidget *spacer = new QWidget;
+    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+    ui->mainToolBar->addWidget(spacer);
+    ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addAction(p_laserSlewAction);
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
 	connect(ui->actionTest,&QAction::triggered,this,&MainWindow::test);
@@ -254,18 +264,21 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionAbort->setEnabled(true);
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
+        p_laserSlewAction->setEnabled(false);
 		break;
 	case Slewing:
 		ui->actionStart_Laser_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(true);
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
+        p_laserSlewAction->setEnabled(false);
 		break;
 	case Disconnected:
 		ui->actionStart_Laser_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(false);
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);
+        p_laserSlewAction->setEnabled(false);
 		break;
 	case Idle:
 	default:
@@ -273,6 +286,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionAbort->setEnabled(false);
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);
+        p_laserSlewAction->setEnabled(true);
 		break;
 	}
 

@@ -11,6 +11,12 @@ VirtualLaser::VirtualLaser(QObject *parent) :
 	p_comm = new VirtualInstrument(d_key,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualLaser::logMessage);
 	connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
+
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    s.setValue(QString("%1/%2/controlStep").arg(d_key).arg(d_subKey),1.0);
+    s.setValue(QString("%1/%2/decimals").arg(d_key).arg(d_subKey),3);
+    s.setValue(QString("%1/%2/units").arg(d_key).arg(d_subKey),QString("V"));
+    s.sync();
 }
 
 VirtualLaser::~VirtualLaser()

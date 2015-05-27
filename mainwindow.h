@@ -9,6 +9,7 @@
 #include "scan.h"
 
 class QThread;
+class LaserSlewAction;
 class LogHandler;
 class HardwareManager;
 class AcquisitionManager;
@@ -61,6 +62,7 @@ private:
 	AcquisitionManager *p_am;
 
 	QThread *p_batchThread;
+    LaserSlewAction *p_laserSlewAction;
 
 	QList<QPair<QThread*,QObject*>> d_threadObjectList;
 
