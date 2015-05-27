@@ -147,7 +147,7 @@ void DataPlotViewWidget::pointUpdated(const QList<QPair<QString, QVariant> > lis
 
 	   s.beginGroup(QString("dataPlotWidget/curves/%1").arg(md.name));
 
-        md.axis = s.value(QString("axis"),QwtPlot::yLeft).value<QwtPlot::Axis>();
+	   md.axis = static_cast<QwtPlot::Axis>(s.value(QString("axis"),QwtPlot::yLeft).toInt());
         md.plotIndex = s.value(QString("plotIndex"),d_plotCurves.size()).toInt() % d_allPlots.size();
         md.isVisible = s.value(QString("isVisible"),true).toBool();
 
