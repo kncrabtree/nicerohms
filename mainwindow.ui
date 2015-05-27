@@ -283,7 +283,7 @@
      <x>0</x>
      <y>0</y>
      <width>748</width>
-     <height>19</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">
@@ -344,19 +344,24 @@
     <string>Test All Connections</string>
    </property>
   </action>
+  <action name="actionFlip_Mirror">
+   <property name="text">
+    <string>Flip Mirror</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>DataPlotViewWidget</class>
-   <extends>QWidget</extends>
-   <header>dataplotviewwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>Led</class>
    <extends>QWidget</extends>
    <header>led.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DataPlotViewWidget</class>
+   <extends>QWidget</extends>
+   <header>dataplotviewwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

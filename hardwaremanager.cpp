@@ -72,6 +72,7 @@ void HardwareManager::initialize()
 	connect(p_wavemeter,&Wavemeter::switchRequest,p_iob,&IOBoard::flipWavemeterMirror);
 	connect(p_iob,&IOBoard::lockState,this,&HardwareManager::lockStateUpdate);
 	connect(this,&HardwareManager::autoRelock,p_iob,&IOBoard::relock);
+    connect(this,&HardwareManager::flipWavemeterMirror,p_iob,&IOBoard::flipWavemeterMirror);
 	d_hardwareList.append(qMakePair(p_iob,nullptr));
 
 	//GPIB controller may need its own thread, but may not...

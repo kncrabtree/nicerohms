@@ -55,6 +55,7 @@ signals:
     void wavemeterPumpUpdate(double);
     void wavemeterSignalUpdate(double);
     void updateWavemeterTimer();
+    void flipWavemeterMirror();
 
     void cavityPZTUpdate(double);
 
