@@ -23,6 +23,22 @@ public:
 	Scan &operator=(const Scan &);
 	~Scan();
 
+    enum PointAction {
+        Continue,
+        Remeasure,
+        Abort
+    };
+
+    struct PointValidation
+    {
+        PointValidation() : min(0.0), max(1.0), action(Scan::Continue), precision(3) {}
+
+        double min;
+        double max;
+        Scan::PointAction action;
+        int precision;
+    };
+
 	bool isInitialized() const;
 	bool hardwareSuccess() const;
 	bool isComplete() const;
@@ -46,12 +62,15 @@ public:
 	void setInitialized();
 	void setAborted();
 	void setErrorString(const QString s);
-	bool validateData(const QList<QPair<QString,QVariant>> l);
+    PointAction validateData(const QList<QPair<QString,QVariant>> l);
 	bool addPointData(const QList<QPair<QString,QVariant>> l);
 	void addNumDataPoints(int n);
 	void setPointRedo();
 	void setLaserParams(double start, double stop, double step, int delay);
 	void addHardwareItem(QString key, bool active);
+
+    //multiple entries with same key are OK; Abort takes precedence over Redo, which in turn takes precedence over Continue
+    void addValidationItem(QString key, double min, double max, Scan::PointAction action, int precision = 3);
 
 private:
 	QSharedDataPointer<ScanData> data;
@@ -90,7 +109,7 @@ public:
 	QString errorString;
 	QString endLogMessage;
 	NicerOhms::LogMessageCode endLogCode;
-	QMap<QString,QPair<double,double>> abortConditions;
+    QMap<QString,Scan::PointValidation> validationConditions;
 };
 
 #endif // SCAN_H

@@ -43,10 +43,22 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 		if(plot)
 			d_plotDataCache.append(l);
 
-		if(!d_currentScan.validateData(l))
+        Scan::PointAction a = d_currentScan.validateData(l);
+        if(a == Scan::Abort)
 			abortScan();
 		else
 		{
+            if(a == Scan::Remeasure)
+            {
+                if(!d_currentScan.errorString().isEmpty())
+                {
+                    emit logMessage(d_currentScan.errorString(),NicerOhms::LogWarning);
+                    d_currentScan.setErrorString(QString(""));
+                }
+
+                d_currentState = WaitingForRedo;
+            }
+
 			//addPointData returns true if point is now complete
 			if(d_currentScan.addPointData(l))
 			{

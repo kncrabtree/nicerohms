@@ -148,13 +148,14 @@ void Scan::setErrorString(const QString s)
 	data->errorString = s;
 }
 
-bool Scan::validateData(const QList<QPair<QString, QVariant> > l)
+Scan::PointAction Scan::validateData(const QList<QPair<QString, QVariant> > l)
 {
 	//can check data and see if scan should be automatically aborted
 	//return false if the scan should abort
 	//example: abort if pressure is below 2.0
-	if(data->abortConditions.isEmpty())
-		return true;
+    PointAction out = Continue;
+    if(data->validationConditions.isEmpty())
+        return out;
 
 	//I'm assuming that all QVariants can be converted to doubles
 	for(int i=0; i<l.size(); i++)
@@ -169,19 +170,32 @@ bool Scan::validateData(const QList<QPair<QString, QVariant> > l)
 		if(!ok)
 			continue;
 
-		if(data->abortConditions.contains(key))
+        if(data->validationConditions.contains(key))
 		{
-			auto range = data->abortConditions.value(key);
-			if(value < range.first || value > range.second)
-			{
-				data->errorString = QString("Aborting because %1 is outside specified range (Value = %2, Min = %3, Max = %4")
-						.arg(key).arg(value,0,'g',3).arg(range.first,0,'g',3).arg(range.second,0,'g',3);
-				return false;
+            QList<PointValidation> validationList = data->validationConditions.values(key);
+            for(int i=0; i<validationList.size(); i++)
+            {
+                const PointValidation &v = validationList.at(i);
+                if(value < v.min || value > v.max)
+                {
+                    if(v.action == Abort)
+                    {
+                        data->errorString = QString("Aborting because %1 is outside specified range (Value = %2, Min = %3, Max = %4).")
+                                .arg(key).arg(value,0,'g',v.precision).arg(v.min,0,'g',v.precision).arg(v.max,0,'g',v.precision);
+                        return Abort;
+                    }
+                    else if(v.action == Remeasure)
+                    {
+                        data->errorString = QString("Remeasuring because %1 is outside specified range (Value = %2, Min = %3, Max = %4).")
+                                .arg(key).arg(value,0,'g',v.precision).arg(v.min,0,'g',v.precision).arg(v.max,0,'g',v.precision);
+                        out = Remeasure;
+                    }
+                }
 			}
 		}
 	}
 
-	return true;
+    return out;
 }
 
 bool Scan::addPointData(const QList<QPair<QString, QVariant> > l)
@@ -232,7 +246,22 @@ void Scan::setLaserParams(double start, double stop, double step, int delay)
 
 void Scan::addHardwareItem(QString key, bool active)
 {
-	data->activeHardware.insert(key,active);
+    data->activeHardware.insert(key,active);
+}
+
+void Scan::addValidationItem(QString key, double min, double max, Scan::PointAction action, int precision)
+{
+    PointValidation v;
+    v.min = min;
+    v.max = max;
+    v.action = action;
+    v.precision = precision;
+
+    if(data->validationConditions.contains(key))
+        data->validationConditions.insertMulti(key,v);
+    else
+        data->validationConditions.insert(key,v);
+
 }
 
 void Scan::saveData()
