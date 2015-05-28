@@ -68,8 +68,7 @@ void HardwareManager::initialize()
 	//ioboard probably does not need its own thread
 	p_iob = new IOBoardHardware();
 	connect(p_iob,&IOBoard::relockComplete,this,&HardwareManager::relockComplete);
-	connect(p_iob,&IOBoard::mirrorFlipped,p_wavemeter,&Wavemeter::switchComplete);
-	connect(p_wavemeter,&Wavemeter::switchRequest,p_iob,&IOBoard::flipWavemeterMirror);
+    connect(p_iob,&IOBoard::mirrorFlipped,p_wavemeter,&Wavemeter::flipComplete);
 	connect(p_iob,&IOBoard::lockState,this,&HardwareManager::lockStateUpdate);
 	connect(this,&HardwareManager::autoRelock,p_iob,&IOBoard::relock);
     connect(this,&HardwareManager::flipWavemeterMirror,p_iob,&IOBoard::flipWavemeterMirror);
@@ -248,41 +247,64 @@ void HardwareManager::hardwareFailure(HardwareObject *obj, bool abort)
     checkStatus();
 }
 
-void HardwareManager::initializeScan(Scan s)
+void HardwareManager::beginScanInitialization(Scan s)
 {
-    //do initialization
-    //if successful, call Scan::setInitialized()
-    bool success = true;
-    for(int i=0;i<d_hardwareList.size();i++)
-    {
-        QThread *t = d_hardwareList.at(i).second;
-        HardwareObject *obj = d_hardwareList.at(i).first;
-	   bool active = s.isHardwareActive(obj->key());
-        if(t != nullptr)
-	   {
-		   QMetaObject::invokeMethod(obj,"setActive",Qt::BlockingQueuedConnection,Q_ARG(bool,active));
-		   QMetaObject::invokeMethod(obj,"prepareForScan",Qt::BlockingQueuedConnection,Q_RETURN_ARG(Scan,s),Q_ARG(Scan,s));
-	   }
-        else
-	   {
-		   obj->setActive(active);
-		   s = obj->prepareForScan(s);
-	   }
+    //initial synchronous initialization can go here
+    //
+    //
 
-	   if(!s.hardwareSuccess())
+
+    //if the comb is active, we need to go into the wavemeter read procedure
+    if(s.isHardwareActive(QString("freqcomb")))
+    {
+       //use wavemeterReadController...
+    }
+    else if(s.isHardwareActive(QString("wavemeter")))
+    {
+        //use wavemeterREadController to set flipper state
+    }
+    else
+        completeScanInitialization(s);
+}
+
+void HardwareManager::completeScanInitialization(Scan s)
+{
+    //only go on to phase 2 if phase 1 was successful
+    if(s.hardwareSuccess())
+    {
+        //do phase 2 initialization
+        //if successful, call Scan::setInitialized()
+        bool success = true;
+        for(int i=0;i<d_hardwareList.size();i++)
         {
-            success = false;
-            break;
+            QThread *t = d_hardwareList.at(i).second;
+            HardwareObject *obj = d_hardwareList.at(i).first;
+            bool active = s.isHardwareActive(obj->key());
+            if(t != nullptr)
+            {
+                QMetaObject::invokeMethod(obj,"setActive",Qt::BlockingQueuedConnection,Q_ARG(bool,active));
+                QMetaObject::invokeMethod(obj,"prepareForScan",Qt::BlockingQueuedConnection,Q_RETURN_ARG(Scan,s),Q_ARG(Scan,s));
+            }
+            else
+            {
+                obj->setActive(active);
+                s = obj->prepareForScan(s);
+            }
+
+            if(!s.hardwareSuccess())
+            {
+                success = false;
+                break;
+            }
         }
+
+        //any final synchronous initialization can be performed here
+
+        if(success)
+            s.setInitialized();
     }
 
-    //any additional synchronous initialization can be performed here
-
-    if(success)
-	   s.setInitialized();
-
     emit scanInitialized(s);
-
 }
 
 void HardwareManager::testObjectConnection(const QString type, const QString key)
@@ -337,7 +359,7 @@ double HardwareManager::checkCavityVoltage()
 	else
 		QMetaObject::invokeMethod(p_iob,"readVoltage",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
 
-	return out;
+    return out;
 }
 
 void HardwareManager::test()

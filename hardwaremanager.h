@@ -84,12 +84,10 @@ public slots:
      * TODO: Consider generating an abort signal here
      */
     void hardwareFailure(HardwareObject *obj, bool abort);
-
-    void initializeScan(Scan s);
-
+    void beginScanInitialization(Scan s);
+    void completeScanInitialization(Scan s);
     void testObjectConnection(const QString type, const QString key);
     void testAllConnections();
-
     void getPointData();
 
 

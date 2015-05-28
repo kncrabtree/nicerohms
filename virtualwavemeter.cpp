@@ -28,8 +28,6 @@ bool VirtualWavemeter::testConnection()
     d_pumpFreq = 2.8175983e14;
     d_signalFreq = 2.0e14;
 
-	readPump();
-	readSignal();
 	readTimerInterval();
 
 	p_timer->start();
@@ -54,9 +52,9 @@ void VirtualWavemeter::readPointData()
 {
 	if(d_isActive)
 	{
-		readPump();
+        double f = read();
 		QList<QPair<QString,QVariant>> out;
-		out.append(qMakePair(QString("wavemeter"),QVariant::fromValue(d_pumpFreq/29979245800)));
+        out.append(qMakePair(QString("wavemeter"),QVariant::fromValue(f/29979245800)));
 		emit pointDataRead(out);
 	}
 }
@@ -83,4 +81,13 @@ double VirtualWavemeter::read()
 		return d_pumpFreq;
 	}
 
+}
+
+
+void VirtualWavemeter::flipComplete()
+{
+    if(d_currentState == Pump)
+        d_currentState = Signal;
+    else if(d_currentState == Signal)
+        d_currentState = Pump;
 }

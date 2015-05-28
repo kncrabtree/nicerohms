@@ -14,29 +14,27 @@ public:
 	Wavemeter(QObject *parent = nullptr);
 	~Wavemeter();
 
+    enum WavemeterState {
+        Unknown,
+        Pump,
+        Signal
+    };
+
 signals:
 	void signalUpdate(double);
 	void pumpUpdate(double);
 	void switchRequest();
 
 public slots:
-	void readSignal();
-	void readPump();
-	void switchComplete();
 	void readTimerInterval();
+    Wavemeter::WavemeterState getState() const;
+    virtual double read() =0;
+    virtual void flipComplete();
 
 protected:
-	enum WavemeterState {
-		Unknown,
-		Pump,
-		Signal
-	};
-
 	double d_signalFreq, d_pumpFreq;
 	WavemeterState d_currentState;
 
-
-	virtual double read() =0;
 	QTimer *p_timer;
 	bool d_scanActive;
 

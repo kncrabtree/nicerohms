@@ -16,73 +16,23 @@ Wavemeter::~Wavemeter()
 
 }
 
-void Wavemeter::readSignal()
-{
-	switch (d_currentState) {
-	case Signal:
-		read();
-		break;
-	case Pump:
-		if(!d_scanActive)
-			p_timer->stop();
-		emit switchRequest();
-		break;
-	case Unknown:
-	default:
-		if(!d_scanActive)
-			p_timer->stop();
-		read();
-		if(d_currentState == Pump)
-			emit switchRequest();
-		else if(!d_scanActive)
-			p_timer->start();
-		break;
-	}
-}
-
-void Wavemeter::readPump()
-{
-	switch (d_currentState) {
-	case Pump:
-		read();
-		break;
-	case Signal:
-		if(!d_scanActive)
-			p_timer->stop();
-		emit switchRequest();
-		break;
-	case Unknown:
-	default:
-		if(!d_scanActive)
-			p_timer->stop();
-		read();
-		if(d_currentState == Signal)
-			emit switchRequest();
-		else if(!d_scanActive)
-			p_timer->start();
-		break;
-	}
-}
-
-void Wavemeter::switchComplete()
-{
-	if(d_currentState == Pump)
-		d_currentState = Signal;
-	else if(d_currentState == Signal)
-		d_currentState = Pump;
-
-	//if the state is unknown, it will be determined in the read call if possible
-	read();
-
-	if(!d_scanActive)
-		p_timer->start();
-}
-
 void Wavemeter::readTimerInterval()
 {
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
 	int timerInterval = s.value(QString("%1/%2/readInterval").arg(d_key).arg(d_subKey),200).toInt();
-	p_timer->setInterval(timerInterval);
+    p_timer->setInterval(timerInterval);
+}
+
+Wavemeter::WavemeterState Wavemeter::getState() const
+{
+    return d_currentState;
+}
+
+void Wavemeter::flipComplete()
+{
+    //generally, this should do nothing!
+    //it's only here so that the virtual implementation works properly
+    //however, it's here and can be reimplemented in a derived class if needed
 }
 
 

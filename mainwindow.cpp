@@ -237,7 +237,7 @@ void MainWindow::beginBatch(BatchManager *bm)
 {
 	connect(p_batchThread,&QThread::started,bm,&BatchManager::beginNextScan);
 	connect(bm,&BatchManager::logMessage,p_lh,&LogHandler::logMessage);
-	connect(bm,&BatchManager::beginScan,p_hwm,&HardwareManager::initializeScan);
+    connect(bm,&BatchManager::beginScan,p_hwm,&HardwareManager::beginScanInitialization);
 	connect(p_am,&AcquisitionManager::scanComplete,bm,&BatchManager::scanComplete);
 	connect(bm,&BatchManager::batchComplete,this,&MainWindow::batchComplete);
 	connect(bm,&BatchManager::batchComplete,p_batchThread,&QThread::quit);
