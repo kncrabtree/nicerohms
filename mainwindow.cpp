@@ -211,6 +211,8 @@ void MainWindow::test()
 	s.endArray();
 	s.endGroup();
 
+    scan.addHardwareItem(QString("freqcomb"),true);
+
 	BatchManager *bm = new BatchSingle(scan);
 	beginBatch(bm);
 }

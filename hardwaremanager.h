@@ -85,7 +85,7 @@ public slots:
      */
     void hardwareFailure(HardwareObject *obj, bool abort);
     void beginScanInitialization(Scan s);
-    void completeScanInitialization(Scan s);
+    void completeScanInitialization(Scan s, bool stageOneSuccess = true, QString errorMsg = QString(""));
     void testObjectConnection(const QString type, const QString key);
     void testAllConnections();
     void getPointData();

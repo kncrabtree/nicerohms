@@ -33,7 +33,7 @@ void WavemeterReadController::signalReadComplete(double freq)
     //note: this is numerically stable!
 
     //only process if we're in the correct state
-    if(d_signalReadsComplete < d_targetReads)
+    if(d_signalReadsComplete < d_targetReads && d_currentControlState != Done)
     {
         d_signalReadsComplete++;
         double delta = freq - d_signalMean;
@@ -62,7 +62,7 @@ void WavemeterReadController::pumpReadComplete(double freq)
     //note: this is numerically stable!
 
     //only process if we're in the correct state
-    if(d_pumpReadsComplete < d_targetReads)
+    if(d_pumpReadsComplete < d_targetReads && d_currentControlState != Done)
     {
         d_pumpReadsComplete++;
         double delta = freq - d_pumpMean;
@@ -88,6 +88,13 @@ void WavemeterReadController::pumpReadComplete(double freq)
 void WavemeterReadController::flipComplete()
 {
     if(d_currentControlState == WaitingForFinalFlip)
-        emit readsComplete();
+        emit readsComplete(d_aborted);
+}
+
+void WavemeterReadController::abort()
+{
+    d_aborted = true;
+    d_currentControlState = Done;
+    emit readsComplete(true);
 }
 

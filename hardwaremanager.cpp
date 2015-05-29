@@ -10,6 +10,7 @@
 #include "ioboard.h"
 #include "gpibcontroller.h"
 #include "aomsynthesizer.h"
+#include "wavemeterreadcontroller.h"
 
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
 {
@@ -257,20 +258,61 @@ void HardwareManager::beginScanInitialization(Scan s)
     //if the comb is active, we need to go into the wavemeter read procedure
     if(s.isHardwareActive(QString("freqcomb")))
     {
-       //use wavemeterReadController...
+        //use wavemeterReadcontroller to get readings
+        WavemeterReadController *wmr = new WavemeterReadController(10,Wavemeter::Pump);
+        connect(p_iob,&IOBoard::mirrorFlipped,wmr,&WavemeterReadController::flipComplete);
+        connect(p_wavemeter,&Wavemeter::signalUpdate,wmr,&WavemeterReadController::signalReadComplete);
+        connect(p_wavemeter,&Wavemeter::pumpUpdate,wmr,&WavemeterReadController::pumpReadComplete);
+        connect(wmr,&WavemeterReadController::flipRequest,p_iob,&IOBoard::flipWavemeterMirror);
+        connect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
+        connect(wmr,&WavemeterReadController::readsComplete,[=](bool aborted) {
+            disconnect(p_wavemeter,&Wavemeter::signalUpdate,wmr,&WavemeterReadController::signalReadComplete);
+            disconnect(p_wavemeter,&Wavemeter::pumpUpdate,wmr,&WavemeterReadController::pumpReadComplete);
+            disconnect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
+            disconnect(wmr,&WavemeterReadController::flipRequest,p_iob,&IOBoard::flipWavemeterMirror);
+
+            if(aborted)
+                completeScanInitialization(s,false,QString("Could not make wavemeter readings before acquisition."));
+            else
+            {
+                emit logMessage(QString("Wm test: sig: %1 (%2); pump %3 (%4)").arg(wmr->signalMean()).arg(wmr->signalStDev()).arg(wmr->pumpMean()).arg(wmr->pumpStDev()));
+                completeScanInitialization(s);
+            }
+            wmr->deleteLater();
+
+        });
     }
     else if(s.isHardwareActive(QString("wavemeter")))
     {
         //use wavemeterREadController to set flipper state
+        WavemeterReadController *wmr = new WavemeterReadController(0,Wavemeter::Pump);
+        connect(p_iob,&IOBoard::mirrorFlipped,wmr,&WavemeterReadController::flipComplete);
+        connect(wmr,&WavemeterReadController::flipRequest,p_iob,&IOBoard::flipWavemeterMirror);
+        connect(p_wavemeter,&Wavemeter::signalUpdate,wmr,&WavemeterReadController::signalReadComplete);
+        connect(p_wavemeter,&Wavemeter::pumpUpdate,wmr,&WavemeterReadController::pumpReadComplete);
+        connect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
+        connect(wmr,&WavemeterReadController::readsComplete,[=](bool aborted) {
+            disconnect(p_wavemeter,&Wavemeter::signalUpdate,wmr,&WavemeterReadController::signalReadComplete);
+            disconnect(p_wavemeter,&Wavemeter::pumpUpdate,wmr,&WavemeterReadController::pumpReadComplete);
+            disconnect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
+            disconnect(wmr,&WavemeterReadController::flipRequest,p_iob,&IOBoard::flipWavemeterMirror);
+
+            wmr->deleteLater();
+            if(aborted)
+                completeScanInitialization(s,false,QString("Could not set wavemeter state before acquisition."));
+            else
+                completeScanInitialization(s);
+
+        });
     }
     else
         completeScanInitialization(s);
 }
 
-void HardwareManager::completeScanInitialization(Scan s)
+void HardwareManager::completeScanInitialization(Scan s, bool stageOneSuccess, QString errorMsg)
 {
     //only go on to phase 2 if phase 1 was successful
-    if(s.hardwareSuccess())
+    if(stageOneSuccess)
     {
         //do phase 2 initialization
         //if successful, call Scan::setInitialized()
@@ -302,6 +344,11 @@ void HardwareManager::completeScanInitialization(Scan s)
 
         if(success)
             s.setInitialized();
+    }
+    else
+    {
+        s.setHardwareFailed();
+        s.setErrorString(errorMsg);
     }
 
     emit scanInitialized(s);

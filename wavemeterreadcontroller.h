@@ -14,7 +14,8 @@ public:
 
     enum ControlState {
         Reading,
-        WaitingForFinalFlip
+        WaitingForFinalFlip,
+        Done
     };
 
     bool wasAborted() const { return d_aborted; }
@@ -31,6 +32,7 @@ public slots:
     void signalReadComplete(double freq);
     void pumpReadComplete(double freq);
     void flipComplete();
+    void abort();
 
 private:
     int d_targetReads;
