@@ -20,10 +20,6 @@ public slots:
 	// Wavemeter interface
 protected:
 	double read();
-
-    // Wavemeter interface
-public slots:
-    void flipComplete();
 };
 
 #endif // VIRTUALWAVEMETER_H

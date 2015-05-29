@@ -56,8 +56,7 @@ void HardwareManager::initialize()
 	//wavemeter unlikely to need its own thread unless reads are very slow
 	//calls are designed generally to be asynchronous
 	p_wavemeter = new WavemeterHardware();
-	connect(p_wavemeter,&Wavemeter::pumpUpdate,this,&HardwareManager::wavemeterPumpUpdate);
-	connect(p_wavemeter,&Wavemeter::signalUpdate,this,&HardwareManager::wavemeterSignalUpdate);
+    connect(p_wavemeter,&Wavemeter::freqUpdate,this,&HardwareManager::wavemeterFreqUpdate);
 	connect(this,&HardwareManager::updateWavemeterTimer,p_wavemeter,&Wavemeter::readTimerInterval);
 	d_hardwareList.append(qMakePair(p_wavemeter,nullptr));
 
@@ -69,10 +68,8 @@ void HardwareManager::initialize()
 	//ioboard probably does not need its own thread
 	p_iob = new IOBoardHardware();
 	connect(p_iob,&IOBoard::relockComplete,this,&HardwareManager::relockComplete);
-    connect(p_iob,&IOBoard::mirrorFlipped,p_wavemeter,&Wavemeter::flipComplete);
 	connect(p_iob,&IOBoard::lockState,this,&HardwareManager::lockStateUpdate);
 	connect(this,&HardwareManager::autoRelock,p_iob,&IOBoard::relock);
-    connect(this,&HardwareManager::flipWavemeterMirror,p_iob,&IOBoard::flipWavemeterMirror);
 	d_hardwareList.append(qMakePair(p_iob,nullptr));
 
 	//GPIB controller may need its own thread, but may not...
@@ -259,49 +256,21 @@ void HardwareManager::beginScanInitialization(Scan s)
     if(s.isHardwareActive(QString("freqcomb")))
     {
         //use wavemeterReadcontroller to get readings
-        WavemeterReadController *wmr = new WavemeterReadController(10,Wavemeter::Pump);
-        connect(p_iob,&IOBoard::mirrorFlipped,wmr,&WavemeterReadController::flipComplete);
-        connect(p_wavemeter,&Wavemeter::signalUpdate,wmr,&WavemeterReadController::signalReadComplete);
-        connect(p_wavemeter,&Wavemeter::pumpUpdate,wmr,&WavemeterReadController::pumpReadComplete);
-        connect(wmr,&WavemeterReadController::flipRequest,p_iob,&IOBoard::flipWavemeterMirror);
+        WavemeterReadController *wmr = new WavemeterReadController(10);
+        connect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
         connect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
         connect(wmr,&WavemeterReadController::readsComplete,[=](bool aborted) {
-            disconnect(p_wavemeter,&Wavemeter::signalUpdate,wmr,&WavemeterReadController::signalReadComplete);
-            disconnect(p_wavemeter,&Wavemeter::pumpUpdate,wmr,&WavemeterReadController::pumpReadComplete);
+            disconnect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
             disconnect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
-            disconnect(wmr,&WavemeterReadController::flipRequest,p_iob,&IOBoard::flipWavemeterMirror);
 
             if(aborted)
                 completeScanInitialization(s,false,QString("Could not make wavemeter readings before acquisition."));
             else
             {
-                emit logMessage(QString("Wm test: sig: %1 (%2); pump %3 (%4)").arg(wmr->signalMean()).arg(wmr->signalStDev()).arg(wmr->pumpMean()).arg(wmr->pumpStDev()));
+                emit logMessage(QString("Wm test: %1 (%2)").arg(wmr->freqMean()).arg(wmr->freqStDev()));
                 completeScanInitialization(s);
             }
             wmr->deleteLater();
-
-        });
-    }
-    else if(s.isHardwareActive(QString("wavemeter")))
-    {
-        //use wavemeterREadController to set flipper state
-        WavemeterReadController *wmr = new WavemeterReadController(0,Wavemeter::Pump);
-        connect(p_iob,&IOBoard::mirrorFlipped,wmr,&WavemeterReadController::flipComplete);
-        connect(wmr,&WavemeterReadController::flipRequest,p_iob,&IOBoard::flipWavemeterMirror);
-        connect(p_wavemeter,&Wavemeter::signalUpdate,wmr,&WavemeterReadController::signalReadComplete);
-        connect(p_wavemeter,&Wavemeter::pumpUpdate,wmr,&WavemeterReadController::pumpReadComplete);
-        connect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
-        connect(wmr,&WavemeterReadController::readsComplete,[=](bool aborted) {
-            disconnect(p_wavemeter,&Wavemeter::signalUpdate,wmr,&WavemeterReadController::signalReadComplete);
-            disconnect(p_wavemeter,&Wavemeter::pumpUpdate,wmr,&WavemeterReadController::pumpReadComplete);
-            disconnect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
-            disconnect(wmr,&WavemeterReadController::flipRequest,p_iob,&IOBoard::flipWavemeterMirror);
-
-            wmr->deleteLater();
-            if(aborted)
-                completeScanInitialization(s,false,QString("Could not set wavemeter state before acquisition."));
-            else
-                completeScanInitialization(s);
 
         });
     }

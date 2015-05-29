@@ -21,7 +21,6 @@ public slots:
 
 	// IOBoard interface
 public slots:
-	void flipWavemeterMirror();
 	bool readCavityLocked();
 
 protected:

@@ -23,19 +23,6 @@ void Wavemeter::readTimerInterval()
     p_timer->setInterval(timerInterval);
 }
 
-Wavemeter::WavemeterState Wavemeter::getState() const
-{
-    return d_currentState;
-}
-
-void Wavemeter::flipComplete()
-{
-    //generally, this should do nothing!
-    //it's only here so that the virtual implementation works properly
-    //however, it's here and can be reimplemented in a derived class if needed
-}
-
-
 
 void Wavemeter::beginAcquisition()
 {

@@ -56,11 +56,6 @@ void VirtualIOBoard::readPointData()
 	//do something here
 }
 
-void VirtualIOBoard::flipWavemeterMirror()
-{
-	emit mirrorFlipped();
-}
-
 bool VirtualIOBoard::readCavityLocked()
 {
 	bool on = qrand() % 1000;

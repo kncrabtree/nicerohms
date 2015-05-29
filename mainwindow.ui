@@ -23,6 +23,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <layout class="QFormLayout" name="formLayout">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="scanNumberLabel">
            <property name="text">
@@ -72,66 +75,14 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="signalLabel">
-           <property name="text">
-            <string>Signal</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QDoubleSpinBox" name="signalDoubleSpinBox">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="buttonSymbols">
-            <enum>QAbstractSpinBox::NoButtons</enum>
-           </property>
-           <property name="specialValueText">
-            <string>Unknown</string>
-           </property>
-           <property name="suffix">
-            <string> GHz</string>
-           </property>
-           <property name="maximum">
-            <double>1000000.000000000000000</double>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="pumpLabel">
-           <property name="text">
-            <string>Pump</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QDoubleSpinBox" name="pumpDoubleSpinBox">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="buttonSymbols">
-            <enum>QAbstractSpinBox::NoButtons</enum>
-           </property>
-           <property name="specialValueText">
-            <string>Unknown</string>
-           </property>
-           <property name="suffix">
-            <string> GHz</string>
-           </property>
-           <property name="maximum">
-            <double>1000000.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
           <widget class="QLabel" name="idlerLabel">
            <property name="text">
             <string>Idler</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="idlerDoubleSpinBox">
            <property name="readOnly">
             <bool>true</bool>
@@ -150,14 +101,14 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="3" column="0">
           <widget class="QLabel" name="aomLabel">
            <property name="text">
             <string>AOM</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="3" column="1">
           <widget class="QDoubleSpinBox" name="aomDoubleSpinBox">
            <property name="readOnly">
             <bool>true</bool>
@@ -342,11 +293,6 @@
   <action name="actionTest_All_Connections">
    <property name="text">
     <string>Test All Connections</string>
-   </property>
-  </action>
-  <action name="actionFlip_Mirror">
-   <property name="text">
-    <string>Flip Mirror</string>
    </property>
   </action>
  </widget>

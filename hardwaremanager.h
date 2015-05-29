@@ -52,11 +52,8 @@ signals:
     void laserSlewComplete();
     void abortSlew();
 
-    void wavemeterPumpUpdate(double);
-    void wavemeterSignalUpdate(double);
+    void wavemeterFreqUpdate(double);
     void updateWavemeterTimer();
-    void flipWavemeterMirror();
-
     void cavityPZTUpdate(double);
 
     void relockComplete(bool);

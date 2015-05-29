@@ -49,8 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::laserPosUpdate,ui->laserDoubleSpinBox,&QDoubleSpinBox::setValue);
 	connect(p_hwm,&HardwareManager::lockStateUpdate,ui->lockLed,&Led::setState);
 	connect(p_hwm,&HardwareManager::lockStateCheck,ui->lockLed,&Led::setState);
-	connect(p_hwm,&HardwareManager::wavemeterPumpUpdate,this,&MainWindow::pumpUpdate);
-	connect(p_hwm,&HardwareManager::wavemeterSignalUpdate,this,&MainWindow::signalUpdate);
+    connect(p_hwm,&HardwareManager::wavemeterFreqUpdate,[=](double f){ ui->idlerDoubleSpinBox->setValue(f/1e9);});
 	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
 	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
 	connect(p_hwm,&HardwareManager::aomSynthUpdate,ui->aomDoubleSpinBox,&QDoubleSpinBox::setValue);
@@ -89,7 +88,6 @@ MainWindow::MainWindow(QWidget *parent) :
     spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     ui->mainToolBar->addWidget(spacer);
     ui->mainToolBar->addSeparator();
-    ui->mainToolBar->addAction(ui->actionFlip_Mirror);
     ui->mainToolBar->addAction(p_laserSlewAction);
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
@@ -98,14 +96,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionAbort,&QAction::triggered,p_am,&AcquisitionManager::abortScan);
 	connect(ui->actionTest_All_Connections,&QAction::triggered,p_hwm,&HardwareManager::testAllConnections);
     connect(p_laserSlewAction,&LaserSlewAction::slewSignal,p_hwm,&HardwareManager::slewLaser);
-    connect(ui->actionFlip_Mirror,&QAction::triggered,p_hwm,&HardwareManager::flipWavemeterMirror);
 
 	p_batchThread = new QThread(this);
 
 	ui->scanNumberSpinBox->blockSignals(true);
 	ui->laserDoubleSpinBox->blockSignals(true);
-	ui->pumpDoubleSpinBox->blockSignals(true);
-	ui->signalDoubleSpinBox->blockSignals(true);
 	ui->idlerDoubleSpinBox->blockSignals(true);
 	ui->aomDoubleSpinBox->blockSignals(true);
 
@@ -217,24 +212,6 @@ void MainWindow::test()
 	beginBatch(bm);
 }
 
-void MainWindow::pumpUpdate(double f)
-{
-	double freq = f/1e9;
-
-	ui->pumpDoubleSpinBox->setValue(freq);
-	if(!qFuzzyCompare(1.0 + ui->signalDoubleSpinBox->value(), 1.0))
-		ui->idlerDoubleSpinBox->setValue(freq - ui->signalDoubleSpinBox->value());
-}
-
-void MainWindow::signalUpdate(double f)
-{
-	double freq = f/1e9;
-
-	ui->signalDoubleSpinBox->setValue(freq);
-	if(ui->pumpDoubleSpinBox->value() - freq > 0.0)
-		ui->idlerDoubleSpinBox->setValue(ui->pumpDoubleSpinBox->value() - freq);
-}
-
 void MainWindow::beginBatch(BatchManager *bm)
 {
 	connect(p_batchThread,&QThread::started,bm,&BatchManager::beginNextScan);
@@ -263,7 +240,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 
     //can iterate through hardware list here for more fine-grained control
     QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-    bool iob = set.value(QString("ioboard/connected"),false).toBool();
+//    bool iob = set.value(QString("ioboard/connected"),false).toBool();
 
 	switch(s)
 	{
@@ -273,7 +250,6 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
         p_laserSlewAction->setEnabled(false);
-        ui->actionFlip_Mirror->setEnabled(false);
 		break;
 	case Slewing:
 		ui->actionStart_Laser_Scan->setEnabled(false);
@@ -281,7 +257,6 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
         p_laserSlewAction->setEnabled(false);
-        ui->actionFlip_Mirror->setEnabled(false);
 		break;
 	case Disconnected:
 		ui->actionStart_Laser_Scan->setEnabled(false);
@@ -289,7 +264,6 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);
         p_laserSlewAction->setEnabled(false);
-        ui->actionFlip_Mirror->setEnabled(false);
 		break;
 	case Idle:
 	default:
@@ -298,7 +272,6 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);
         p_laserSlewAction->setEnabled(true);
-        ui->actionFlip_Mirror->setEnabled(iob);
 		break;
 	}
 

@@ -24,9 +24,8 @@ bool VirtualWavemeter::testConnection()
 {
 	p_timer->stop();
 
-	d_currentState = Pump;
-    d_pumpFreq = 2.8175983e14;
-    d_signalFreq = 2.0e14;
+
+    d_currentFreq = 8.1723094e13;
 
 	readTimerInterval();
 
@@ -52,42 +51,15 @@ void VirtualWavemeter::readPointData()
 {
 	if(d_isActive)
 	{
-        double f = read();
 		QList<QPair<QString,QVariant>> out;
-        out.append(qMakePair(QString("wavemeter"),QVariant::fromValue(f/29979245800)));
+        out.append(qMakePair(QString("wavemeter"),read()));
 		emit pointDataRead(out);
 	}
 }
 
 double VirtualWavemeter::read()
 {
-	//this would be where we actually read the wavemeter and determine whether the result is signal or pump
-	//for the virtual case, we'll just do nothing
-    //my suggestion is that if the wavemeter doesn't give a valid reading, just set the state to "unknown," don't emit a signal, and return -1.0
-
-	if(d_currentState == Unknown)
-		d_currentState = Pump;
-
-	if(d_currentState == Signal)
-	{
-        d_signalFreq = 2.0e14 + static_cast<double>((qrand()%10000)-5000.0)*1e6;
-		emit signalUpdate(d_signalFreq);
-		return d_signalFreq;
-	}
-	else
-	{
-        d_pumpFreq = 2.8175983e14 + static_cast<double>((qrand()%10000)-5000.0)*1e6;
-		emit pumpUpdate(d_pumpFreq);
-		return d_pumpFreq;
-	}
-
-}
-
-
-void VirtualWavemeter::flipComplete()
-{
-    if(d_currentState == Pump)
-        d_currentState = Signal;
-    else if(d_currentState == Signal)
-        d_currentState = Pump;
+    d_currentFreq = 8.1723094e13 + static_cast<double>((qrand()%10000)-5000.0)*1e4;
+    emit freqUpdate(d_currentFreq);
+    return d_currentFreq;
 }

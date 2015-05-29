@@ -13,12 +13,10 @@ public:
 	~IOBoard();
 
 signals:
-	void mirrorFlipped();
 	void relockComplete(bool success);
 	void lockState(bool);
 
 public slots:
-	virtual void flipWavemeterMirror() =0;
 	virtual bool readCavityLocked() =0;
 	void relock();
 	void readIOSettings();

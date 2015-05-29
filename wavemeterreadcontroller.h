@@ -9,38 +9,25 @@ class WavemeterReadController : public QObject
 {
     Q_OBJECT
 public:
-    explicit WavemeterReadController(int numReads, Wavemeter::WavemeterState finalState, QObject *parent = 0);
+    explicit WavemeterReadController(int numReads, QObject *parent = 0);
     ~WavemeterReadController();
 
-    enum ControlState {
-        Reading,
-        WaitingForFinalFlip,
-        Done
-    };
-
     bool wasAborted() const { return d_aborted; }
-    double signalMean() const { return d_signalMean; }
-    double pumpMean() const { return d_pumpMean; }
-    double signalStDev() const;
-    double pumpStDev() const;
+    double freqMean() const { return d_freqMean; }
+    double freqStDev() const;
 
 signals:
     void readsComplete(bool aborted = false);
-    void flipRequest();
 
 public slots:
-    void signalReadComplete(double freq);
-    void pumpReadComplete(double freq);
-    void flipComplete();
+    void readComplete(double freq);
     void abort();
 
 private:
     int d_targetReads;
-    int d_signalReadsComplete, d_pumpReadsComplete;
-    Wavemeter::WavemeterState d_currentWmState, d_finalWmState;
-    ControlState d_currentControlState;
+    int d_readsComplete;
 
-    double d_signalMean, d_signalSumSq, d_pumpMean, d_pumpSumSq;
+    double d_freqMean, d_freqSumSq;
     bool d_aborted;
 
 

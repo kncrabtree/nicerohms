@@ -44,9 +44,6 @@ public slots:
 	void batchComplete(bool aborted);
 
 	void test();
-	void pumpUpdate(double f);
-	void signalUpdate(double f);
-
 
 signals:
     void statusMessage(const QString);
