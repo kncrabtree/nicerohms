@@ -128,7 +128,7 @@ NicerOhms::LogMessageCode Scan::endLogCode() const
 	return data->endLogCode;
 }
 
-bool Scan::isHardwareActive(QString key)
+bool Scan::isHardwareActive(QString key) const
 {
 	//if key is not found, assume hardware is inactive
 	return data->activeHardware.value(key,false);

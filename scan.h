@@ -56,7 +56,7 @@ public:
 	QPair<double,double> cavityPZTRange() const;
 	QString endLogMessage() const;
 	NicerOhms::LogMessageCode endLogCode() const;
-	bool isHardwareActive(QString key);
+	bool isHardwareActive(QString key) const;
 
 
 	void setHardwareFailed();
