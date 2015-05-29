@@ -60,6 +60,23 @@ QString Scan::startString() const
 	return QString("Scan %1 starting.").arg(data->number);
 }
 
+QString Scan::headerString() const
+{
+	QString out;
+
+	auto it = data->headerData.constBegin();
+	while(it != data->headerData.constEnd())
+	{
+		QString key = it.key();
+		QString val = it.value().first;
+		QString unit = it.value().second;
+
+		out.append(QString("#%1\t%2\t%3\n").arg(key).arg(val).arg(unit));
+	}
+
+	return out;
+}
+
 int Scan::totalPoints() const
 {
 	return data->totalPoints;
@@ -111,7 +128,7 @@ NicerOhms::LogMessageCode Scan::endLogCode() const
 	return data->endLogCode;
 }
 
-bool Scan::isHardwareActive(QString key)
+bool Scan::isHardwareActive(QString key) const
 {
 	//if key is not found, assume hardware is inactive
 	return data->activeHardware.value(key,false);
@@ -134,6 +151,21 @@ void Scan::setInitialized()
 
 	data->endLogMessage = QString("Scan %1 complete.").arg(data->number);
 	data->endLogCode = NicerOhms::LogHighlight;
+
+	addHeaderItem(QString("ScanNumber"),num);
+	addHeaderItem(QString("ScanStartTime"),data->startTime);
+	addHeaderItem(QString("ScanTotalPoints"),data->totalPoints);
+	addHeaderItem(QString("ScanAutoLockEnabled"),data->autoLockEnabled);
+	if(data->autoLockEnabled)
+	{
+		addHeaderItem(QString("ScanAutoLockMin"),data->cavityMin,QString("V"));
+		addHeaderItem(QString("ScanAutoLockMax"),data->cavityMax,QString("V"));
+	}
+	addHeaderItem(QString("ScanNumDataPoints"),data->numDataPoints);
+	addHeaderItem(QString("ScanPointDelay"),data->laserDelay,QString("ms"));
+	addHeaderItem(QString("ScanAbortOnUnlock"),data->abortOnUnlock);
+
+	//figure out how to include start, stop, and step
 }
 
 void Scan::setAborted()
@@ -146,6 +178,11 @@ void Scan::setAborted()
 void Scan::setErrorString(const QString s)
 {
 	data->errorString = s;
+}
+
+void Scan::addHeaderItem(QString key, QVariant value, QString units)
+{
+	data->headerData.insert(key,qMakePair(value.toString(),units));
 }
 
 Scan::PointAction Scan::validateData(const QList<QPair<QString, QVariant> > l)

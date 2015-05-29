@@ -46,6 +46,7 @@ public:
 	int number() const;
 	QString errorString() const;
 	QString startString() const;
+	QString headerString() const;
 	int totalPoints() const;
 	int completedPoints() const;
 	double currentLaserPos() const;
@@ -55,14 +56,15 @@ public:
 	QPair<double,double> cavityPZTRange() const;
 	QString endLogMessage() const;
 	NicerOhms::LogMessageCode endLogCode() const;
-	bool isHardwareActive(QString key);
+	bool isHardwareActive(QString key) const;
 
 
 	void setHardwareFailed();
 	void setInitialized();
 	void setAborted();
 	void setErrorString(const QString s);
-    PointAction validateData(const QList<QPair<QString,QVariant>> l);
+	void addHeaderItem(QString key, QVariant value, QString units = QString(""));
+	PointAction validateData(const QList<QPair<QString,QVariant>> l);
 	bool addPointData(const QList<QPair<QString,QVariant>> l);
 	void addNumDataPoints(int n);
 	void setPointRedo();
@@ -106,6 +108,7 @@ public:
 	QList<QPair<QString,QVariant>> dataCache;
 	QMap<QString,bool> activeHardware;
 	QMap<QString,QVector<QVariant>> scanData;
+	QMap<QString,QPair<QString,QString>> headerData;
 	QString errorString;
 	QString endLogMessage;
 	NicerOhms::LogMessageCode endLogCode;
