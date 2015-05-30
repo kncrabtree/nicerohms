@@ -45,6 +45,7 @@ signals:
     void endAcquisition();
     void pointData(const QList<QPair<QString,QVariant>>, bool plot);
     void readPointData();
+    void uiAbort();
 
     void slewLaser(double);
     void laserPosUpdate(double);

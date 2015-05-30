@@ -44,7 +44,7 @@ void HardwareManager::initialize()
 	connect(p_laser,&Laser::laserPosChanged,this,&HardwareManager::laserPosUpdate);
 	connect(p_laser,&Laser::slewStarting,this,&HardwareManager::laserSlewStarted);
 	connect(p_laser,&Laser::slewComplete,this,&HardwareManager::laserSlewComplete);
-	connect(this,&HardwareManager::abortSlew,p_laser,&Laser::abortSlew);
+    connect(this,&HardwareManager::uiAbort,p_laser,&Laser::abortSlew);
 	d_hardwareList.append(qMakePair(p_laser,nullptr));
 
 	//Lock ins may need their own threads since comms might be slow
@@ -255,10 +255,11 @@ void HardwareManager::beginScanInitialization(Scan s)
     //if the comb is active, we need to go into the wavemeter read procedure
     if(s.isHardwareActive(QString("freqcomb")))
     {
+        emit statusMessage(QString("Reading wavemeter to determine comb mode numbers..."));
         //use wavemeterReadcontroller to get readings
         WavemeterReadController *wmr = new WavemeterReadController(10);
         connect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
-        connect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
+        connect(this,&HardwareManager::uiAbort,wmr,&WavemeterReadController::abort);
         connect(wmr,&WavemeterReadController::readsComplete,[=](bool aborted) {
             disconnect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
             disconnect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
@@ -283,6 +284,7 @@ void HardwareManager::completeScanInitialization(Scan s, bool stageOneSuccess, Q
     //only go on to phase 2 if phase 1 was successful
     if(stageOneSuccess)
     {
+        emit statusMessage(QString("Initializing hardware for scan..."));
         //do phase 2 initialization
         //if successful, call Scan::setInitialized()
         bool success = true;

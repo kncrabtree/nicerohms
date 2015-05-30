@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
 	connect(ui->actionTest,&QAction::triggered,this,&MainWindow::test);
-	connect(ui->actionAbort,&QAction::triggered,p_hwm,&HardwareManager::abortSlew);
+    connect(ui->actionAbort,&QAction::triggered,p_hwm,&HardwareManager::uiAbort);
 	connect(ui->actionAbort,&QAction::triggered,p_am,&AcquisitionManager::abortScan);
 	connect(ui->actionTest_All_Connections,&QAction::triggered,p_hwm,&HardwareManager::testAllConnections);
     connect(p_laserSlewAction,&LaserSlewAction::slewSignal,p_hwm,&HardwareManager::slewLaser);
