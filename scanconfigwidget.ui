@@ -405,7 +405,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>IO Board</string>
+          <string>IO Board Analog</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -420,6 +420,26 @@
          <property name="selectionMode">
           <enum>QAbstractItemView::ExtendedSelection</enum>
          </property>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>IO Board Digital</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableView" name="ioBoardDigitalTableView">
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
         </widget>
        </item>
       </layout>

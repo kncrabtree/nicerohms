@@ -174,10 +174,6 @@ bool IOBoardAnalogConfigModel::setData(const QModelIndex &index, const QVariant 
 
 	bool out = true;
 	switch(index.column()) {
-//	case 0:
-//		d_channelConfigList[index.row()].enabled = value.toBool();
-//		emit dataChanged(index,index);
-//		break;
 	case 1:
 		d_channelConfigList[index.row()].name = value.toString();
 		emit dataChanged(index,index);

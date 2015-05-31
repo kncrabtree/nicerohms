@@ -4,6 +4,7 @@
 #include "scan.h"
 #include "batchsingle.h"
 #include "ioboardanalogconfigmodel.h"
+#include "ioboarddigitalconfigmodel.h"
 
 #include <QSettings>
 #include <QApplication>
@@ -153,8 +154,11 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 
 	//initialize models
 	ui->ioBoardTableView->setModel(new IOBoardAnalogConfigModel(this));
-	ui->ioBoardTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	ui->ioBoardTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	ui->ioBoardTableView->setItemDelegateForColumn(2,new RangeDelegate);
+
+	ui->ioBoardDigitalTableView->setModel(new IOBoardDigitalConfigModel(this));
+	ui->ioBoardDigitalTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 ScanConfigWidget::~ScanConfigWidget()
@@ -204,6 +208,11 @@ BatchManager *ScanConfigWidget::toBatchManager()
 	s.addHardwareItem(QString("lockin2"),ui->lockin2CheckBox->isChecked());
 
 	s.setComments(ui->commentsBox->toPlainText());
+
+	s.addHardwareItem(QString("ioboard"));
+	//add ioboard settngs
+
+	//add validation settings
 
 	return new BatchSingle(s);
 }
@@ -287,6 +296,7 @@ void ScanConfigWidget::saveToSettings() const
 
 	//ioboard and validation
 	static_cast<IOBoardAnalogConfigModel*>(ui->ioBoardTableView->model())->saveToSettings();
+	static_cast<IOBoardDigitalConfigModel*>(ui->ioBoardDigitalTableView->model())->saveToSettings();
 
 	s.endGroup();
 	s.sync();
