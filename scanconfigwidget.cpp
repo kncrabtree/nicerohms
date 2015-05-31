@@ -154,8 +154,9 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 
 	//initialize models
 	ui->ioBoardTableView->setModel(new IOBoardAnalogConfigModel(this));
+	ui->ioBoardTableView->setItemDelegateForColumn(1,new RangeDelegate);
 	ui->ioBoardTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	ui->ioBoardTableView->setItemDelegateForColumn(2,new RangeDelegate);
+
 
 	ui->ioBoardDigitalTableView->setModel(new IOBoardDigitalConfigModel(this));
 	ui->ioBoardDigitalTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);

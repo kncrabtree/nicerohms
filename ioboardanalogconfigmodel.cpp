@@ -89,10 +89,10 @@ QVariant IOBoardAnalogConfigModel::data(const QModelIndex &index, int role) cons
 		switch (index.column()) {
 		case 0:
 			break;
-		case 1:
+		case 2:
 			out = d_channelConfigList.at(index.row()).name;
 			break;
-		case 2:
+		case 1:
 		{
 			QString s;
 			switch (d_channelConfigList.at(index.row()).range) {
@@ -124,10 +124,10 @@ QVariant IOBoardAnalogConfigModel::data(const QModelIndex &index, int role) cons
 		case 0:
 //			out = (d_channelConfigList.at(index.row()).enabled ? Qt::Checked : Qt::Unchecked);
 			break;
-		case 1:
+		case 2:
 			out = d_channelConfigList.at(index.row()).name;
 			break;
-		case 2:
+		case 1:
 		{
 			int i = 0;
 			switch (d_channelConfigList.at(index.row()).range) {
@@ -174,11 +174,11 @@ bool IOBoardAnalogConfigModel::setData(const QModelIndex &index, const QVariant 
 
 	bool out = true;
 	switch(index.column()) {
-	case 1:
+	case 2:
 		d_channelConfigList[index.row()].name = value.toString();
 		emit dataChanged(index,index);
 		break;
-	case 2:
+	case 1:
 		NicerOhms::LabJackRange r;
 		switch(value.toInt()) {
 		case 0:
@@ -218,10 +218,10 @@ QVariant IOBoardAnalogConfigModel::headerData(int section, Qt::Orientation orien
 		case 0:
 			out = QString("On");
 			break;
-		case 1:
+		case 2:
 			out = QString("Name");
 			break;
-		case 2:
+		case 1:
 			out = QString("Range");
 			break;
 		}
