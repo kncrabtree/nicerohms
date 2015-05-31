@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>710</width>
-    <height>462</height>
+    <width>995</width>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -414,8 +414,11 @@
        </item>
        <item>
         <widget class="QTableView" name="ioBoardTableView">
+         <property name="editTriggers">
+          <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+         </property>
          <property name="selectionMode">
-          <enum>QAbstractItemView::SingleSelection</enum>
+          <enum>QAbstractItemView::ExtendedSelection</enum>
          </property>
         </widget>
        </item>

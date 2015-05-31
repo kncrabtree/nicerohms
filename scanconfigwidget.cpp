@@ -3,6 +3,7 @@
 
 #include "scan.h"
 #include "batchsingle.h"
+#include "ioboardanalogconfigmodel.h"
 
 #include <QSettings>
 #include <QApplication>
@@ -151,6 +152,9 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 	ui->commentsBox->setPlainText(s.value(QString("%1/comments").arg(d_key),QString("")).toString());
 
 	//initialize models
+	ui->ioBoardTableView->setModel(new IOBoardAnalogConfigModel(this));
+	ui->ioBoardTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	ui->ioBoardTableView->setItemDelegateForColumn(2,new RangeDelegate);
 }
 
 ScanConfigWidget::~ScanConfigWidget()
@@ -282,6 +286,7 @@ void ScanConfigWidget::saveToSettings() const
 
 
 	//ioboard and validation
+	static_cast<IOBoardAnalogConfigModel*>(ui->ioBoardTableView->model())->saveToSettings();
 
 	s.endGroup();
 	s.sync();
