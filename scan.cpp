@@ -3,9 +3,9 @@
 #include <QSettings>
 #include <QApplication>
 
-Scan::Scan() : data(new ScanData)
+Scan::Scan(ScanType t) : data(new ScanData)
 {
-
+	data->type = t;
 }
 
 Scan::Scan(const Scan &rhs) : data(rhs.data)
@@ -23,6 +23,11 @@ Scan &Scan::operator=(const Scan &rhs)
 Scan::~Scan()
 {
 
+}
+
+Scan::ScanType Scan::type() const
+{
+	return data->type;
 }
 
 bool Scan::isInitialized() const

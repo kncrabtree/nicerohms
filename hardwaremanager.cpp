@@ -97,7 +97,6 @@ void HardwareManager::initialize()
 		s.setValue(QString("key"),obj->key());
 		s.setValue(QString("subKey"),obj->subKey());
 		s.setValue(QString("prettyName"),obj->name());
-		s.setValue(QString("connected"),false);
 		s.setValue(QString("critical"),obj->isCritical());
 	}
 	s.endArray();
@@ -253,7 +252,7 @@ void HardwareManager::beginScanInitialization(Scan s)
 
 
     //if the comb is active, we need to go into the wavemeter read procedure
-    if(s.isHardwareActive(QString("freqcomb")))
+    if(s.isHardwareActive(QString("freqComb")))
     {
         //use wavemeterReadcontroller to get readings
         WavemeterReadController *wmr = new WavemeterReadController(10);

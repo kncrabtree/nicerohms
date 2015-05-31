@@ -9,6 +9,9 @@
 #include <QActionGroup>
 #include <QCloseEvent>
 #include <QWidgetAction>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 #include "loghandler.h"
 #include "communicationdialog.h"
@@ -16,6 +19,7 @@
 #include "acquisitionmanager.h"
 #include "batchmanager.h"
 #include "laserslewaction.h"
+#include "scanconfigwidget.h"
 
 #include "batchsingle.h"
 
@@ -92,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
 	connect(ui->actionTest,&QAction::triggered,this,&MainWindow::test);
+	connect(ui->actionStart_Laser_Scan,&QAction::triggered,this,&MainWindow::startLaserScan);
 	connect(ui->actionAbort,&QAction::triggered,p_hwm,&HardwareManager::abortSlew);
 	connect(ui->actionAbort,&QAction::triggered,p_am,&AcquisitionManager::abortScan);
 	connect(ui->actionTest_All_Connections,&QAction::triggered,p_hwm,&HardwareManager::testAllConnections);
@@ -186,6 +191,29 @@ void MainWindow::batchComplete(bool aborted)
 
 }
 
+void MainWindow::startLaserScan()
+{
+	if(p_batchThread->isRunning())
+		return;
+
+	QDialog d(this);
+	ScanConfigWidget *scw = new ScanConfigWidget(Scan::LaserScan,&d);
+	QVBoxLayout *vbl = new QVBoxLayout();
+	QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
+	vbl->addWidget(scw,1);
+	vbl->addWidget(bb,0);
+	d.setLayout(vbl);
+
+	connect(bb->button(QDialogButtonBox::Cancel),&QPushButton::clicked,&d,&QDialog::reject);
+	connect(bb->button(QDialogButtonBox::Ok),&QPushButton::clicked,scw,&ScanConfigWidget::validate);
+	connect(scw,&ScanConfigWidget::scanValid,&d,&QDialog::accept);
+
+	if(d.exec() == QDialog::Rejected)
+		return;
+
+	//do stuff
+}
+
 void MainWindow::test()
 {
 	Scan scan;
@@ -206,7 +234,7 @@ void MainWindow::test()
 	s.endArray();
 	s.endGroup();
 
-    scan.addHardwareItem(QString("freqcomb"),true);
+    scan.addHardwareItem(QString("freqComb"),true);
 
 	BatchManager *bm = new BatchSingle(scan);
 	beginBatch(bm);

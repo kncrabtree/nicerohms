@@ -18,7 +18,12 @@ class ScanData;
 class Scan
 {
 public:
-	Scan();
+	enum ScanType {
+		LaserScan,
+		CombScan
+	};
+
+	Scan(ScanType t = LaserScan);
 	Scan(const Scan &);
 	Scan &operator=(const Scan &);
 	~Scan();
@@ -39,6 +44,7 @@ public:
         int precision;
     };
 
+    ScanType type() const;
 	bool isInitialized() const;
 	bool hardwareSuccess() const;
 	bool isComplete() const;
@@ -84,10 +90,11 @@ private:
 class ScanData : public QSharedData
 {
 public:
-	ScanData() : number(0), isInitialized(false), hardwareSuccess(true), aborted(false), completedPoints(0), totalPoints(0),
-		autoLockEnabled(false), cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), laserDelay(0), numDataPoints(0), redo(false),
-		laserStart(0.0), laserStop(0.0), laserStep(0.0) {}
+	ScanData() : type(Scan::LaserScan), number(0), isInitialized(false), hardwareSuccess(true), aborted(false), completedPoints(0),
+		totalPoints(0), autoLockEnabled(false), cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), laserDelay(0),
+		numDataPoints(0), redo(false), laserStart(0.0), laserStop(0.0), laserStep(0.0) {}
 
+	Scan::ScanType type;
 	int number;
 	bool isInitialized;
 	bool hardwareSuccess;

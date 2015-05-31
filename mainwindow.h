@@ -43,6 +43,8 @@ public slots:
 	void scanInitialized(const Scan s);
 	void batchComplete(bool aborted);
 
+	void startLaserScan();
+
 	void test();
 
 signals:
