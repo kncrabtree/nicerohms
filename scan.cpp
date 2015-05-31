@@ -288,7 +288,28 @@ void Scan::setScanParams(double start, double stop, double step, int delay)
 
 void Scan::addHardwareItem(QString key, bool active)
 {
-    data->activeHardware.insert(key,active);
+	data->activeHardware.insert(key,active);
+}
+
+void Scan::setCavityPZTRange(double min, double max)
+{
+	data->cavityMin = min;
+	data->cavityMax = max;
+}
+
+void Scan::setAutoRelock(bool enabled)
+{
+	data->autoLockEnabled = enabled;
+}
+
+void Scan::setAbortOnUnlock(bool abort)
+{
+	data->abortOnUnlock = abort;
+}
+
+void Scan::setComments(QString c)
+{
+	data->comments = c;
 }
 
 void Scan::addValidationItem(QString key, double min, double max, Scan::PointAction action, int precision)

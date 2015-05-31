@@ -5,6 +5,8 @@
 
 #include "scan.h"
 
+class BatchManager;
+
 namespace Ui {
 class ScanConfigWidget;
 }
@@ -16,6 +18,8 @@ class ScanConfigWidget : public QWidget
 public:
 	explicit ScanConfigWidget(Scan::ScanType t, QWidget *parent = 0);
 	~ScanConfigWidget();
+
+	BatchManager *toBatchManager();
 
 signals:
 	void scanValid();

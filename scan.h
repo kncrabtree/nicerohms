@@ -75,7 +75,11 @@ public:
 	void addNumDataPoints(int n);
 	void setPointRedo();
 	void setScanParams(double start, double stop, double step, int delay);
-	void addHardwareItem(QString key, bool active);
+	void addHardwareItem(QString key, bool active = true);
+	void setCavityPZTRange(double min, double max);
+	void setAutoRelock(bool enabled);
+	void setAbortOnUnlock(bool abort);
+	void setComments(QString c);
 
     //multiple entries with same key are OK; Abort takes precedence over Redo, which in turn takes precedence over Continue
     void addValidationItem(QString key, double min, double max, Scan::PointAction action, int precision = 3);
@@ -111,6 +115,7 @@ public:
 	double scanStart;
 	double scanStop;
 	double scanStep;
+	QString comments;
 
 	QList<QPair<QString,QVariant>> dataCache;
 	QMap<QString,bool> activeHardware;

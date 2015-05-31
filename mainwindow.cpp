@@ -211,7 +211,7 @@ void MainWindow::startLaserScan()
 	if(d.exec() == QDialog::Rejected)
 		return;
 
-	//do stuff
+	beginBatch(scw->toBatchManager());
 }
 
 void MainWindow::test()

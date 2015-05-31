@@ -1,6 +1,9 @@
 #include "scanconfigwidget.h"
 #include "ui_scanconfigwidget.h"
 
+#include "scan.h"
+#include "batchsingle.h"
+
 #include <QSettings>
 #include <QApplication>
 #include <QMessageBox>
@@ -153,6 +156,52 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 ScanConfigWidget::~ScanConfigWidget()
 {
 	delete ui;
+}
+
+BatchManager *ScanConfigWidget::toBatchManager()
+{
+	Scan s(d_type);
+
+	s.addHardwareItem(QString("laser"));
+	if(d_type == Scan::LaserScan)
+	{
+		s.setScanParams(ui->laserStartDoubleSpinBox->value(),ui->laserStopDoubleSpinBox->value(),
+					 ui->laserStepDoubleSpinBox->value(),ui->laserDelaySpinBox->value());
+
+		s.addHardwareItem(QString("wavemeter"),ui->wavemeterCheckBox->isChecked());
+		s.addHardwareItem(QString("aomSynth"),ui->aomCheckBox->isChecked());
+		s.addHardwareItem(QString("freqComb"),ui->freqCombCheckBox->isChecked());
+	}
+	else
+	{
+		s.setScanParams(0.0,ui->combLengthDoubleSpinBox->value(),ui->combStepDoubleSpinBox->value(),ui->combDelaySpinBox->value());
+
+		s.addHardwareItem(QString("wavemeter"),true);
+		s.addHardwareItem(QString("aomSynth"),true);
+		s.addHardwareItem(QString("freqComb"),true);
+	}
+
+	s.addHardwareItem(QString("cavityPZT"),ui->cavityPZTBox->isChecked());
+	if(ui->cavityPZTBox->isChecked())
+	{
+		s.setCavityPZTRange(qMin(ui->lowTripDoubleSpinBox->value(),ui->highTripDoubleSpinBox->value()),
+						qMax(ui->lowTripDoubleSpinBox->value(),ui->highTripDoubleSpinBox->value()));
+		s.setAutoRelock(ui->autoRelockCheckBox->isChecked());
+		s.setAbortOnUnlock(ui->abortOnFailCheckBox->isChecked());
+	}
+	else
+	{
+		s.setAutoRelock(false);
+		s.setAbortOnUnlock(false);
+		s.setCavityPZTRange(-1.0,1.0);
+	}
+
+	s.addHardwareItem(QString("lockin1"),ui->lockin1CheckBox->isChecked());
+	s.addHardwareItem(QString("lockin2"),ui->lockin2CheckBox->isChecked());
+
+	s.setComments(ui->commentsBox->toPlainText());
+
+	return new BatchSingle(s);
 }
 
 void ScanConfigWidget::swapLaserStartStop()
