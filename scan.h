@@ -55,10 +55,10 @@ public:
 	QString headerString() const;
 	int totalPoints() const;
 	int completedPoints() const;
-	double currentLaserPos() const;
+	double currentPos() const;
 	bool isAutoLockEnabled() const;
 	bool isAbortOnUnlock() const;
-	int laserDelay() const;
+	int delay() const;
 	QPair<double,double> cavityPZTRange() const;
 	QString endLogMessage() const;
 	NicerOhms::LogMessageCode endLogCode() const;
@@ -74,7 +74,7 @@ public:
 	bool addPointData(const QList<QPair<QString,QVariant>> l);
 	void addNumDataPoints(int n);
 	void setPointRedo();
-	void setLaserParams(double start, double stop, double step, int delay);
+	void setScanParams(double start, double stop, double step, int delay);
 	void addHardwareItem(QString key, bool active);
 
     //multiple entries with same key are OK; Abort takes precedence over Redo, which in turn takes precedence over Continue
@@ -91,8 +91,8 @@ class ScanData : public QSharedData
 {
 public:
 	ScanData() : type(Scan::LaserScan), number(0), isInitialized(false), hardwareSuccess(true), aborted(false), completedPoints(0),
-		totalPoints(0), autoLockEnabled(false), cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), laserDelay(0),
-		numDataPoints(0), redo(false), laserStart(0.0), laserStop(0.0), laserStep(0.0) {}
+		totalPoints(0), autoLockEnabled(false), cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), scanDelay(0),
+		numDataPoints(0), redo(false), scanStart(0.0), scanStop(0.0), scanStep(0.0) {}
 
 	Scan::ScanType type;
 	int number;
@@ -105,12 +105,12 @@ public:
 	bool autoLockEnabled;
 	double cavityMin, cavityMax;
 	bool abortOnUnlock;
-	int laserDelay;
+	int scanDelay;
 	int numDataPoints;
 	bool redo;
-	double laserStart;
-	double laserStop;
-	double laserStep;
+	double scanStart;
+	double scanStop;
+	double scanStep;
 
 	QList<QPair<QString,QVariant>> dataCache;
 	QMap<QString,bool> activeHardware;

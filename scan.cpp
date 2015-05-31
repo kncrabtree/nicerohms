@@ -92,13 +92,13 @@ int Scan::completedPoints() const
 	return data->completedPoints;
 }
 
-double Scan::currentLaserPos() const
+double Scan::currentPos() const
 {
-	double pos = data->laserStart + static_cast<double>(data->completedPoints)*data->laserStep;
-	if(data->laserStep > 0)
-		pos = qMin(pos,data->laserStop);
+	double pos = data->scanStart + static_cast<double>(data->completedPoints)*data->scanStep;
+	if(data->scanStep > 0)
+		pos = qMin(pos,data->scanStop);
 	else
-		pos = qMax(pos,data->laserStop);
+		pos = qMax(pos,data->scanStop);
 
 	return pos;
 }
@@ -113,9 +113,9 @@ bool Scan::isAbortOnUnlock() const
 	return data->abortOnUnlock;
 }
 
-int Scan::laserDelay() const
+int Scan::delay() const
 {
-	return data->laserDelay;
+	return data->scanDelay;
 }
 
 QPair<double, double> Scan::cavityPZTRange() const
@@ -167,7 +167,7 @@ void Scan::setInitialized()
 		addHeaderItem(QString("ScanAutoLockMax"),data->cavityMax,QString("V"));
 	}
 	addHeaderItem(QString("ScanNumDataPoints"),data->numDataPoints);
-	addHeaderItem(QString("ScanPointDelay"),data->laserDelay,QString("ms"));
+	addHeaderItem(QString("ScanPointDelay"),data->scanDelay,QString("ms"));
 	addHeaderItem(QString("ScanAbortOnUnlock"),data->abortOnUnlock);
 
 	//figure out how to include start, stop, and step
@@ -268,19 +268,19 @@ void Scan::setPointRedo()
 	data->redo = true;
 }
 
-void Scan::setLaserParams(double start, double stop, double step, int delay)
+void Scan::setScanParams(double start, double stop, double step, int delay)
 {
-	data->laserStart = start;
-	data->laserStop = stop;
-	data->laserDelay = delay;
+	data->scanStart = start;
+	data->scanStop = stop;
+	data->scanDelay = delay;
 
 	if(stop > start)
-		data->laserStep = fabs(step);
+		data->scanStep = fabs(step);
 	else
-		data->laserStep = -fabs(step);
+		data->scanStep = -fabs(step);
 
-	int points = static_cast<int>(floor(fabs((data->laserStart - data->laserStop)/data->laserStep))) + 2;
-	if(qFuzzyCompare(1.0 + data->laserStart + static_cast<double>(points - 1)*data->laserStep,1.0 + data->laserStop + data->laserStep))
+	int points = static_cast<int>(floor(fabs((data->scanStart - data->scanStop)/data->scanStep))) + 2;
+	if(qFuzzyCompare(1.0 + data->scanStart + static_cast<double>(points - 1)*data->scanStep,1.0 + data->scanStop + data->scanStep))
 		points -= 1;
 
 	data->totalPoints = points;

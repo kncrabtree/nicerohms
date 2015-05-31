@@ -39,7 +39,7 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 {
 	if(d_currentState != Idle)
 	{
-		double x = d_currentScan.currentLaserPos();
+		double x = d_currentScan.currentPos();
 		if(plot)
 			d_plotDataCache.append(l);
 
@@ -83,7 +83,7 @@ void AcquisitionManager::beginPoint()
 	{
 		d_plotDataCache.clear();
 		d_currentState = WaitingForLaser;
-		emit startPoint(d_currentScan.currentLaserPos());
+		emit startPoint(d_currentScan.currentPos());
 	}
 }
 
@@ -92,7 +92,7 @@ void AcquisitionManager::laserReady()
 	if(d_currentState == WaitingForLaser)
 	{
 		d_currentState = WaitingForLockCheck;
-		QTimer::singleShot(d_currentScan.laserDelay(),this,&AcquisitionManager::checkLock);
+		QTimer::singleShot(d_currentScan.delay(),this,&AcquisitionManager::checkLock);
 	}
 }
 

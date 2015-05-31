@@ -217,7 +217,7 @@ void MainWindow::startLaserScan()
 void MainWindow::test()
 {
 	Scan scan;
-	scan.setLaserParams(100.0,1.0,5.1,500);
+	scan.setScanParams(100.0,1.0,5.1,500);
 //    scan.addValidationItem(QString("lockin2X"),-9.5,9.5,Scan::Abort,2);
 //    scan.addValidationItem(QString("lockin1Y"),-8.0,8.0,Scan::Remeasure,4);
 
