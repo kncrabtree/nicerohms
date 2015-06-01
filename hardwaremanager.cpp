@@ -88,8 +88,9 @@ void HardwareManager::initialize()
 	p_freqComb = new FreqCombHardware();
 	connect(p_freqComb,&FrequencyComb::combUpdate,this,&HardwareManager::combUpdate);
 	connect(p_freqComb,&FrequencyComb::repRateUpdate,this,&HardwareManager::repRateUpdate);
-	connect(this,&HardwareManager::readComb,p_freqComb,&FrequencyComb::readComb);
 	connect(p_aomSynth,&AomSynthesizer::frequencyUpdate,p_freqComb,&FrequencyComb::setAOMFreq);
+	connect(this,&HardwareManager::setCombPumpBeat,p_freqComb,&FrequencyComb::setPumpBeat);
+	connect(this,&HardwareManager::setCombSignalBeat,p_freqComb,&FrequencyComb::setSignalBeat);
 	d_hardwareList.append(qMakePair(p_freqComb,nullptr));
 
 
@@ -415,7 +416,10 @@ void HardwareManager::readComb()
 		    setCombIdlerFreq(wmr->freqMean());
 		    QMetaObject::invokeMethod(p_freqComb,"readComb");
 	    }
+	    else
+		    emit statusMessage(QString("Comb read aborted"));
 	    wmr->deleteLater();
+
 	});
 }
 

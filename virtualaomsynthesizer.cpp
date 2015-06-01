@@ -12,7 +12,7 @@ VirtualAomSynthesizer::VirtualAomSynthesizer(GpibController *c, QObject *parent)
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualAomSynthesizer::logMessage);
 	connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
 
-	d_frequency = 185.0;
+	d_frequency = 185e6;
 }
 
 VirtualAomSynthesizer::~VirtualAomSynthesizer()

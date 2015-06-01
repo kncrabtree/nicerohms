@@ -19,6 +19,7 @@
 #include "acquisitionmanager.h"
 #include "batchmanager.h"
 #include "laserslewaction.h"
+#include "readcombaction.h"
 #include "scanconfigwidget.h"
 #include "ioboardconfigwidget.h"
 
@@ -57,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(p_hwm,&HardwareManager::wavemeterFreqUpdate,[=](double f){ ui->idlerDoubleSpinBox->setValue(f/1e9);});
 	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
 	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
-	connect(p_hwm,&HardwareManager::aomSynthUpdate,ui->aomDoubleSpinBox,&QDoubleSpinBox::setValue);
+	connect(p_hwm,&HardwareManager::aomSynthUpdate,[=](double f){ ui->aomDoubleSpinBox->setValue(f/1e6);});
 	connect(p_hwm,&HardwareManager::repRateUpdate,this,&MainWindow::repRateUpdate);
 	connect(p_hwm,&HardwareManager::combUpdate,this,&MainWindow::combUpdate);
 
@@ -96,6 +97,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainToolBar->addWidget(spacer);
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addAction(p_laserSlewAction);
+    ui->mainToolBar->addSeparator();
+    p_readCombAction = new ReadCombAction(this);
+    ui->mainToolBar->addAction(p_readCombAction);
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
 	connect(ui->actionStart_Laser_Scan,&QAction::triggered,this,&MainWindow::startLaserScan);
@@ -103,6 +107,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionAbort,&QAction::triggered,p_am,&AcquisitionManager::abortScan);
 	connect(ui->actionTest_All_Connections,&QAction::triggered,p_hwm,&HardwareManager::testAllConnections);
     connect(p_laserSlewAction,&LaserSlewAction::slewSignal,p_hwm,&HardwareManager::slewLaser);
+    connect(p_readCombAction,&QAction::triggered,[=](){ configureUi(CombReading); });
+    connect(p_readCombAction,&QAction::triggered,p_hwm,&HardwareManager::readComb);
+    connect(p_readCombAction,&ReadCombAction::setPumpSign,p_hwm,&HardwareManager::setCombPumpBeat);
+    connect(p_readCombAction,&ReadCombAction::setSignalSign,p_hwm,&HardwareManager::setCombSignalBeat);
     connect(ui->actionIOBoard,&QAction::triggered,this,&MainWindow::launchIOBoardDialog);
 
 	p_batchThread = new QThread(this);
@@ -236,7 +244,13 @@ void MainWindow::combUpdate(FreqCombData d)
 		ui->pBeatDoubleSpinBox->setValue(d.pumpBeat());
 		ui->sBeatDoubleSpinBox->setValue(d.signalBeat());
 		ui->dnSpinBox->setValue(d.deltaN());
-		ui->combIdlerDoubleSpinBox->setValue(d.calculatedIdlerFreq());
+		ui->combIdlerDoubleSpinBox->setValue(d.calculatedIdlerFreq()/1e9);
+	}
+
+	if(d_currentState == CombReading)
+	{
+		emit statusMessage(QString("Comb read complete"));
+		configureUi(Idle);
 	}
 }
 
@@ -306,6 +320,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
 		p_laserSlewAction->setEnabled(false);
+		p_readCombAction->setEnabled(false);
 		ui->actionIOBoard->setEnabled(false);
 		break;
 	case Slewing:
@@ -315,6 +330,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
 		p_laserSlewAction->setEnabled(false);
+		p_readCombAction->setEnabled(false);
 		ui->actionIOBoard->setEnabled(false);
 		break;
 	case Disconnected:
@@ -323,6 +339,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);
 		p_laserSlewAction->setEnabled(false);
+		p_readCombAction->setEnabled(false);
 		ui->actionIOBoard->setEnabled(true);
 		break;
 	case Idle:
@@ -332,6 +349,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);
 		p_laserSlewAction->setEnabled(true);
+		p_readCombAction->setEnabled(true);
 		ui->actionIOBoard->setEnabled(true);
 		break;
 	}

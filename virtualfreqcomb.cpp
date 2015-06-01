@@ -22,8 +22,8 @@ VirtualFreqComb::~VirtualFreqComb()
 
 bool VirtualFreqComb::testConnection()
 {
+	//note: will not need this in real implementation....
 	setRepRate(1e8);
-	readComb();
 
 	emit connected();
 	return true;
@@ -78,9 +78,9 @@ FreqCombData VirtualFreqComb::readComb()
 	FreqCombData out;
 	//normally, we'd make the network request, and all these would be set by calling out.parseXml()
 	out.setRepRate((d_currentDDSFreq + 980e6)/10.0);
-	out.setOffsetBeat(30e6 + static_cast<double>((qrand() % 20000) - 10000)/1e6);
-	out.setPumpBeat(30e6 + static_cast<double>((qrand() % 20000) - 10000)/1e6);
-	out.setSignalBeat(30e6 + static_cast<double>((qrand() % 20000) - 10000)/1e6);
+	out.setOffsetBeat(30e6 + static_cast<double>((qrand() % 20000) - 10000)/1e4);
+	out.setPumpBeat(30e6 + static_cast<double>((qrand() % 2000000) - 1000000));
+	out.setSignalBeat(30e6 + static_cast<double>((qrand() % 2000000) - 1000000));
 	out.setRepRateLockVoltage(3.0);
 	out.setRepRateLocked(true);
 

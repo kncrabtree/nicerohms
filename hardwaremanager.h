@@ -67,6 +67,8 @@ signals:
 
     void combUpdate(FreqCombData);
     void repRateUpdate(double);
+    void setCombPumpBeat(bool);
+    void setCombSignalBeat(bool);
 
 public slots:
     void initialize();

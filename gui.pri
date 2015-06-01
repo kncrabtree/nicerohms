@@ -6,7 +6,8 @@ SOURCES += mainwindow.cpp \
     $$PWD/led.cpp \
     $$PWD/laserslewaction.cpp \
     $$PWD/scanconfigwidget.cpp \
-    $$PWD/ioboardconfigwidget.cpp
+    $$PWD/ioboardconfigwidget.cpp \
+    $$PWD/readcombaction.cpp
 
 HEADERS += mainwindow.h \
     $$PWD/dataplot.h \
@@ -16,7 +17,8 @@ HEADERS += mainwindow.h \
     $$PWD/led.h \
     $$PWD/laserslewaction.h \
     $$PWD/scanconfigwidget.h \
-    $$PWD/ioboardconfigwidget.h
+    $$PWD/ioboardconfigwidget.h \
+    $$PWD/readcombaction.h
 
 FORMS += mainwindow.ui \
     $$PWD/communicationdialog.ui \

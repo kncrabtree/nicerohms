@@ -9,5 +9,6 @@
         <file>icons/laserscan.png</file>
         <file>icons/go-last.png</file>
         <file>icons/labjack.png</file>
+        <file>icons/configure.png</file>
     </qresource>
 </RCC>

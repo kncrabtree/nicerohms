@@ -11,6 +11,7 @@
 
 class QThread;
 class LaserSlewAction;
+class ReadCombAction;
 class LogHandler;
 class HardwareManager;
 class AcquisitionManager;
@@ -65,6 +66,7 @@ private:
 
 	QThread *p_batchThread;
     LaserSlewAction *p_laserSlewAction;
+    ReadCombAction *p_readCombAction;
 
 	QList<QPair<QThread*,QObject*>> d_threadObjectList;
 
