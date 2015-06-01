@@ -238,8 +238,24 @@ BatchManager *ScanConfigWidget::toBatchManager()
 
 	s.addHardwareItem(QString("ioboard"));
 	//add ioboard settngs
+	s.setIOBoardAnalog(static_cast<IOBoardAnalogConfigModel*>(ui->ioBoardTableView->model())->getConfig());
+	s.setIOBoardDigital(static_cast<IOBoardDigitalConfigModel*>(ui->ioBoardDigitalTableView->model())->getConfig());
 
 	//add validation settings
+	QList<NicerOhms::ValidationItem> l = static_cast<ValidationModel*>(ui->validationTableView->model())->getList();
+	for(int i=0; i<l.size(); i++)
+	{
+		if(!l.at(i).key.isEmpty())
+		{
+			Scan::PointAction a;
+			if(l.at(i).abort)
+				a = Scan::Abort;
+			else
+				a = Scan::Remeasure;
+
+			s.addValidationItem(l.at(i).key,qMin(l.at(i).min,l.at(i).max),qMin(l.at(i).min,l.at(i).max),a);
+		}
+	}
 
 	return new BatchSingle(s);
 }

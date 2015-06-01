@@ -13,6 +13,7 @@ public:
 	~IOBoardDigitalConfigModel();
 
 	void saveToSettings();
+	QList<QPair<int,bool>> getConfig();
 
 	// QAbstractItemModel interface
 	int rowCount(const QModelIndex &parent) const;

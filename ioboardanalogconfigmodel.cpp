@@ -55,6 +55,21 @@ void IOBoardAnalogConfigModel::saveToSettings()
 
 	s.endArray();
 	s.endGroup();
+
+	s.beginGroup(QString("analogNames"));
+	for(int i=0; i<d_channelConfigList.size(); i++)
+		s.setValue(QString("ain%1").arg(i),d_channelConfigList.at(i).name);
+	s.endGroup();
+
+}
+
+QList<QPair<bool, NicerOhms::LabJackRange> > IOBoardAnalogConfigModel::getConfig()
+{
+	QList<QPair<bool, NicerOhms::LabJackRange>> out;
+	for(int i=0;i<d_channelConfigList.size();i++)
+		out.append(qMakePair(d_channelConfigList.at(i).enabled,d_channelConfigList.at(i).range));
+
+	return out;
 }
 
 

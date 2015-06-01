@@ -139,6 +139,16 @@ bool Scan::isHardwareActive(QString key) const
 	return data->activeHardware.value(key,false);
 }
 
+QList<QPair<bool, NicerOhms::LabJackRange> > Scan::ioboardAnalogConfig() const
+{
+	return data->ioboardAnalogConfig;
+}
+
+QList<QPair<int, bool> > Scan::ioboardDigitalConfig() const
+{
+	return data->ioboardDigitalConfig;
+}
+
 void Scan::setHardwareFailed()
 {
 	data->hardwareSuccess = false;
@@ -340,6 +350,16 @@ void Scan::finalSave()
 	}
 
 	//save to disk...
+}
+
+void Scan::setIOBoardAnalog(QList<QPair<bool, NicerOhms::LabJackRange> > l)
+{
+	data->ioboardAnalogConfig = l;
+}
+
+void Scan::setIOBoardDigital(QList<QPair<int, bool> > l)
+{
+	data->ioboardDigitalConfig = l;
 }
 
 void Scan::addValidationItem(QString key, double min, double max, Scan::PointAction action, int precision)

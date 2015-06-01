@@ -63,6 +63,8 @@ public:
 	QString endLogMessage() const;
 	NicerOhms::LogMessageCode endLogCode() const;
 	bool isHardwareActive(QString key) const;
+	QList<QPair<bool,NicerOhms::LabJackRange>> ioboardAnalogConfig() const;
+	QList<QPair<int,bool>> ioboardDigitalConfig() const;
 
 
 	void setHardwareFailed();
@@ -81,6 +83,8 @@ public:
 	void setAbortOnUnlock(bool abort);
 	void setComments(QString c);
 	void finalSave();
+	void setIOBoardAnalog(QList<QPair<bool,NicerOhms::LabJackRange>> l);
+	void setIOBoardDigital(QList<QPair<int,bool>> l);
 
     //multiple entries with same key are OK; Abort takes precedence over Redo, which in turn takes precedence over Continue
     void addValidationItem(QString key, double min, double max, Scan::PointAction action, int precision = 3);
@@ -126,6 +130,8 @@ public:
 	QString endLogMessage;
 	NicerOhms::LogMessageCode endLogCode;
     QMap<QString,Scan::PointValidation> validationConditions;
+    QList<QPair<bool,NicerOhms::LabJackRange>> ioboardAnalogConfig;
+    QList<QPair<int,bool>> ioboardDigitalConfig;
 };
 
 #endif // SCAN_H

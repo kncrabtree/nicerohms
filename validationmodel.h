@@ -30,6 +30,7 @@ public:
 	
 	void addNewItem(QString k = QString(""), double min = 0.0, double max = 1.0, bool abort = true);
 	void saveToSettings();
+	QList<NicerOhms::ValidationItem> getList();
 	
 private:
 	QList<NicerOhms::ValidationItem> d_validationList;

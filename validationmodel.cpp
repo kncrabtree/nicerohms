@@ -241,6 +241,11 @@ void ValidationModel::saveToSettings()
 
 }
 
+QList<NicerOhms::ValidationItem> ValidationModel::getList()
+{
+	return d_validationList;
+}
+
 DoubleSpinBoxDelegate::DoubleSpinBoxDelegate(QObject *parent) :
      QStyledItemDelegate(parent)
 {

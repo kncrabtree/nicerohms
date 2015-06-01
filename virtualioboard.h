@@ -26,6 +26,10 @@ public slots:
 protected:
 	void setCavityPZTVoltage(double v);
 	void setCavityLockOverride(bool unlock);
+
+private:
+	QList<QPair<bool,NicerOhms::LabJackRange>> d_analogConfig;
+	QList<QPair<int,bool>> d_digitalConfig;
 };
 
 #endif // VIRTUALIOBOARD_H

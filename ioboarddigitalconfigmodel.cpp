@@ -46,7 +46,20 @@ void IOBoardDigitalConfigModel::saveToSettings()
 	}
 	s.endArray();
 	s.endGroup();
+
+	s.beginGroup(QString("digitalNames"));
+	for(int i=0; i<d_channelConfigList.size(); i++)
+		s.setValue(QString("din%1").arg(i+d_reservedPins),d_channelConfigList.at(i).second);
+	s.endGroup();
 	s.sync();
+}
+
+QList<QPair<int, bool> > IOBoardDigitalConfigModel::getConfig()
+{
+	QList<QPair<int,bool>> out;
+	for(int i=0;i<d_channelConfigList.size();i++)
+		out.append(qMakePair(i+d_reservedPins,d_channelConfigList.at(i).first));
+	return out;
 }
 
 

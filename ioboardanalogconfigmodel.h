@@ -20,6 +20,7 @@ public:
 	};
 
 	void saveToSettings();
+	QList<QPair<bool,NicerOhms::LabJackRange>> getConfig();
 
 private:
 	QList<AnalogChannelConfig> d_channelConfigList;
