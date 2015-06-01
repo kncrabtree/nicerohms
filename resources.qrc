@@ -2,5 +2,11 @@
     <qresource prefix="/">
         <file>icons/add.png</file>
         <file>icons/remove.png</file>
+        <file>icons/abort.png</file>
+        <file>icons/comb.png</file>
+        <file>icons/computer.png</file>
+        <file>icons/connect.png</file>
+        <file>icons/laserscan.png</file>
+        <file>icons/go-last.png</file>
     </qresource>
 </RCC>
