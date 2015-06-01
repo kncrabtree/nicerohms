@@ -80,6 +80,7 @@ public:
 	void setAutoRelock(bool enabled);
 	void setAbortOnUnlock(bool abort);
 	void setComments(QString c);
+	void finalSave();
 
     //multiple entries with same key are OK; Abort takes precedence over Redo, which in turn takes precedence over Continue
     void addValidationItem(QString key, double min, double max, Scan::PointAction action, int precision = 3);
@@ -87,7 +88,7 @@ public:
 private:
 	QSharedDataPointer<ScanData> data;
 
-	void saveData();
+	void finishPoint();
 };
 
 

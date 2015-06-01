@@ -20,6 +20,13 @@ enum LabJackRange {
 	LJR10mV
 };
 
+struct ValidationItem {
+	QString key;
+	double min;
+	double max;
+	bool abort;
+};
+
 }
 
 #endif // DATASTRUCTS_H

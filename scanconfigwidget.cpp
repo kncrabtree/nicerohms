@@ -5,6 +5,7 @@
 #include "batchsingle.h"
 #include "ioboardanalogconfigmodel.h"
 #include "ioboarddigitalconfigmodel.h"
+#include "validationmodel.h"
 
 #include <QSettings>
 #include <QApplication>
@@ -157,9 +158,34 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 	ui->ioBoardTableView->setItemDelegateForColumn(1,new RangeDelegate);
 	ui->ioBoardTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-
 	ui->ioBoardDigitalTableView->setModel(new IOBoardDigitalConfigModel(this));
 	ui->ioBoardDigitalTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+	ValidationModel *vm = new ValidationModel(this);
+	ui->validationTableView->setModel(vm);
+	ui->validationTableView->setItemDelegateForColumn(0,new CompleterLineEditDelegate);
+	ui->validationTableView->setItemDelegateForColumn(1,new DoubleSpinBoxDelegate);
+	ui->validationTableView->setItemDelegateForColumn(2,new DoubleSpinBoxDelegate);
+	ui->validationTableView->setItemDelegateForColumn(3,new ActionComboBoxDelegate);
+	ui->validationTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	connect(ui->addValidationButton,&QToolButton::clicked,[=](){ vm->addNewItem(); });
+	connect(ui->removeValidationButton,&QToolButton::clicked,[=](){
+		QModelIndexList l = ui->validationTableView->selectionModel()->selectedIndexes();
+		if(l.isEmpty())
+			return;
+
+		QList<int> rowList;
+		for(int i=0; i<l.size(); i++)
+		{
+			if(!rowList.contains(l.at(i).row()))
+				rowList.append(l.at(i).row());
+		}
+
+		std::stable_sort(rowList.begin(),rowList.end());
+
+		for(int i=rowList.size()-1; i>=0; i--)
+			vm->removeRows(rowList.at(i),1,QModelIndex());
+	});
 }
 
 ScanConfigWidget::~ScanConfigWidget()
@@ -298,6 +324,8 @@ void ScanConfigWidget::saveToSettings() const
 	//ioboard and validation
 	static_cast<IOBoardAnalogConfigModel*>(ui->ioBoardTableView->model())->saveToSettings();
 	static_cast<IOBoardDigitalConfigModel*>(ui->ioBoardDigitalTableView->model())->saveToSettings();
+
+	static_cast<ValidationModel*>(ui->validationTableView->model())->saveToSettings();
 
 	s.endGroup();
 	s.sync();

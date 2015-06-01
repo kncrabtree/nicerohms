@@ -247,7 +247,7 @@ bool Scan::addPointData(const QList<QPair<QString, QVariant> > l)
 	if(data->dataCache.size() == data->numDataPoints)
 	{
 		if(!data->redo)
-			saveData();
+			finishPoint();
 		data->redo = false;
 		data->dataCache.clear();
 		return true;
@@ -312,6 +312,36 @@ void Scan::setComments(QString c)
 	data->comments = c;
 }
 
+void Scan::finalSave()
+{
+	//will do some disk writing eventually
+	//save keys for use in completer
+	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+	QString keys = s.value(QString("knownValidationKeys"),QString("")).toString();
+	QStringList knownKeyList = keys.split(QChar(';'),QString::SkipEmptyParts);
+
+	auto it = data->scanData.constBegin();
+	while(it != data->scanData.constEnd())
+	{
+		QString key = it.key();
+		if(!knownKeyList.contains(key))
+			knownKeyList.append(key);
+		it++;
+	}
+
+	keys.clear();
+	if(knownKeyList.size() > 0)
+	{
+		keys = knownKeyList.at(0);
+		for(int i=1; i<knownKeyList.size();i++)
+			keys.append(QString(";%1").arg(knownKeyList.at(i)));
+
+		s.setValue(QString("knownValidationKeys"),keys);
+	}
+
+	//save to disk...
+}
+
 void Scan::addValidationItem(QString key, double min, double max, Scan::PointAction action, int precision)
 {
     PointValidation v;
@@ -327,7 +357,7 @@ void Scan::addValidationItem(QString key, double min, double max, Scan::PointAct
 
 }
 
-void Scan::saveData()
+void Scan::finishPoint()
 {
 	for(int i=0; i<data->dataCache.size(); i++)
 	{

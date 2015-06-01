@@ -195,6 +195,7 @@ void AcquisitionManager::checkScanComplete()
 
 void AcquisitionManager::endAcquisition()
 {
+	d_currentScan.finalSave();
 	emit scanComplete(d_currentScan);
 	d_currentState = Idle;
 }
