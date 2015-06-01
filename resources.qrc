@@ -8,5 +8,6 @@
         <file>icons/connect.png</file>
         <file>icons/laserscan.png</file>
         <file>icons/go-last.png</file>
+        <file>icons/labjack.png</file>
     </qresource>
 </RCC>

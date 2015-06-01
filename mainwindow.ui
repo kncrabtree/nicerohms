@@ -243,6 +243,8 @@
     </property>
     <addaction name="actionCommunication"/>
     <addaction name="actionTest_All_Connections"/>
+    <addaction name="separator"/>
+    <addaction name="actionIOBoard"/>
    </widget>
    <widget class="QMenu" name="menuAcquisition">
     <property name="title">
@@ -267,7 +269,6 @@
    </attribute>
    <addaction name="actionStart_Laser_Scan"/>
    <addaction name="actionAbort"/>
-   <addaction name="actionTest"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionCommunication">
@@ -280,11 +281,6 @@
    </property>
    <property name="toolTip">
     <string>Configure IO settings for GPIB, RS232, and TCP socket connections</string>
-   </property>
-  </action>
-  <action name="actionTest">
-   <property name="text">
-    <string>Test</string>
    </property>
   </action>
   <action name="actionStart_Laser_Scan">
@@ -312,6 +308,15 @@
    </property>
    <property name="text">
     <string>Test All Connections</string>
+   </property>
+  </action>
+  <action name="actionIOBoard">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/labjack.png</normaloff>:/icons/labjack.png</iconset>
+   </property>
+   <property name="text">
+    <string>IOBoard</string>
    </property>
   </action>
  </widget>

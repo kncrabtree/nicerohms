@@ -36,6 +36,7 @@ public:
 
 public slots:
 	void launchCommunicationDialog();
+	void launchIOBoardDialog();
 	void hardwareConnected(bool connected);
 	void configForSlew(bool slewing);
 
@@ -44,8 +45,6 @@ public slots:
 	void batchComplete(bool aborted);
 
 	void startLaserScan();
-
-	void test();
 
 signals:
     void statusMessage(const QString);

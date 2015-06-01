@@ -20,6 +20,7 @@
 #include "batchmanager.h"
 #include "laserslewaction.h"
 #include "scanconfigwidget.h"
+#include "ioboardconfigwidget.h"
 
 #include "batchsingle.h"
 
@@ -95,12 +96,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainToolBar->addAction(p_laserSlewAction);
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
-	connect(ui->actionTest,&QAction::triggered,this,&MainWindow::test);
 	connect(ui->actionStart_Laser_Scan,&QAction::triggered,this,&MainWindow::startLaserScan);
 	connect(ui->actionAbort,&QAction::triggered,p_hwm,&HardwareManager::abortSlew);
 	connect(ui->actionAbort,&QAction::triggered,p_am,&AcquisitionManager::abortScan);
 	connect(ui->actionTest_All_Connections,&QAction::triggered,p_hwm,&HardwareManager::testAllConnections);
     connect(p_laserSlewAction,&LaserSlewAction::slewSignal,p_hwm,&HardwareManager::slewLaser);
+    connect(ui->actionIOBoard,&QAction::triggered,this,&MainWindow::launchIOBoardDialog);
 
 	p_batchThread = new QThread(this);
 
@@ -135,6 +136,28 @@ void MainWindow::launchCommunicationDialog()
 	connect(p_hwm,&HardwareManager::testComplete,&d,&CommunicationDialog::testComplete);
 
 	d.exec();
+}
+
+void MainWindow::launchIOBoardDialog()
+{
+	QDialog d(this);
+	IOBoardConfigWidget *io = new IOBoardConfigWidget(&d);
+	QVBoxLayout *vbl = new QVBoxLayout;
+	QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,&d);
+
+	connect(io,&IOBoardConfigWidget::testConnection,p_hwm,&HardwareManager::testObjectConnection);
+	connect(p_hwm,&HardwareManager::testComplete,io,&IOBoardConfigWidget::testComplete);
+
+	connect(bb->button(QDialogButtonBox::Ok),&QPushButton::clicked,io,&IOBoardConfigWidget::saveToSettings);
+	connect(bb->button(QDialogButtonBox::Ok),&QPushButton::clicked,&d,&QDialog::accept);
+	connect(bb->button(QDialogButtonBox::Cancel),&QPushButton::clicked,&d,&QDialog::reject);
+
+	vbl->addWidget(io,1);
+	vbl->addWidget(bb,0);
+
+	d.setLayout(vbl);
+	d.exec();
+
 }
 
 void MainWindow::hardwareConnected(bool connected)
@@ -214,32 +237,6 @@ void MainWindow::startLaserScan()
 	beginBatch(scw->toBatchManager());
 }
 
-void MainWindow::test()
-{
-	Scan scan;
-	scan.setScanParams(100.0,1.0,5.1,500);
-//    scan.addValidationItem(QString("lockin2X"),-9.5,9.5,Scan::Abort,2);
-//    scan.addValidationItem(QString("lockin1Y"),-8.0,8.0,Scan::Remeasure,4);
-
-	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-	s.beginGroup(QString("hardware"));
-	int n = s.beginReadArray(QString("instruments"));
-	for(int i=0; i<n; i++)
-	{
-		s.setArrayIndex(i);
-		QString key = s.value(QString("key"),QString("")).toString();
-		if(!key.isEmpty())
-			scan.addHardwareItem(key,true);
-	}
-	s.endArray();
-	s.endGroup();
-
-    scan.addHardwareItem(QString("freqComb"),true);
-
-	BatchManager *bm = new BatchSingle(scan);
-	beginBatch(bm);
-}
-
 void MainWindow::beginBatch(BatchManager *bm)
 {
 	connect(p_batchThread,&QThread::started,bm,&BatchManager::beginNextScan);
@@ -277,21 +274,24 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionAbort->setEnabled(true);
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
-        p_laserSlewAction->setEnabled(false);
+		p_laserSlewAction->setEnabled(false);
+		ui->actionIOBoard->setEnabled(false);
 		break;
 	case Slewing:
 		ui->actionStart_Laser_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(true);
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
-        p_laserSlewAction->setEnabled(false);
+		p_laserSlewAction->setEnabled(false);
+		ui->actionIOBoard->setEnabled(false);
 		break;
 	case Disconnected:
 		ui->actionStart_Laser_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(false);
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);
-        p_laserSlewAction->setEnabled(false);
+		p_laserSlewAction->setEnabled(false);
+		ui->actionIOBoard->setEnabled(true);
 		break;
 	case Idle:
 	default:
@@ -299,7 +299,8 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionAbort->setEnabled(false);
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);
-        p_laserSlewAction->setEnabled(true);
+		p_laserSlewAction->setEnabled(true);
+		ui->actionIOBoard->setEnabled(true);
 		break;
 	}
 
