@@ -5,7 +5,8 @@ HEADERS += \
     $$PWD/virtualcavitypzt.h \
     $$PWD/virtualioboard.h \
     $$PWD/virtualgpibcontroller.h \
-    $$PWD/virtualaomsynthesizer.h
+    $$PWD/virtualaomsynthesizer.h \
+    $$PWD/virtualfreqcomb.h
 
 SOURCES += \
     $$PWD/virtuallaser.cpp \
@@ -14,4 +15,5 @@ SOURCES += \
     $$PWD/virtualcavitypzt.cpp \
     $$PWD/virtualioboard.cpp \
     $$PWD/virtualgpibcontroller.cpp \
-    $$PWD/virtualaomsynthesizer.cpp
+    $$PWD/virtualaomsynthesizer.cpp \
+    $$PWD/virtualfreqcomb.cpp

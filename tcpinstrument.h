@@ -9,12 +9,12 @@ class TcpInstrument : public CommunicationProtocol
 {
 	Q_OBJECT
 public:
-    explicit TcpInstrument(QString key, QString subKey, QObject *parent = nullptr);
-    ~TcpInstrument();
+	explicit TcpInstrument(QString key, QString subKey, QObject *parent = nullptr);
+	~TcpInstrument();
 
-    bool writeCmd(QString cmd);
-    QByteArray queryCmd(QString cmd);
-    QTcpSocket *d_socket;
+	bool writeCmd(QString cmd);
+	QByteArray queryCmd(QString cmd);
+	QIODevice *device() { return d_socket; }
 
 public slots:
 	virtual void initialize();
@@ -23,11 +23,12 @@ public slots:
 
 
 private:
-    QString d_ip;
-    int d_port;
+	QTcpSocket *d_socket;
+	QString d_ip;
+	int d_port;
 
-    bool connectSocket();
-    void disconnectSocket();
+	bool connectSocket();
+	void disconnectSocket();
 	void setSocketConnectionInfo(QString ip, int port);
 	
 };

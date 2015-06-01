@@ -13,14 +13,16 @@ public:
 signals:
 	void frequencyUpdate(double);
 
-protected:
+public slots:
+	double getLastFrequency() { return d_frequency; }
 	virtual void setFrequency(double f) =0;
 	virtual double readFrequency() =0;
 
+protected:
 	double d_frequency;
 };
 
-#if NICEROHMS_AOMSYNTHESIZER == 1
+#if NICEROHMS_AOMSYNTH == 1
 #include "xxxxx.h"
 class XXXXX;
 typedef XXXXX AomSynthesizerHardware;

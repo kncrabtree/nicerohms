@@ -11,9 +11,9 @@ public:
     ~VirtualInstrument();
 
     // CommunicationProtocol interface
-public:
     bool writeCmd(QString cmd);
     QByteArray queryCmd(QString cmd);
+    QIODevice *device() { return nullptr; }
 
 public slots:
     void initialize();

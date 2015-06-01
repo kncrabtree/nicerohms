@@ -16,7 +16,8 @@ public:
 	    Virtual,
 	    Tcp,
 	    Rs232,
-	    Gpib
+	    Gpib,
+	    Custom
     };
 
     explicit CommunicationProtocol(CommType type, QString key, QString subKey, QObject *parent = nullptr);
@@ -27,6 +28,7 @@ public:
 
     QString key() { return d_key; }
     CommType type() { return d_type; }
+    virtual QIODevice *device() =0;
 
     /*!
      * \brief Convenience function for setting read options

@@ -7,6 +7,7 @@
 #include <QPair>
 
 #include "scan.h"
+#include "freqcombdata.h"
 
 class QThread;
 class LaserSlewAction;
@@ -31,6 +32,7 @@ public:
 		Idle,
 		Acquiring,
 		Slewing,
+		CombReading,
 		Disconnected
 	};
 
@@ -43,6 +45,8 @@ public slots:
 	void manualRelock();
 	void scanInitialized(const Scan s);
 	void batchComplete(bool aborted);
+	void combUpdate(FreqCombData d);
+	void repRateUpdate(double r);
 
 	void startLaserScan();
 

@@ -11,6 +11,7 @@
 
 #include "datastructs.h"
 #include "scan.h"
+#include "freqcombdata.h"
 
 class HardwareObject;
 class Laser;
@@ -20,6 +21,7 @@ class CavityPZTDriver;
 class IOBoard;
 class GpibController;
 class AomSynthesizer;
+class FrequencyComb;
 
 class HardwareManager : public QObject
 {
@@ -63,6 +65,9 @@ signals:
 
     void aomSynthUpdate(double);
 
+    void combUpdate(FreqCombData);
+    void repRateUpdate(double);
+
 public slots:
     void initialize();
 
@@ -91,7 +96,10 @@ public slots:
     void checkLock();
     double checkCavityVoltage();
 
-    void test();
+    double getAomFrequency();
+
+    void readComb();
+    void setCombIdlerFreq(double f);
 
 private:
     QHash<QString,bool> d_status;
@@ -104,6 +112,7 @@ private:
     IOBoard *p_iob;
     GpibController *p_gpibController;
     AomSynthesizer *p_aomSynth;
+    FrequencyComb *p_freqComb;
 
     QList<QPair<HardwareObject*,QThread*> > d_hardwareList;
 

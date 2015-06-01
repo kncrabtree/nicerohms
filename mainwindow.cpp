@@ -58,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
 	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
 	connect(p_hwm,&HardwareManager::aomSynthUpdate,ui->aomDoubleSpinBox,&QDoubleSpinBox::setValue);
+	connect(p_hwm,&HardwareManager::repRateUpdate,this,&MainWindow::repRateUpdate);
+	connect(p_hwm,&HardwareManager::combUpdate,this,&MainWindow::combUpdate);
 
 	QThread *hwmThread = new QThread(this);
 	connect(hwmThread,&QThread::started,p_hwm,&HardwareManager::initialize);
@@ -214,6 +216,35 @@ void MainWindow::batchComplete(bool aborted)
 
 }
 
+void MainWindow::combUpdate(FreqCombData d)
+{
+	if(!d.success())
+	{
+		ui->repRateDoubleSpinBox->setValue(0.0);
+		ui->combLockLed->setState(false);
+		ui->oBeatDoubleSpinBox->setValue(0.0);
+		ui->pBeatDoubleSpinBox->setValue(0.0);
+		ui->sBeatDoubleSpinBox->setValue(0.0);
+		ui->dnSpinBox->setValue(0);
+		ui->combIdlerDoubleSpinBox->setValue(0.0);
+	}
+	else
+	{
+		ui->repRateDoubleSpinBox->setValue(d.repRate());
+		ui->combLockLed->setState(d.repRateLocked());
+		ui->oBeatDoubleSpinBox->setValue(d.offsetBeat());
+		ui->pBeatDoubleSpinBox->setValue(d.pumpBeat());
+		ui->sBeatDoubleSpinBox->setValue(d.signalBeat());
+		ui->dnSpinBox->setValue(d.deltaN());
+		ui->combIdlerDoubleSpinBox->setValue(d.calculatedIdlerFreq());
+	}
+}
+
+void MainWindow::repRateUpdate(double r)
+{
+	ui->repRateDoubleSpinBox->setValue(r);
+}
+
 void MainWindow::startLaserScan()
 {
 	if(p_batchThread->isRunning())
@@ -278,6 +309,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		ui->actionIOBoard->setEnabled(false);
 		break;
 	case Slewing:
+	case CombReading:
 		ui->actionStart_Laser_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(true);
 		ui->actionCommunication->setEnabled(false);

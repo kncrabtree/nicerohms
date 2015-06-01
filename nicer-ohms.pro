@@ -6,7 +6,7 @@
 
 QT       += core gui network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport xml
 
 TARGET = nicerohms
 TEMPLATE = app
@@ -44,6 +44,11 @@ DEFINES += NICEROHMS_IOBOARD=0
 #Gpib controller. 0 = virtual, 1 = Prologix USB
 DEFINES += NICEROHMS_GPIBCONTROLLER=0
 
+#AOMSynth. 0 = Virtual, 1 = ????
+DEFINES += NICEROHMS_AOMSYNTH=0
+
+#Frequency Comb. 0 = Virtual, 1 = Menlo
+DEFINES += NICEROHMS_FREQCOMB=0
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3

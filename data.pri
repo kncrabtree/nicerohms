@@ -5,7 +5,8 @@ HEADERS += \
     $$PWD/wavemeterreadcontroller.h \
     $$PWD/ioboardanalogconfigmodel.h \
     $$PWD/ioboarddigitalconfigmodel.h \
-    $$PWD/validationmodel.h
+    $$PWD/validationmodel.h \
+    $$PWD/freqcombdata.h
 
 SOURCES += \
     $$PWD/loghandler.cpp \
@@ -13,4 +14,5 @@ SOURCES += \
     $$PWD/wavemeterreadcontroller.cpp \
     $$PWD/ioboardanalogconfigmodel.cpp \
     $$PWD/ioboarddigitalconfigmodel.cpp \
-    $$PWD/validationmodel.cpp
+    $$PWD/validationmodel.cpp \
+    $$PWD/freqcombdata.cpp
