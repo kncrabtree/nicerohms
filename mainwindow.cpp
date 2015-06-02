@@ -157,6 +157,7 @@ void MainWindow::launchCommunicationDialog()
 void MainWindow::launchIOBoardDialog()
 {
 	QDialog d(this);
+    d.setWindowTitle(QString("IO Board Configuration"));
 	IOBoardConfigWidget *io = new IOBoardConfigWidget(&d);
 	QVBoxLayout *vbl = new QVBoxLayout;
 	QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,&d);
@@ -277,6 +278,7 @@ void MainWindow::startScan(Scan::ScanType t)
         return;
 
     QDialog d(this);
+    d.setWindowTitle(QString("Configure Scan"));
     ScanConfigWidget *scw = new ScanConfigWidget(t,&d);
     QVBoxLayout *vbl = new QVBoxLayout();
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);

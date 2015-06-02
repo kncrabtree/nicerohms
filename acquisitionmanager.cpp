@@ -130,7 +130,10 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
 			else
 			{
 				if(d_currentScan.isAbortOnUnlock())
+                {
+                    d_currentScan.setErrorString(QString("Aborted because lock was lost."));
 					abortScan();
+                }
 				else
 				{
 					d_currentState = WaitingForManualLock;

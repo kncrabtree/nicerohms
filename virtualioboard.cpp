@@ -39,21 +39,55 @@ void VirtualIOBoard::initialize()
 
 Scan VirtualIOBoard::prepareForScan(Scan scan)
 {
+    //ioboard is always active
 	readIOSettings();
 
 	d_analogConfig = scan.ioboardAnalogConfig();
 	d_digitalConfig = scan.ioboardDigitalConfig();
 
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    QString prefix = QString("IoBoard");
+
 	int numPoints = 0;
 	for(int i=0; i<d_analogConfig.size(); i++)
 	{
 		if(d_analogConfig.at(i).first)
+        {
 			numPoints++;
+            QString name = s.value(QString("analogNames/ain%1").arg(i),QString("")).toString();
+            QString r, units;
+            switch(d_analogConfig.at(i).second)
+            {
+            case NicerOhms::LJR10V:
+                r = QString("10");
+                units = QString("V");
+                break;
+            case NicerOhms::LJR1V:
+                r = QString("1");
+                units = QString("V");
+                break;
+            case NicerOhms::LJR100mV:
+                r = QString("100");
+                units = QString("mV");
+                break;
+            case NicerOhms::LJR10mV:
+                r = QString("10");
+                units = QString("mV");
+                break;
+            }
+            scan.addHeaderItem(prefix+QString("AIN%1Name").arg(i),name,QString(""));
+            scan.addHeaderItem(prefix+QString("AIN%1Range").arg(i),r,QString(""));
+        }
 	}
 	for(int i=0; i<d_digitalConfig.size(); i++)
 	{
 		if(d_digitalConfig.at(i).second)
+        {
 			numPoints++;
+            int reserved = s.value(QString("%1/%2/reservedDigitalChannels").arg(d_key).arg(d_subKey),2).toInt();
+            QString name = s.value(QString("digitalNames/din%1").arg(i+reserved)).toString();
+            scan.addHeaderItem(prefix+QString("DIN%1Name").arg(i+reserved),name);
+        }
 	}
 	scan.addNumDataPoints(numPoints);
 
@@ -112,7 +146,7 @@ void VirtualIOBoard::readPointData()
 
 bool VirtualIOBoard::readCavityLocked()
 {
-	bool on = qrand() % 1000;
+    bool on = qrand() % 100;
 	emit lockState(on);
 	return on;
 }

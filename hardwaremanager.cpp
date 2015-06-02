@@ -71,7 +71,7 @@ void HardwareManager::initialize()
 	connect(p_iob,&IOBoard::relockComplete,this,&HardwareManager::relockComplete);
 	connect(p_iob,&IOBoard::lockState,this,&HardwareManager::lockStateUpdate);
 	connect(this,&HardwareManager::autoRelock,p_iob,&IOBoard::relock);
-	d_hardwareList.append(qMakePair(p_iob,nullptr));
+    d_hardwareList.append(qMakePair(p_iob,nullptr));
 
 	//GPIB controller may need its own thread, but may not...
 	//If GPIB controller has its own thread, then all GPIB instruments MUST be in that same thread
