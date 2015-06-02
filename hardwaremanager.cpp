@@ -206,6 +206,8 @@ void HardwareManager::initialize()
 			   thread->start();
 	   }
     }
+
+    connect(this,&HardwareManager::endAcquisition,this,&HardwareManager::cleanUpAfterScan);
 }
 
 void HardwareManager::connectionResult(HardwareObject *obj, bool success, QString msg)
@@ -262,7 +264,7 @@ void HardwareManager::beginScanInitialization(Scan s)
 
 
     //if the comb is active, we need to go into the wavemeter read procedure
-    if(s.isHardwareActive(QString("freqComb")))
+    if(s.type() == Scan::CombScan)
     {
         //turn off deltaN override if it was left on
         setCombOverrideDN(-1);
@@ -336,6 +338,9 @@ void HardwareManager::completeScanInitialization(Scan s, bool stageOneSuccess, Q
         s.setErrorString(errorMsg);
     }
 
+    if(s.type() == Scan::LaserScan)
+        connect(p_laser,&Laser::slewComplete,this,&HardwareManager::readyForPoint,Qt::UniqueConnection);
+
     emit scanInitialized(s);
 }
 
@@ -344,7 +349,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 	//if the shift is 0, then nothing needs to be done
 	if(qFuzzyCompare(1.0+shiftMHz,1.0))
 	{
-		emit combReady();
+        emit readyForPoint();
 		return;
 	}
 
@@ -379,7 +384,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     setCombRepRate(d.repRate() + repRateShift);
 	setAomFrequency(nextAomFreq);
 
-	emit combReady();
+    emit readyForPoint();
 }
 
 void HardwareManager::testObjectConnection(const QString type, const QString key)
@@ -406,7 +411,12 @@ void HardwareManager::testAllConnections()
 void HardwareManager::getPointData()
 {
     for(int i=0; i<d_hardwareList.size(); i++)
-	    QMetaObject::invokeMethod(d_hardwareList.at(i).first,"readPointData");
+        QMetaObject::invokeMethod(d_hardwareList.at(i).first,"readPointData");
+}
+
+void HardwareManager::cleanUpAfterScan()
+{
+    connect(p_laser,&Laser::slewComplete,this,&HardwareManager::readyForPoint);
 }
 
 double HardwareManager::estimateLaserFrequency()
@@ -421,7 +431,7 @@ double HardwareManager::estimateLaserFrequency()
 	}
 }
 
-void HardwareManager::checkLock()
+void HardwareManager::checkLock(bool pztEnabled)
 {
 	bool locked = false;
 	if(p_iob->thread() == thread())
@@ -429,7 +439,7 @@ void HardwareManager::checkLock()
 	else
 		QMetaObject::invokeMethod(p_iob,"readCavityLocked",Qt::BlockingQueuedConnection,Q_RETURN_ARG(bool,locked));
 
-	if(!locked)
+    if(!locked || !pztEnabled)
 		emit lockStateCheck(locked,-1.0);
 	else
 	{

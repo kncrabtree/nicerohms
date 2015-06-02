@@ -385,16 +385,6 @@
           <item row="3" column="1">
            <widget class="QCheckBox" name="aomCheckBox"/>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="freqCombLabel">
-            <property name="text">
-             <string>Freq Comb</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QCheckBox" name="freqCombCheckBox"/>
-          </item>
          </layout>
         </widget>
        </item>

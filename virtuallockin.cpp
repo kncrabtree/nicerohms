@@ -7,6 +7,7 @@ VirtualLockIn::VirtualLockIn(int num, QObject *parent) :
 {
 	d_subKey = QString("virtual");
 	d_prettyName = QString("Virtual LockIn %1").arg(d_id);
+    d_isCritical = false;
 
 	p_comm = new VirtualInstrument(d_key,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualLockIn::logMessage);

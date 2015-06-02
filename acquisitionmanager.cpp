@@ -28,7 +28,9 @@ void AcquisitionManager::beginScan(Scan s)
 	d_currentScan = s;
 
 	d_currentState = Acquiring;
-	emit statusMessage(QString("Slewing laser to starting position"));
+    if(s.type() == Scan::LaserScan)
+        emit statusMessage(QString("Slewing laser to starting position"));
+
 	emit logMessage(s.startString(),NicerOhms::LogHighlight);
 	emit beginAcquisition();
 
@@ -95,7 +97,7 @@ void AcquisitionManager::frequencyReady()
 	if(d_currentState == WaitingForFrequency)
 	{
 		d_currentState = WaitingForLockCheck;
-		QTimer::singleShot(d_currentScan.delay(),this,&AcquisitionManager::checkLock);
+        QTimer::singleShot(d_currentScan.delay(),[=](){ emit checkLock(d_currentScan.isHardwareActive(QString("cavityPZT"))); });
 	}
 }
 
@@ -105,9 +107,12 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
 	{
 		if(d_currentScan.isAutoLockEnabled() && locked)
 		{
-			auto range = d_currentScan.cavityPZTRange();
-			if(cavityVoltage < range.first || cavityVoltage > range.second)
-				locked = false;
+            if(d_currentScan.isHardwareActive(QString("cavityPZT")))
+            {
+                auto range = d_currentScan.cavityPZTRange();
+                if(cavityVoltage < range.first || cavityVoltage > range.second)
+                    locked = false;
+            }
 		}
 
 		if(locked)

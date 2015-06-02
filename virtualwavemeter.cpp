@@ -7,6 +7,7 @@ VirtualWavemeter::VirtualWavemeter(QObject *parent) :
 {
 	d_subKey = QString("virtual");
 	d_prettyName = QString("Virtual Wavemeter");
+    d_isCritical = false;
 
 	p_comm = new VirtualInstrument(d_key,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualWavemeter::logMessage);

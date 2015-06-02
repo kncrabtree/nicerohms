@@ -7,6 +7,7 @@ VirtualFreqComb::VirtualFreqComb(QObject *parent) :
 {
 	d_subKey = QString("virtual");
 	d_prettyName = QString("Virtual Frequency Comb");
+    d_isCritical = false;
 
 	p_comm = new VirtualInstrument(d_key,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualFreqComb::logMessage);
@@ -69,7 +70,10 @@ void VirtualFreqComb::readPointData()
 		noPlotData.append(qMakePair(QString("deltaN"),d.deltaN()));
 		noPlotData.append(qMakePair(QString("replockv"),d.repRateLockVoltage()));
 		noPlotData.append(qMakePair(QString("replocked"),d.repRateLocked()));
-	}
+
+        emit pointDataRead(plotData);
+        emit pointDataReadNoPlot(noPlotData);
+	}   
 
 }
 

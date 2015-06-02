@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this,&MainWindow::manualRelockComplete,p_am,&AcquisitionManager::manualLockComplete);
 	connect(p_am,&AcquisitionManager::beginAcquisition,p_hwm,&HardwareManager::beginAcquisition);
 	connect(p_am,&AcquisitionManager::startLaserPoint,p_hwm,&HardwareManager::slewLaser);
+    connect(p_am,&AcquisitionManager::startCombPoint,p_hwm,&HardwareManager::beginCombPoint);
 	connect(p_am,&AcquisitionManager::checkLock,p_hwm,&HardwareManager::checkLock);
 	connect(p_am,&AcquisitionManager::getPointData,p_hwm,&HardwareManager::getPointData);
 	connect(p_am,&AcquisitionManager::scanComplete,p_hwm,&HardwareManager::endAcquisition);
@@ -86,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::pointData,p_am,&AcquisitionManager::processData);
 	connect(p_hwm,&HardwareManager::relockComplete,p_am,&AcquisitionManager::autoLockComplete);
 	connect(p_am,&AcquisitionManager::startCombPoint,p_hwm,&HardwareManager::beginCombPoint);
-	connect(p_hwm,&HardwareManager::combReady,p_am,&AcquisitionManager::frequencyReady);
+    connect(p_hwm,&HardwareManager::readyForPoint,p_am,&AcquisitionManager::frequencyReady);
 
 	QThread *amThread = new QThread(this);
 	connect(amThread,&QThread::started,p_am,&AcquisitionManager::initialize);
@@ -106,7 +107,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->actionCommunication,&QAction::triggered,this,&MainWindow::launchCommunicationDialog);
     connect(ui->actionAbort,&QAction::triggered,p_hwm,&HardwareManager::uiAbort);
-	connect(ui->actionStart_Laser_Scan,&QAction::triggered,this,&MainWindow::startLaserScan);
+    connect(ui->actionStart_Laser_Scan,&QAction::triggered,[=](){ startScan(Scan::LaserScan);} );
+    connect(ui->actionStart_Comb_Scan,&QAction::triggered,[=](){ startScan(Scan::CombScan);} );
 	connect(ui->actionAbort,&QAction::triggered,p_am,&AcquisitionManager::abortScan);
 	connect(ui->actionTest_All_Connections,&QAction::triggered,p_hwm,&HardwareManager::testAllConnections);
     connect(p_laserSlewAction,&LaserSlewAction::slewSignal,p_hwm,&HardwareManager::slewLaser);
@@ -217,7 +219,7 @@ void MainWindow::batchComplete(bool aborted)
 {
 	disconnect(p_hwm,&HardwareManager::lockStateUpdate,p_am,&AcquisitionManager::lockStateUpdate);
 	disconnect(p_am,&AcquisitionManager::plotData,ui->dataPlotWidget,&DataPlotViewWidget::pointUpdated);
-	disconnect(p_hwm,&HardwareManager::laserSlewComplete,p_am,&AcquisitionManager::frequencyReady);
+    disconnect(p_hwm,&HardwareManager::readyForPoint,p_am,&AcquisitionManager::frequencyReady);
 
 	if(aborted)
 	    emit statusMessage(QString("Scan aborted"));
@@ -266,30 +268,30 @@ void MainWindow::combUpdate(FreqCombData d)
 
 void MainWindow::repRateUpdate(double r)
 {
-	ui->repRateDoubleSpinBox->setValue(r);
+    ui->repRateDoubleSpinBox->setValue(r);
 }
 
-void MainWindow::startLaserScan()
+void MainWindow::startScan(Scan::ScanType t)
 {
-	if(p_batchThread->isRunning())
-		return;
+    if(p_batchThread->isRunning())
+        return;
 
-	QDialog d(this);
-	ScanConfigWidget *scw = new ScanConfigWidget(Scan::LaserScan,&d);
-	QVBoxLayout *vbl = new QVBoxLayout();
-	QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
-	vbl->addWidget(scw,1);
-	vbl->addWidget(bb,0);
-	d.setLayout(vbl);
+    QDialog d(this);
+    ScanConfigWidget *scw = new ScanConfigWidget(t,&d);
+    QVBoxLayout *vbl = new QVBoxLayout();
+    QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
+    vbl->addWidget(scw,1);
+    vbl->addWidget(bb,0);
+    d.setLayout(vbl);
 
-	connect(bb->button(QDialogButtonBox::Cancel),&QPushButton::clicked,&d,&QDialog::reject);
-	connect(bb->button(QDialogButtonBox::Ok),&QPushButton::clicked,scw,&ScanConfigWidget::validate);
-	connect(scw,&ScanConfigWidget::scanValid,&d,&QDialog::accept);
+    connect(bb->button(QDialogButtonBox::Cancel),&QPushButton::clicked,&d,&QDialog::reject);
+    connect(bb->button(QDialogButtonBox::Ok),&QPushButton::clicked,scw,&ScanConfigWidget::validate);
+    connect(scw,&ScanConfigWidget::scanValid,&d,&QDialog::accept);
 
-	if(d.exec() == QDialog::Rejected)
-		return;
+    if(d.exec() == QDialog::Rejected)
+        return;
 
-	beginBatch(scw->toBatchManager());
+    beginBatch(scw->toBatchManager());
 }
 
 void MainWindow::beginBatch(BatchManager *bm)
@@ -302,7 +304,7 @@ void MainWindow::beginBatch(BatchManager *bm)
 	connect(bm,&BatchManager::batchComplete,p_batchThread,&QThread::quit);
 	connect(p_batchThread,&QThread::finished,bm,&BatchManager::deleteLater);
 
-	connect(p_hwm,&HardwareManager::laserSlewComplete,p_am,&AcquisitionManager::frequencyReady,Qt::UniqueConnection);
+    connect(p_hwm,&HardwareManager::readyForPoint,p_am,&AcquisitionManager::frequencyReady,Qt::UniqueConnection);
 	connect(p_hwm,&HardwareManager::lockStateUpdate,p_am,&AcquisitionManager::lockStateUpdate,Qt::UniqueConnection);
 	connect(p_am,&AcquisitionManager::plotData,ui->dataPlotWidget,&DataPlotViewWidget::pointUpdated,Qt::UniqueConnection);
 
@@ -320,12 +322,15 @@ void MainWindow::configureUi(MainWindow::UiState s)
 
     //can iterate through hardware list here for more fine-grained control
     QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-//    bool iob = set.value(QString("ioboard/connected"),false).toBool();
+    bool aom = set.value(QString("aomSynth/connected"),false).toBool();
+    bool wavemeter = set.value(QString("wavemeter/connected"),false).toBool();
+    bool comb = set.value(QString("freqComb/connected"),false).toBool();
 
 	switch(s)
 	{
 	case Acquiring:
 		ui->actionStart_Laser_Scan->setEnabled(false);
+        ui->actionStart_Comb_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(true);
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
@@ -336,6 +341,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 	case Slewing:
 	case CombReading:
 		ui->actionStart_Laser_Scan->setEnabled(false);
+        ui->actionStart_Comb_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(true);
 		ui->actionCommunication->setEnabled(false);
 		ui->actionTest_All_Connections->setEnabled(false);
@@ -345,6 +351,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		break;
 	case Disconnected:
 		ui->actionStart_Laser_Scan->setEnabled(false);
+        ui->actionStart_Comb_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(false);
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);
@@ -355,6 +362,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 	case Idle:
 	default:
 		ui->actionStart_Laser_Scan->setEnabled(true);
+        ui->actionStart_Comb_Scan->setEnabled(aom && wavemeter && comb);
 		ui->actionAbort->setEnabled(false);
 		ui->actionCommunication->setEnabled(true);
 		ui->actionTest_All_Connections->setEnabled(true);

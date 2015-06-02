@@ -59,16 +59,6 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		ui->laserStepDoubleSpinBox->setValue(lastStep);
 		ui->laserDelaySpinBox->setValue(lastDelay);
 
-		bool combAlive = s.value(QString("freqComb/connected"),false).toBool();
-		bool comb = s.value(QString("%1/combEnabled").arg(d_key),false).toBool();
-		if(!combAlive)
-		{
-			ui->freqCombCheckBox->setChecked(false);
-			ui->freqCombCheckBox->setEnabled(false);
-		}
-		else
-			ui->freqCombCheckBox->setChecked(comb);
-
 		bool wmAlive = s.value(QString("wavemeter/connected"),false).toBool();
 		bool wm = s.value(QString("%1/wavemeterEnabled").arg(d_key),true).toBool();
 		if(!wmAlive)
@@ -94,9 +84,6 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 	else
 	{
 		ui->laserScanBox->hide();
-
-		ui->freqCombCheckBox->setChecked(true);
-		ui->freqCombCheckBox->setEnabled(false);
 
 		ui->wavemeterCheckBox->setChecked(true);
 		ui->wavemeterCheckBox->setEnabled(false);
@@ -205,7 +192,6 @@ BatchManager *ScanConfigWidget::toBatchManager()
 
 		s.addHardwareItem(QString("wavemeter"),ui->wavemeterCheckBox->isChecked());
 		s.addHardwareItem(QString("aomSynth"),ui->aomCheckBox->isChecked());
-		s.addHardwareItem(QString("freqComb"),ui->freqCombCheckBox->isChecked());
 	}
 	else
 	{
@@ -311,8 +297,6 @@ void ScanConfigWidget::saveToSettings() const
 			s.setValue(QString("wavemeterEnabled"),ui->wavemeterCheckBox->isChecked());
 		if(ui->aomCheckBox->isEnabled())
 			s.setValue(QString("aomEnabled"),ui->aomCheckBox->isChecked());
-		if(ui->freqCombCheckBox->isEnabled())
-			s.setValue(QString("freqCombEnabled"),ui->freqCombCheckBox->isChecked());
 	}
 	else
 	{

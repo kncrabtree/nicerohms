@@ -7,6 +7,7 @@ VirtualLaser::VirtualLaser(QObject *parent) :
 {
 	d_subKey = QString("virtual");
 	d_prettyName = QString("Virtual Laser");
+    d_isCritical = true;
 
 	p_comm = new VirtualInstrument(d_key,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualLaser::logMessage);

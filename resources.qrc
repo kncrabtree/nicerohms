@@ -11,5 +11,6 @@
         <file>icons/labjack.png</file>
         <file>icons/configure.png</file>
         <file>icons/laser.png</file>
+        <file>icons/combscan.png</file>
     </qresource>
 </RCC>

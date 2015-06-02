@@ -49,7 +49,7 @@ public slots:
 	void combUpdate(FreqCombData d);
 	void repRateUpdate(double r);
 
-	void startLaserScan();
+    void startScan(Scan::ScanType t);
 
 signals:
     void statusMessage(const QString);

@@ -6,6 +6,7 @@ VirtualGpibController::VirtualGpibController(QObject *parent) : GpibController(p
 {
 	d_subKey = QString("virtual");
 	d_prettyName = QString("Virtual GPIB Controller");
+    d_isCritical = false;
 
 	p_comm = new VirtualInstrument(d_key,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualGpibController::logMessage);

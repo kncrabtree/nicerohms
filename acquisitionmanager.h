@@ -30,7 +30,7 @@ signals:
 	void scanComplete(Scan);
 	void startLaserPoint(double);
 	void startCombPoint(double);
-	void checkLock();
+    void checkLock(bool cPZT);
 	void requestAutoLock();
 	void requestManualLock();
 	void getPointData();

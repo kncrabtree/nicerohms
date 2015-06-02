@@ -494,6 +494,7 @@
      <string>Acquisition</string>
     </property>
     <addaction name="actionStart_Laser_Scan"/>
+    <addaction name="actionStart_Comb_Scan"/>
     <addaction name="separator"/>
     <addaction name="actionAbort"/>
    </widget>
@@ -511,6 +512,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionStart_Laser_Scan"/>
+   <addaction name="actionStart_Comb_Scan"/>
    <addaction name="actionAbort"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -569,6 +571,15 @@
    </property>
    <property name="text">
     <string>Num Data Plots</string>
+   </property>
+  </action>
+  <action name="actionStart_Comb_Scan">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/combscan.png</normaloff>:/icons/combscan.png</iconset>
+   </property>
+   <property name="text">
+    <string>Start Comb Scan</string>
    </property>
   </action>
  </widget>

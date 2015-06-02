@@ -7,6 +7,7 @@ VirtualCavityPZT::VirtualCavityPZT(QObject *parent) :
 {
 	d_subKey = QString("virtual");
 	d_prettyName = QString("Virtual Cavity PZT Driver");
+    d_isCritical = false;
 
 	p_comm = new VirtualInstrument(d_key,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualCavityPZT::logMessage);

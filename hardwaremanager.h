@@ -70,7 +70,7 @@ signals:
     void repRateUpdate(double);
     void setCombPumpBeat(bool);
     void setCombSignalBeat(bool);
-    void combReady();
+    void readyForPoint();
 
 public slots:
     void initialize();
@@ -96,10 +96,11 @@ public slots:
     void testObjectConnection(const QString type, const QString key);
     void testAllConnections();
     void getPointData();
+    void cleanUpAfterScan();
 
     double estimateLaserFrequency();
 
-    void checkLock();
+    void checkLock(bool pztEnabled);
     double checkCavityVoltage();
 
     double getAomFrequency();

@@ -7,6 +7,7 @@ VirtualAomSynthesizer::VirtualAomSynthesizer(GpibController *c, QObject *parent)
 {
 	d_subKey = QString("virtual");
 	d_prettyName = QString("Virtual AOM Synthesizer");
+    d_isCritical = false;
 
 	p_comm = new GpibInstrument(d_key,d_subKey,c,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualAomSynthesizer::logMessage);
