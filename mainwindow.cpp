@@ -114,6 +114,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(p_readCombAction,&ReadCombAction::setPumpSign,p_hwm,&HardwareManager::setCombPumpBeat);
     connect(p_readCombAction,&ReadCombAction::setSignalSign,p_hwm,&HardwareManager::setCombSignalBeat);
     connect(ui->actionIOBoard,&QAction::triggered,this,&MainWindow::launchIOBoardDialog);
+    connect(ui->actionNum_Data_Plots,&QAction::triggered,ui->dataPlotWidget,&DataPlotViewWidget::changeNumPlots);
 
 	p_batchThread = new QThread(this);
 

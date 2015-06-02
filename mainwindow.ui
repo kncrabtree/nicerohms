@@ -461,6 +461,7 @@
     <addaction name="actionTest_All_Connections"/>
     <addaction name="separator"/>
     <addaction name="actionIOBoard"/>
+    <addaction name="actionNum_Data_Plots"/>
    </widget>
    <widget class="QMenu" name="menuAcquisition">
     <property name="title">
@@ -502,7 +503,7 @@
   <action name="actionStart_Laser_Scan">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/laserscan.png</normaloff>:/icons/laserscan.png</iconset>
+     <normaloff>:/icons/laser.png</normaloff>:/icons/laser.png</iconset>
    </property>
    <property name="text">
     <string>Start Laser Scan</string>
@@ -533,6 +534,15 @@
    </property>
    <property name="text">
     <string>IOBoard</string>
+   </property>
+  </action>
+  <action name="actionNum_Data_Plots">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/dataplots.png</normaloff>:/icons/dataplots.png</iconset>
+   </property>
+   <property name="text">
+    <string>Num Data Plots</string>
    </property>
   </action>
  </widget>
