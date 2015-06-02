@@ -249,6 +249,8 @@ void MainWindow::combUpdate(FreqCombData d)
 		ui->combIdlerDoubleSpinBox->setValue(d.calculatedIdlerFreq()/1e9);
 	}
 
+    ui->tsDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+
 	if(d_currentState == CombReading)
 	{
         if(d.success())
