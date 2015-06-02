@@ -80,16 +80,19 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 void AcquisitionManager::beginPoint()
 {
 	if(d_currentState == Acquiring || d_currentState == WaitingForRedo)
-	{
+	{		
 		d_plotDataCache.clear();
-		d_currentState = WaitingForLaser;
-		emit startPoint(d_currentScan.currentPos());
+		d_currentState = WaitingForFrequency;
+		if(d_currentScan.type() == Scan::LaserScan)
+			emit startLaserPoint(d_currentScan.currentPos());
+		else
+			emit startCombPoint(d_currentScan.combShift());
 	}
 }
 
-void AcquisitionManager::laserReady()
+void AcquisitionManager::frequencyReady()
 {
-	if(d_currentState == WaitingForLaser)
+	if(d_currentState == WaitingForFrequency)
 	{
 		d_currentState = WaitingForLockCheck;
 		QTimer::singleShot(d_currentScan.delay(),this,&AcquisitionManager::checkLock);

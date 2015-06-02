@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_am,&AcquisitionManager::requestManualLock,this,&MainWindow::manualRelock);
 	connect(this,&MainWindow::manualRelockComplete,p_am,&AcquisitionManager::manualLockComplete);
 	connect(p_am,&AcquisitionManager::beginAcquisition,p_hwm,&HardwareManager::beginAcquisition);
-	connect(p_am,&AcquisitionManager::startPoint,p_hwm,&HardwareManager::slewLaser);
+	connect(p_am,&AcquisitionManager::startLaserPoint,p_hwm,&HardwareManager::slewLaser);
 	connect(p_am,&AcquisitionManager::checkLock,p_hwm,&HardwareManager::checkLock);
 	connect(p_am,&AcquisitionManager::getPointData,p_hwm,&HardwareManager::getPointData);
 	connect(p_am,&AcquisitionManager::scanComplete,p_hwm,&HardwareManager::endAcquisition);
@@ -84,6 +84,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::lockStateCheck,p_am,&AcquisitionManager::lockCheckComplete);
 	connect(p_hwm,&HardwareManager::pointData,p_am,&AcquisitionManager::processData);
 	connect(p_hwm,&HardwareManager::relockComplete,p_am,&AcquisitionManager::autoLockComplete);
+	connect(p_am,&AcquisitionManager::startCombPoint,p_hwm,&HardwareManager::beginCombPoint);
+	connect(p_hwm,&HardwareManager::combReady,p_am,&AcquisitionManager::frequencyReady);
 
 	QThread *amThread = new QThread(this);
 	connect(amThread,&QThread::started,p_am,&AcquisitionManager::initialize);
@@ -213,7 +215,7 @@ void MainWindow::batchComplete(bool aborted)
 {
 	disconnect(p_hwm,&HardwareManager::lockStateUpdate,p_am,&AcquisitionManager::lockStateUpdate);
 	disconnect(p_am,&AcquisitionManager::plotData,ui->dataPlotWidget,&DataPlotViewWidget::pointUpdated);
-	disconnect(p_hwm,&HardwareManager::laserSlewComplete,p_am,&AcquisitionManager::laserReady);
+	disconnect(p_hwm,&HardwareManager::laserSlewComplete,p_am,&AcquisitionManager::frequencyReady);
 
 	if(aborted)
 	    emit statusMessage(QString("Scan aborted"));
@@ -292,7 +294,7 @@ void MainWindow::beginBatch(BatchManager *bm)
 	connect(bm,&BatchManager::batchComplete,p_batchThread,&QThread::quit);
 	connect(p_batchThread,&QThread::finished,bm,&BatchManager::deleteLater);
 
-	connect(p_hwm,&HardwareManager::laserSlewComplete,p_am,&AcquisitionManager::laserReady,Qt::UniqueConnection);
+	connect(p_hwm,&HardwareManager::laserSlewComplete,p_am,&AcquisitionManager::frequencyReady,Qt::UniqueConnection);
 	connect(p_hwm,&HardwareManager::lockStateUpdate,p_am,&AcquisitionManager::lockStateUpdate,Qt::UniqueConnection);
 	connect(p_am,&AcquisitionManager::plotData,ui->dataPlotWidget,&DataPlotViewWidget::pointUpdated,Qt::UniqueConnection);
 

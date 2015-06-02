@@ -22,6 +22,7 @@ public slots:
 	// Laser interface
 public slots:
 	double readPosition();
+	double estimateFrequency();
 
 protected:
 	double setPosition(double target);

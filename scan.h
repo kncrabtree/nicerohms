@@ -56,6 +56,7 @@ public:
 	int totalPoints() const;
 	int completedPoints() const;
 	double currentPos() const;
+	double combShift() const;
 	bool isAutoLockEnabled() const;
 	bool isAbortOnUnlock() const;
 	int delay() const;

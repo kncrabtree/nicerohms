@@ -29,6 +29,7 @@ public slots:
 	void setAOMFreq(double f){ d_currentAOMFreq = f; }
 	void setSignalBeat(bool pos){ d_signalBeatPositive = pos; }
 	void setPumpBeat(bool pos){ d_pumpBeatPositive = pos; }
+	FreqCombData getLastMeasurement() const { return d_lastMeasurement; }
 
 protected:
 	bool d_pumpBeatPositive, d_signalBeatPositive, d_overrideNext;

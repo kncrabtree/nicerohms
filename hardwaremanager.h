@@ -69,6 +69,7 @@ signals:
     void repRateUpdate(double);
     void setCombPumpBeat(bool);
     void setCombSignalBeat(bool);
+    void combReady();
 
 public slots:
     void initialize();
@@ -90,18 +91,24 @@ public slots:
     void hardwareFailure(HardwareObject *obj, bool abort);
     void beginScanInitialization(Scan s);
     void completeScanInitialization(Scan s, bool stageOneSuccess = true, QString errorMsg = QString(""));
+    void beginCombPoint(double shiftMHz);
     void testObjectConnection(const QString type, const QString key);
     void testAllConnections();
     void getPointData();
 
+    double estimateLaserFrequency();
 
     void checkLock();
     double checkCavityVoltage();
 
     double getAomFrequency();
+    void setAomFrequency(double f);
 
     void readComb();
+    void setCombRepRate(double f);
     void setCombIdlerFreq(double f);
+    void setCombOverrideDN(int dN);
+    FreqCombData getLastCombReading();
 
 private:
     QHash<QString,bool> d_status;

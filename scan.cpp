@@ -103,6 +103,18 @@ double Scan::currentPos() const
 	return pos;
 }
 
+double Scan::combShift() const
+{
+	if(data->completedPoints == 0)
+		return 0.0;
+	else
+	{
+		double lastPos = data->scanStart + static_cast<double>(data->completedPoints-1)*data->scanStep;
+		return currentPos() - lastPos;
+	}
+
+}
+
 bool Scan::isAutoLockEnabled() const
 {
 	return data->autoLockEnabled;
