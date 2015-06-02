@@ -34,6 +34,7 @@ bool VirtualAomSynthesizer::testConnection()
 
 	if(success)
 	{
+        readTripParameters();
 		readFrequency();
 		emit connected();
 		return true;
@@ -53,7 +54,10 @@ void VirtualAomSynthesizer::initialize()
 Scan VirtualAomSynthesizer::prepareForScan(Scan scan)
 {
 	if(d_isActive)
+    {
+        readTripParameters();
 		scan.addNumDataPoints(1);
+    }
 
 	return scan;
 }

@@ -280,7 +280,9 @@ void HardwareManager::beginScanInitialization(Scan s)
                 completeScanInitialization(s,false,QString("Could not make wavemeter readings before acquisition."));
             else
             {
-                emit logMessage(QString("Wm test: %1 (%2)").arg(wmr->freqMean()).arg(wmr->freqStDev()));
+                //note: can test wmr->stdev here!
+
+                p_freqComb->setIdlerFreq(wmr->freqMean());
                 completeScanInitialization(s);
             }
             wmr->deleteLater();
@@ -350,20 +352,31 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 
 	//need to set rep rate, calculate what do do with aom and deltaN
 	double pumpFreqEstimate = estimateLaserFrequency();
-	double signalFreqEstimate = pumpFreqEstimate - d.calculatedIdlerFreq() + 2.0*d.aomFreq();
-	int signalModeEstimate = qRound(signalFreqEstimate/d.repRate());
-	double aomFreq = d.aomFreq();
+    int pumpModeEstimate = qRound(pumpFreqEstimate/d.repRate());
+    int signalModeEstimate = pumpModeEstimate - d.deltaN();
 
-	double repRateShift = shiftMHz; // how to calculate?!
+    double repRateShift = shiftMHz*1e6/qRound(pumpFreqEstimate/d.repRate());
 
-	setCombRepRate(d.repRate() + repRateShift);
+    //figure out if aom needs ratchet
+    double nextAomFreq = d.aomFreq() + static_cast<double>(signalModeEstimate)*repRateShift/2.0;
+    double lt = aomLowTrip();
+    double ht = aomHighTrip();
 
-	double nextAomFreq = aomFreq; //how to calculate?!
+    //since we're not updating the comb's knowledge of the idler frequency, we need to tell it the mode number difference
+    if(nextAomFreq > ht)
+    {
+        nextAomFreq -= 50e6;
+        setCombOverrideDN(d.deltaN()+1);
+    }
+    else if(nextAomFreq < lt)
+    {
+        nextAomFreq += 50e6;
+        setCombOverrideDN(d.deltaN()-1);
+    }
+    else
+        setCombOverrideDN(d.deltaN());
 
-	//figure out if mode needs ratchet
-
-	setCombOverrideDN(d.deltaN()); //or d.deltaN() + 1 or d.deltaN() - 1 as appropriate
-
+    setCombRepRate(d.repRate() + repRateShift);
 	setAomFrequency(nextAomFreq);
 
 	emit combReady();
@@ -453,7 +466,31 @@ void HardwareManager::setAomFrequency(double f)
 	if(p_aomSynth->thread() == thread())
 		p_aomSynth->setFrequency(f);
 	else
-		QMetaObject::invokeMethod(p_aomSynth,"setFrequency",Qt::BlockingQueuedConnection,Q_ARG(double,f));
+        QMetaObject::invokeMethod(p_aomSynth,"setFrequency",Qt::BlockingQueuedConnection,Q_ARG(double,f));
+}
+
+double HardwareManager::aomLowTrip()
+{
+    if(p_aomSynth->thread() == thread())
+        return p_aomSynth->lowTrip();
+    else
+    {
+        double out;
+        QMetaObject::invokeMethod(p_aomSynth,"lowTrip",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
+        return out;
+    }
+}
+
+double HardwareManager::aomHighTrip()
+{
+    if(p_aomSynth->thread() == thread())
+        return p_aomSynth->highTrip();
+    else
+    {
+        double out;
+        QMetaObject::invokeMethod(p_aomSynth,"highTrip",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
+        return out;
+    }
 }
 
 void HardwareManager::readComb()

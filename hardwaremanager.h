@@ -104,6 +104,8 @@ public slots:
 
     double getAomFrequency();
     void setAomFrequency(double f);
+    double aomLowTrip();
+    double aomHighTrip();
 
     void readComb();
     void setCombRepRate(double f);
