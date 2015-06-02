@@ -264,6 +264,9 @@ void HardwareManager::beginScanInitialization(Scan s)
     //if the comb is active, we need to go into the wavemeter read procedure
     if(s.isHardwareActive(QString("freqComb")))
     {
+        //turn off deltaN override if it was left on
+        setCombOverrideDN(-1);
+
         emit statusMessage(QString("Reading wavemeter to determine comb mode numbers..."));
        //use wavemeterReadcontroller to get readings (TODO: use settings to get target reads...)
         WavemeterReadController *wmr = new WavemeterReadController(10);
@@ -456,6 +459,9 @@ void HardwareManager::setAomFrequency(double f)
 void HardwareManager::readComb()
 {
 	//use wavemeterReadcontroller to get readings (TODO: use settings to get target reads...)
+    //turn off deltaN override if it was left on
+    setCombOverrideDN(-1);
+
 	WavemeterReadController *wmr = new WavemeterReadController(10);
 	emit statusMessage(QString("Collecting %1 wavemeter readings...").arg(wmr->targetReads()));
 	connect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
