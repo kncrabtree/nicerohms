@@ -61,6 +61,7 @@ void VirtualCavityPZT::readPointData()
 
 double VirtualCavityPZT::readVoltage()
 {
-	emit cavityPZTUpdate(50.0);
-	return 50.0;
+    double voltage = 50.0 + static_cast<double>((qrand()%2000)-1000)/1e3;
+    emit cavityPZTUpdate(voltage);
+    return voltage;
 }

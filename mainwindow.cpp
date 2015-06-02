@@ -59,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
 	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
 	connect(p_hwm,&HardwareManager::aomSynthUpdate,[=](double f){ ui->aomDoubleSpinBox->setValue(f/1e6);});
+    connect(p_hwm,&HardwareManager::cavityPZTUpdate,ui->cPZTDoubleSpinBox,&QDoubleSpinBox::setValue);
 	connect(p_hwm,&HardwareManager::repRateUpdate,this,&MainWindow::repRateUpdate);
 	connect(p_hwm,&HardwareManager::combUpdate,this,&MainWindow::combUpdate);
 
