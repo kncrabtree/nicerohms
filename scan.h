@@ -122,6 +122,7 @@ public:
 	double scanStop;
 	double scanStep;
 	QString comments;
+    QString fileName;
 
 	QList<QPair<QString,QVariant>> dataCache;
 	QMap<QString,bool> activeHardware;

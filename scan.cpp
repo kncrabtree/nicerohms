@@ -2,6 +2,9 @@
 
 #include <QSettings>
 #include <QApplication>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
 
 Scan::Scan(ScanType t) : data(new ScanData)
 {
@@ -192,7 +195,79 @@ void Scan::setInitialized()
 	addHeaderItem(QString("ScanPointDelay"),data->scanDelay,QString("ms"));
 	addHeaderItem(QString("ScanAbortOnUnlock"),data->abortOnUnlock);
 
-	//figure out how to include start, stop, and step
+    if(data->type == Scan::LaserScan)
+    {
+        addHeaderItem(QString("ScanStartPos"),QString::number(data->scanStart,'f',3),QString("V"));
+        addHeaderItem(QString("ScanStopPos"),QString::number(data->scanStop,'f',3),QString("V"));
+        addHeaderItem(QString("ScanStepSize"),QString::number(data->scanStep,'f',3),QString("V"));
+    }
+    else
+    {
+        addHeaderItem(QString("ScanStartPos"),QString::number(data->scanStart,'f',3),QString("MHz"));
+        addHeaderItem(QString("ScanStopPos"),QString::number(data->scanStop,'f',3),QString("MHz"));
+        addHeaderItem(QString("ScanStepSize"),QString::number(data->scanStep,'f',3),QString("MHz"));
+    }
+
+
+    //get file
+    int millions = data->number/1000000;
+    int thousands = data->number/1000;
+    QString dirName = QString("%1/scans/%2/%3").arg(s.value(QString("savePath"),QString(".")).toString()).arg(millions).arg(thousands);
+
+    QDir d(dirName);
+    if(!d.exists())
+    {
+        if(!d.mkpath(d.absolutePath()))
+        {
+            //this is bad... abort!
+            data->isInitialized = false;
+            data->errorString = QString("Could not create directory %1 for saving data.").arg(dirName);
+            return;
+        }
+    }
+
+    //create output file
+    QFile f(QString("%1/%2.txt").arg(d.absolutePath()).arg(data->number));
+    if(f.exists())
+    {
+        //this is bad... abort!
+        data->isInitialized = false;
+        data->errorString = QString("The file %1 already exists! Make sure that the value of scanNum in the settings file is one greater than the last completed scan.").arg(f.fileName());
+        return;
+    }
+
+    if(!f.open(QIODevice::WriteOnly))
+    {
+        //this is also bad... abort!
+        data->isInitialized = false;
+        data->errorString = QString("The file %1 could not be opened for writing.").arg(f.fileName());
+        return;
+    }
+
+    data->fileName = f.fileName();
+    QTextStream t(&f);
+
+    QString hash = QString("#");
+    QString tab = QString("\t");
+    QString nl = QString("\n");
+    //write header
+    auto it = data->headerData.constBegin();
+    while(it != data->headerData.constEnd())
+    {
+        t << hash << it.key() << tab << it.value().first << tab << it.value().second << nl;
+        it++;
+    }
+    //comments
+    QStringList l = data->comments.split(QString("\n"));
+    int lines = l.size();
+    t << hash << QString("CommentLines") << tab << lines << tab << nl;
+    for(int i=0; i<lines; i++)
+        t << hash << l.at(i) << nl;
+    t << nl;
+
+    f.close();
+
+    s.setValue(QString("scanNum"),data->number+1);
 }
 
 void Scan::setAborted()
@@ -407,7 +482,41 @@ void Scan::finishPoint()
 		}
 	}
 
-	//iterate over data->scanData and write items to disk
+    QFile f(data->fileName);
+
+    if(f.open(QIODevice::Append))
+    {
+        QTextStream t(&f);
+        QString tab("\t");
+        QString nl("\n");
+
+        auto it = data->scanData.constBegin();
+        //iterate over data->scanData and write items to disk
+        if(data->completedPoints == 0)
+        {
+            //need to write headers
+            while(it + 1 != data->scanData.constEnd())
+            {
+                t << QString("%1_%2").arg(it.key()).arg(data->number) << tab;
+                it++;
+            }
+            t << QString("%1_%2").arg(it.key()).arg(data->number) << nl;
+            it = data->scanData.constBegin();
+        }
+
+        //write data
+        t.setRealNumberPrecision(14);
+        t.setRealNumberNotation(QTextStream::SmartNotation);
+        while(it + 1 != data->scanData.constEnd())
+        {
+            QVector<QVariant> vec = data->scanData.value(it.key());
+            t << vec.at(vec.size()-1).toDouble() << tab;
+            it++;
+        }
+        QVector<QVariant> vec = data->scanData.value(it.key());
+        t << vec.at(vec.size()-1).toDouble() << nl;
+        f.close();
+    }
 
 	data->completedPoints++;
 
