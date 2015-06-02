@@ -78,7 +78,8 @@ double VirtualLaser::readPosition()
 double VirtualLaser::estimateFrequency()
 {
     //normally would want to read position here
-	return 29.9792458/0.0001064*1e9 + d_currentPos/150.0*1e11;
+
+    return (-2.115e-6*d_currentPos*d_currentPos*d_currentPos - 0.000185*d_currentPos*d_currentPos + 0.6606*d_currentPos + 2.818e5)*1e9;
 }
 
 double VirtualLaser::setPosition(double target)
