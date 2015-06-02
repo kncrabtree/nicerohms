@@ -22,6 +22,7 @@
 #include "readcombaction.h"
 #include "scanconfigwidget.h"
 #include "ioboardconfigwidget.h"
+#include "freqcombconfigwidget.h"
 
 #include "batchsingle.h"
 
@@ -117,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(p_readCombAction,&ReadCombAction::setPumpSign,p_hwm,&HardwareManager::setCombPumpBeat);
     connect(p_readCombAction,&ReadCombAction::setSignalSign,p_hwm,&HardwareManager::setCombSignalBeat);
     connect(ui->actionIOBoard,&QAction::triggered,this,&MainWindow::launchIOBoardDialog);
+    connect(ui->actionFrequency_Comb,&QAction::triggered,this,&MainWindow::launchFreqCombDialog);
     connect(ui->actionNum_Data_Plots,&QAction::triggered,ui->dataPlotWidget,&DataPlotViewWidget::changeNumPlots);
 
 	p_batchThread = new QThread(this);
@@ -175,6 +177,28 @@ void MainWindow::launchIOBoardDialog()
 	d.setLayout(vbl);
 	d.exec();
 
+}
+
+void MainWindow::launchFreqCombDialog()
+{
+    QDialog d(this);
+    d.setWindowTitle(QString("Frequency Comb Configuration"));
+    FreqCombConfigWidget *fc = new FreqCombConfigWidget(&d);
+    QVBoxLayout *vbl = new QVBoxLayout;
+    QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,&d);
+
+    connect(fc,&FreqCombConfigWidget::testConnection,p_hwm,&HardwareManager::testObjectConnection);
+    connect(p_hwm,&HardwareManager::testComplete,fc,&FreqCombConfigWidget::testComplete);
+
+    connect(bb->button(QDialogButtonBox::Ok),&QPushButton::clicked,fc,&FreqCombConfigWidget::saveToSettings);
+    connect(bb->button(QDialogButtonBox::Ok),&QPushButton::clicked,&d,&QDialog::accept);
+    connect(bb->button(QDialogButtonBox::Cancel),&QPushButton::clicked,&d,&QDialog::reject);
+
+    vbl->addWidget(fc,1);
+    vbl->addWidget(bb,0);
+
+    d.setLayout(vbl);
+    d.exec();
 }
 
 void MainWindow::hardwareConnected(bool connected)
@@ -339,6 +363,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		p_laserSlewAction->setEnabled(false);
 		p_readCombAction->setEnabled(false);
 		ui->actionIOBoard->setEnabled(false);
+        ui->actionFrequency_Comb->setEnabled(false);
 		break;
 	case Slewing:
 	case CombReading:
@@ -350,6 +375,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		p_laserSlewAction->setEnabled(false);
 		p_readCombAction->setEnabled(false);
 		ui->actionIOBoard->setEnabled(false);
+        ui->actionFrequency_Comb->setEnabled(false);
 		break;
 	case Disconnected:
 		ui->actionStart_Laser_Scan->setEnabled(false);
@@ -360,6 +386,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		p_laserSlewAction->setEnabled(false);
 		p_readCombAction->setEnabled(false);
 		ui->actionIOBoard->setEnabled(true);
+        ui->actionFrequency_Comb->setEnabled(true);
 		break;
 	case Idle:
 	default:
@@ -371,6 +398,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		p_laserSlewAction->setEnabled(true);
 		p_readCombAction->setEnabled(true);
 		ui->actionIOBoard->setEnabled(true);
+        ui->actionFrequency_Comb->setEnabled(true);
 		break;
 	}
 

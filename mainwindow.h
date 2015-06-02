@@ -40,6 +40,7 @@ public:
 public slots:
 	void launchCommunicationDialog();
 	void launchIOBoardDialog();
+    void launchFreqCombDialog();
 	void hardwareConnected(bool connected);
 	void configForSlew(bool slewing);
 

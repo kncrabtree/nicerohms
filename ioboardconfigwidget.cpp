@@ -28,7 +28,7 @@ IOBoardConfigWidget::IOBoardConfigWidget(QWidget *parent) : QWidget(parent)
 
 	p_readLockIntervalSpinBox = new QSpinBox(this);
 	p_readLockIntervalSpinBox->setRange(0,10000);
-	p_readLockIntervalSpinBox->setValue(s.value(QString("readLockInterval"),5).toInt());
+    p_readLockIntervalSpinBox->setValue(s.value(QString("readLockInterval"),25).toInt());
 	p_readLockIntervalSpinBox->setSingleStep(5);
 	p_readLockIntervalSpinBox->setSuffix(QString(" ms"));
 	fl->addRow(QString("Lock Check Interval"),p_readLockIntervalSpinBox);

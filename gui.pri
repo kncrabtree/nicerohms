@@ -7,7 +7,8 @@ SOURCES += mainwindow.cpp \
     $$PWD/laserslewaction.cpp \
     $$PWD/scanconfigwidget.cpp \
     $$PWD/ioboardconfigwidget.cpp \
-    $$PWD/readcombaction.cpp
+    $$PWD/readcombaction.cpp \
+    $$PWD/freqcombconfigwidget.cpp
 
 HEADERS += mainwindow.h \
     $$PWD/dataplot.h \
@@ -18,7 +19,8 @@ HEADERS += mainwindow.h \
     $$PWD/laserslewaction.h \
     $$PWD/scanconfigwidget.h \
     $$PWD/ioboardconfigwidget.h \
-    $$PWD/readcombaction.h
+    $$PWD/readcombaction.h \
+    $$PWD/freqcombconfigwidget.h
 
 FORMS += mainwindow.ui \
     $$PWD/communicationdialog.ui \
