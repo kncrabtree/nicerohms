@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QList<QPair<QString,QVariant> >>("QList<QPair<QString,QVariant> >");
     qRegisterMetaType<NicerOhms::LogMessageCode>("NicerOhms::LogMessageCode");
     qRegisterMetaType<Scan>("Scan");
+    qRegisterMetaType<FreqCombData>("FreqCombData");
 
 
     MainWindow w;

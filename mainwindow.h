@@ -7,9 +7,11 @@
 #include <QPair>
 
 #include "scan.h"
+#include "freqcombdata.h"
 
 class QThread;
 class LaserSlewAction;
+class ReadCombAction;
 class LogHandler;
 class HardwareManager;
 class AcquisitionManager;
@@ -31,19 +33,23 @@ public:
 		Idle,
 		Acquiring,
 		Slewing,
+		CombReading,
 		Disconnected
 	};
 
 public slots:
 	void launchCommunicationDialog();
+	void launchIOBoardDialog();
 	void hardwareConnected(bool connected);
 	void configForSlew(bool slewing);
 
 	void manualRelock();
 	void scanInitialized(const Scan s);
 	void batchComplete(bool aborted);
+	void combUpdate(FreqCombData d);
+	void repRateUpdate(double r);
 
-	void test();
+	void startLaserScan();
 
 signals:
     void statusMessage(const QString);
@@ -60,6 +66,7 @@ private:
 
 	QThread *p_batchThread;
     LaserSlewAction *p_laserSlewAction;
+    ReadCombAction *p_readCombAction;
 
 	QList<QPair<QThread*,QObject*>> d_threadObjectList;
 

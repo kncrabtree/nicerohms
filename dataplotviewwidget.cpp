@@ -68,8 +68,16 @@ void DataPlotViewWidget::pointUpdated(const QList<QPair<QString, QVariant> > lis
 
         for(int i=0;i<d_allPlots.size(); i++)
         {
-            d_allPlots[i]->setAxisAutoScaleMax(QwtPlot::xBottom,x);
-            d_allPlots[i]->setAxisAutoScaleMax(QwtPlot::xTop,x);
+		   if(d_xRange.second > d_xRange.first)
+		   {
+			   d_allPlots[i]->setAxisAutoScaleMax(QwtPlot::xBottom,x);
+			   d_allPlots[i]->setAxisAutoScaleMax(QwtPlot::xTop,x);
+		   }
+		   else
+		   {
+			   d_allPlots[i]->setAxisAutoScaleMin(QwtPlot::xBottom,x);
+			   d_allPlots[i]->setAxisAutoScaleMin(QwtPlot::xTop,x);
+		   }
         }
     }
 
@@ -119,27 +127,19 @@ void DataPlotViewWidget::pointUpdated(const QList<QPair<QString, QVariant> > lis
         md.name = list.at(i).first;
 
         //Create curve
-        //Change name if it is a flow with a known name
+	   //Change name if it is a channel with a known name
         QString realName = md.name;
-        if(realName.startsWith(QString("Flow")))
+	   if(realName.startsWith(QString("ain")))
         {
-            QStringList l = realName.split(QString("."));
-            if(l.size() > 1)
-            {
-                bool ok = false;
-                int index = l.at(1).trimmed().toInt(&ok);
-                if(ok)
-                {
-                    QSettings s2(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-                    s2.beginGroup(QString("flowController"));
-                    s2.beginReadArray(QString("channels"));
-                    s2.setArrayIndex(index);
-                    realName = s2.value(QString("name"),md.name).toString();
-                    s2.endArray();
-                    s2.endGroup();
-                }
-            }
-        }
+		   QSettings s2(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+		   realName = s2.value(QString("analogNames/%1").arg(realName),md.name).toString();
+	   }
+	   else if(realName.startsWith(QString("din")))
+	   {
+		   QSettings s2(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+		   realName = s2.value(QString("digitalNames/%1").arg(realName),md.name).toString();
+	   }
+
         QwtPlotCurve *c = new QwtPlotCurve(realName);
         c->setRenderHint(QwtPlotItem::RenderAntialiased);
         md.curve = c;

@@ -3,9 +3,9 @@
 #include <QSettings>
 #include <QApplication>
 
-Scan::Scan() : data(new ScanData)
+Scan::Scan(ScanType t) : data(new ScanData)
 {
-
+	data->type = t;
 }
 
 Scan::Scan(const Scan &rhs) : data(rhs.data)
@@ -23,6 +23,11 @@ Scan &Scan::operator=(const Scan &rhs)
 Scan::~Scan()
 {
 
+}
+
+Scan::ScanType Scan::type() const
+{
+	return data->type;
 }
 
 bool Scan::isInitialized() const
@@ -87,15 +92,27 @@ int Scan::completedPoints() const
 	return data->completedPoints;
 }
 
-double Scan::currentLaserPos() const
+double Scan::currentPos() const
 {
-	double pos = data->laserStart + static_cast<double>(data->completedPoints)*data->laserStep;
-	if(data->laserStep > 0)
-		pos = qMin(pos,data->laserStop);
+	double pos = data->scanStart + static_cast<double>(data->completedPoints)*data->scanStep;
+	if(data->scanStep > 0)
+		pos = qMin(pos,data->scanStop);
 	else
-		pos = qMax(pos,data->laserStop);
+		pos = qMax(pos,data->scanStop);
 
 	return pos;
+}
+
+double Scan::combShift() const
+{
+	if(data->completedPoints == 0)
+		return 0.0;
+	else
+	{
+		double lastPos = data->scanStart + static_cast<double>(data->completedPoints-1)*data->scanStep;
+		return currentPos() - lastPos;
+	}
+
 }
 
 bool Scan::isAutoLockEnabled() const
@@ -108,9 +125,9 @@ bool Scan::isAbortOnUnlock() const
 	return data->abortOnUnlock;
 }
 
-int Scan::laserDelay() const
+int Scan::delay() const
 {
-	return data->laserDelay;
+	return data->scanDelay;
 }
 
 QPair<double, double> Scan::cavityPZTRange() const
@@ -132,6 +149,16 @@ bool Scan::isHardwareActive(QString key) const
 {
 	//if key is not found, assume hardware is inactive
 	return data->activeHardware.value(key,false);
+}
+
+QList<QPair<bool, NicerOhms::LabJackRange> > Scan::ioboardAnalogConfig() const
+{
+	return data->ioboardAnalogConfig;
+}
+
+QList<QPair<int, bool> > Scan::ioboardDigitalConfig() const
+{
+	return data->ioboardDigitalConfig;
 }
 
 void Scan::setHardwareFailed()
@@ -162,7 +189,7 @@ void Scan::setInitialized()
 		addHeaderItem(QString("ScanAutoLockMax"),data->cavityMax,QString("V"));
 	}
 	addHeaderItem(QString("ScanNumDataPoints"),data->numDataPoints);
-	addHeaderItem(QString("ScanPointDelay"),data->laserDelay,QString("ms"));
+	addHeaderItem(QString("ScanPointDelay"),data->scanDelay,QString("ms"));
 	addHeaderItem(QString("ScanAbortOnUnlock"),data->abortOnUnlock);
 
 	//figure out how to include start, stop, and step
@@ -242,7 +269,7 @@ bool Scan::addPointData(const QList<QPair<QString, QVariant> > l)
 	if(data->dataCache.size() == data->numDataPoints)
 	{
 		if(!data->redo)
-			saveData();
+			finishPoint();
 		data->redo = false;
 		data->dataCache.clear();
 		return true;
@@ -263,19 +290,19 @@ void Scan::setPointRedo()
 	data->redo = true;
 }
 
-void Scan::setLaserParams(double start, double stop, double step, int delay)
+void Scan::setScanParams(double start, double stop, double step, int delay)
 {
-	data->laserStart = start;
-	data->laserStop = stop;
-	data->laserDelay = delay;
+	data->scanStart = start;
+	data->scanStop = stop;
+	data->scanDelay = delay;
 
 	if(stop > start)
-		data->laserStep = fabs(step);
+		data->scanStep = fabs(step);
 	else
-		data->laserStep = -fabs(step);
+		data->scanStep = -fabs(step);
 
-	int points = static_cast<int>(floor(fabs((data->laserStart - data->laserStop)/data->laserStep))) + 2;
-	if(qFuzzyCompare(1.0 + data->laserStart + static_cast<double>(points - 1)*data->laserStep,1.0 + data->laserStop + data->laserStep))
+	int points = static_cast<int>(floor(fabs((data->scanStart - data->scanStop)/data->scanStep))) + 2;
+	if(qFuzzyCompare(1.0 + data->scanStart + static_cast<double>(points - 1)*data->scanStep,1.0 + data->scanStop + data->scanStep))
 		points -= 1;
 
 	data->totalPoints = points;
@@ -283,7 +310,68 @@ void Scan::setLaserParams(double start, double stop, double step, int delay)
 
 void Scan::addHardwareItem(QString key, bool active)
 {
-    data->activeHardware.insert(key,active);
+	data->activeHardware.insert(key,active);
+}
+
+void Scan::setCavityPZTRange(double min, double max)
+{
+	data->cavityMin = min;
+	data->cavityMax = max;
+}
+
+void Scan::setAutoRelock(bool enabled)
+{
+	data->autoLockEnabled = enabled;
+}
+
+void Scan::setAbortOnUnlock(bool abort)
+{
+	data->abortOnUnlock = abort;
+}
+
+void Scan::setComments(QString c)
+{
+	data->comments = c;
+}
+
+void Scan::finalSave()
+{
+	//will do some disk writing eventually
+	//save keys for use in completer
+	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+	QString keys = s.value(QString("knownValidationKeys"),QString("")).toString();
+	QStringList knownKeyList = keys.split(QChar(';'),QString::SkipEmptyParts);
+
+	auto it = data->scanData.constBegin();
+	while(it != data->scanData.constEnd())
+	{
+		QString key = it.key();
+		if(!knownKeyList.contains(key))
+			knownKeyList.append(key);
+		it++;
+	}
+
+	keys.clear();
+	if(knownKeyList.size() > 0)
+	{
+		keys = knownKeyList.at(0);
+		for(int i=1; i<knownKeyList.size();i++)
+			keys.append(QString(";%1").arg(knownKeyList.at(i)));
+
+		s.setValue(QString("knownValidationKeys"),keys);
+	}
+
+	//save to disk...
+}
+
+void Scan::setIOBoardAnalog(QList<QPair<bool, NicerOhms::LabJackRange> > l)
+{
+	data->ioboardAnalogConfig = l;
+}
+
+void Scan::setIOBoardDigital(QList<QPair<int, bool> > l)
+{
+	data->ioboardDigitalConfig = l;
 }
 
 void Scan::addValidationItem(QString key, double min, double max, Scan::PointAction action, int precision)
@@ -301,7 +389,7 @@ void Scan::addValidationItem(QString key, double min, double max, Scan::PointAct
 
 }
 
-void Scan::saveData()
+void Scan::finishPoint()
 {
 	for(int i=0; i<data->dataCache.size(); i++)
 	{

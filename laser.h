@@ -20,6 +20,7 @@ public slots:
 	void slewToPosition(double target);
 	void nextSlewPoint();
 	virtual double readPosition() =0;
+	virtual double estimateFrequency() =0;
 	void abortSlew();
 
 protected:

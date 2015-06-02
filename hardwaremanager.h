@@ -11,6 +11,7 @@
 
 #include "datastructs.h"
 #include "scan.h"
+#include "freqcombdata.h"
 
 class HardwareObject;
 class Laser;
@@ -20,6 +21,7 @@ class CavityPZTDriver;
 class IOBoard;
 class GpibController;
 class AomSynthesizer;
+class FrequencyComb;
 
 class HardwareManager : public QObject
 {
@@ -64,6 +66,12 @@ signals:
 
     void aomSynthUpdate(double);
 
+    void combUpdate(FreqCombData);
+    void repRateUpdate(double);
+    void setCombPumpBeat(bool);
+    void setCombSignalBeat(bool);
+    void combReady();
+
 public slots:
     void initialize();
 
@@ -84,15 +92,24 @@ public slots:
     void hardwareFailure(HardwareObject *obj, bool abort);
     void beginScanInitialization(Scan s);
     void completeScanInitialization(Scan s, bool stageOneSuccess = true, QString errorMsg = QString(""));
+    void beginCombPoint(double shiftMHz);
     void testObjectConnection(const QString type, const QString key);
     void testAllConnections();
     void getPointData();
 
+    double estimateLaserFrequency();
 
     void checkLock();
     double checkCavityVoltage();
 
-    void test();
+    double getAomFrequency();
+    void setAomFrequency(double f);
+
+    void readComb();
+    void setCombRepRate(double f);
+    void setCombIdlerFreq(double f);
+    void setCombOverrideDN(int dN);
+    FreqCombData getLastCombReading();
 
 private:
     QHash<QString,bool> d_status;
@@ -105,6 +122,7 @@ private:
     IOBoard *p_iob;
     GpibController *p_gpibController;
     AomSynthesizer *p_aomSynth;
+    FrequencyComb *p_freqComb;
 
     QList<QPair<HardwareObject*,QThread*> > d_hardwareList;
 

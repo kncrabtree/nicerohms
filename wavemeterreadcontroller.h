@@ -15,6 +15,7 @@ public:
     bool wasAborted() const { return d_aborted; }
     double freqMean() const { return d_freqMean; }
     double freqStDev() const;
+    int targetReads() const { return d_targetReads; }
 
 signals:
     void readsComplete(bool aborted = false);

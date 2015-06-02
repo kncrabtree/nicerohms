@@ -39,25 +39,25 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 {
 	if(d_currentState != Idle)
 	{
-		double x = d_currentScan.currentLaserPos();
+		double x = d_currentScan.currentPos();
 		if(plot)
 			d_plotDataCache.append(l);
 
-        Scan::PointAction a = d_currentScan.validateData(l);
-        if(a == Scan::Abort)
+		Scan::PointAction a = d_currentScan.validateData(l);
+		if(a == Scan::Abort)
 			abortScan();
 		else
 		{
-            if(a == Scan::Remeasure)
-            {
-                if(!d_currentScan.errorString().isEmpty())
-                {
-                    emit logMessage(d_currentScan.errorString(),NicerOhms::LogWarning);
-                    d_currentScan.setErrorString(QString(""));
-                }
+			if(a == Scan::Remeasure)
+			{
+				if(!d_currentScan.errorString().isEmpty())
+				{
+					emit logMessage(d_currentScan.errorString(),NicerOhms::LogWarning);
+					d_currentScan.setErrorString(QString(""));
+				}
 
-                d_currentState = WaitingForRedo;
-            }
+				d_currentState = WaitingForRedo;
+			}
 
 			//addPointData returns true if point is now complete
 			if(d_currentScan.addPointData(l))
@@ -80,19 +80,22 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 void AcquisitionManager::beginPoint()
 {
 	if(d_currentState == Acquiring || d_currentState == WaitingForRedo)
-	{
+	{		
 		d_plotDataCache.clear();
-		d_currentState = WaitingForLaser;
-		emit startPoint(d_currentScan.currentLaserPos());
+		d_currentState = WaitingForFrequency;
+		if(d_currentScan.type() == Scan::LaserScan)
+			emit startLaserPoint(d_currentScan.currentPos());
+		else
+			emit startCombPoint(d_currentScan.combShift());
 	}
 }
 
-void AcquisitionManager::laserReady()
+void AcquisitionManager::frequencyReady()
 {
-	if(d_currentState == WaitingForLaser)
+	if(d_currentState == WaitingForFrequency)
 	{
 		d_currentState = WaitingForLockCheck;
-		QTimer::singleShot(d_currentScan.laserDelay(),this,&AcquisitionManager::checkLock);
+		QTimer::singleShot(d_currentScan.delay(),this,&AcquisitionManager::checkLock);
 	}
 }
 
@@ -195,6 +198,7 @@ void AcquisitionManager::checkScanComplete()
 
 void AcquisitionManager::endAcquisition()
 {
+	d_currentScan.finalSave();
 	emit scanComplete(d_currentScan);
 	d_currentState = Idle;
 }

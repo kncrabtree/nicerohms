@@ -16,7 +16,7 @@ public:
 	enum AcquisitionState {
 		Idle,
 		Acquiring,
-		WaitingForLaser,
+		WaitingForFrequency,
 		WaitingForLockCheck,
 		WaitingForAutoLock,
 		WaitingForManualLock,
@@ -28,7 +28,8 @@ signals:
 	void statusMessage(const QString);
 	void beginAcquisition();
 	void scanComplete(Scan);
-	void startPoint(double);
+	void startLaserPoint(double);
+	void startCombPoint(double);
 	void checkLock();
 	void requestAutoLock();
 	void requestManualLock();
@@ -41,7 +42,7 @@ public slots:
 	void beginScan(Scan s);
 	void processData(QList<QPair<QString,QVariant>> l, bool plot);
 	void beginPoint();
-	void laserReady();
+	void frequencyReady();
 	void lockCheckComplete(bool locked, double cavityVoltage);
 	void autoLockComplete(bool success);
 	void manualLockComplete(bool abort);

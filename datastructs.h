@@ -13,6 +13,20 @@ enum LogMessageCode {
     LogDebug
 };
 
+enum LabJackRange {
+	LJR10V,
+	LJR1V,
+	LJR100mV,
+	LJR10mV
+};
+
+struct ValidationItem {
+	QString key;
+	double min;
+	double max;
+	bool abort;
+};
+
 }
 
 #endif // DATASTRUCTS_H
