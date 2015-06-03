@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>756</width>
-    <height>586</height>
+    <height>620</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -262,6 +262,9 @@
             <property name="decimals">
              <number>3</number>
             </property>
+            <property name="minimum">
+             <double>-100000000.000000000000000</double>
+            </property>
             <property name="maximum">
              <double>100000000.000000000000000</double>
             </property>
@@ -290,6 +293,9 @@
             </property>
             <property name="decimals">
              <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>-100000000.000000000000000</double>
             </property>
             <property name="maximum">
              <double>100000000.000000000000000</double>
@@ -476,7 +482,7 @@
      <x>0</x>
      <y>0</y>
      <width>756</width>
-     <height>18</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">
