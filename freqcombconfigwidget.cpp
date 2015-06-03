@@ -2,6 +2,7 @@
 
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QSpinBox>
 #include <QPushButton>
 #include <QSettings>
 #include <QApplication>
@@ -24,6 +25,13 @@ FreqCombConfigWidget::FreqCombConfigWidget(QWidget *parent) : QWidget(parent)
     connect(testButton,&QPushButton::clicked,this,&FreqCombConfigWidget::test);
     fl->addRow(QString(""),testButton);
 
+    p_wmReadsBox = new QSpinBox(this);
+    p_wmReadsBox->setRange(1,1000);
+    p_wmReadsBox->setValue(s.value(QString("wavemeterReads"),10).toInt());
+    p_wmReadsBox->setToolTip(QString("Number of wavemeter readings to average to determine comb mode numbers."));
+    fl->addRow(QString("Wavemeter reads"),p_wmReadsBox);
+
+    fl->setLabelAlignment(Qt::AlignRight);
     s.endGroup();
     s.endGroup();
 
@@ -66,6 +74,7 @@ void FreqCombConfigWidget::saveToSettings()
     s.beginGroup(sk);
 
     s.setValue(QString("uri"),p_uriEdit->text());
+    s.setValue(QString("wavemeterReads"),p_wmReadsBox->value());
 
     s.endGroup();
     s.endGroup();

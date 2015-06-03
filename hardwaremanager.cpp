@@ -269,9 +269,13 @@ void HardwareManager::beginScanInitialization(Scan s)
         //turn off deltaN override if it was left on
         setCombOverrideDN(-1);
 
-        emit statusMessage(QString("Reading wavemeter to determine comb mode numbers..."));
-       //use wavemeterReadcontroller to get readings (TODO: use settings to get target reads...)
-        WavemeterReadController *wmr = new WavemeterReadController(10);
+        QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+        QString sk = set.value(QString("freqComb/subKey"),QString("virtual")).toString();
+        int numReads = set.value(QString("freqComb/%1/wavemeterReads").arg(sk),10).toInt();
+
+       //use wavemeterReadcontroller to get readings
+        WavemeterReadController *wmr = new WavemeterReadController(numReads);
+        emit statusMessage(QString("Collecting %1 wavemeter readings to determine mode numbers...").arg(wmr->targetReads()));
         connect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
         connect(this,&HardwareManager::uiAbort,wmr,&WavemeterReadController::abort);
         connect(wmr,&WavemeterReadController::readsComplete,[=](bool aborted) {
@@ -509,8 +513,12 @@ void HardwareManager::readComb()
     //turn off deltaN override if it was left on
     setCombOverrideDN(-1);
 
-	WavemeterReadController *wmr = new WavemeterReadController(10);
-	emit statusMessage(QString("Collecting %1 wavemeter readings...").arg(wmr->targetReads()));
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    QString sk = s.value(QString("freqComb/subKey"),QString("virtual")).toString();
+    int numReads = s.value(QString("freqComb/%1/wavemeterReads").arg(sk),10).toInt();
+
+    WavemeterReadController *wmr = new WavemeterReadController(numReads);
+    emit statusMessage(QString("Collecting %1 wavemeter readings to determine mode numbers...").arg(wmr->targetReads()));
 	connect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
     connect(this,&HardwareManager::uiAbort,wmr,&WavemeterReadController::abort);
 	connect(wmr,&WavemeterReadController::readsComplete,[=](bool aborted) {

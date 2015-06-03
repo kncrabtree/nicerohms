@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class QLineEdit;
+class QSpinBox;
 
 class FreqCombConfigWidget : public QWidget
 {
@@ -22,6 +23,7 @@ public slots:
 
 private:
     QLineEdit *p_uriEdit;
+    QSpinBox *p_wmReadsBox;
 };
 
 #endif // FREQCOMBCONFIGWIDGET_H

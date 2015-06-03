@@ -20,6 +20,7 @@ highTrip (Hz)
 freqComb
 ----
 uri (QString)
+wavemeterReads (int)
 
 ----
 ioboard
