@@ -408,8 +408,13 @@ void HardwareManager::testObjectConnection(const QString type, const QString key
 
 void HardwareManager::testAllConnections()
 {
-	for(int i=0; i<d_hardwareList.size(); i++)
-		QMetaObject::invokeMethod(d_hardwareList.at(i).first,"testConnection");
+    for(int i=0; i<d_hardwareList.size(); i++)
+    {
+        d_status[d_hardwareList.at(i).first->key()] = false;
+        QMetaObject::invokeMethod(d_hardwareList.at(i).first,"testConnection");
+    }
+
+    checkStatus();
 }
 
 void HardwareManager::getPointData()
