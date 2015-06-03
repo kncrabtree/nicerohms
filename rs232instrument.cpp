@@ -56,9 +56,9 @@ bool Rs232Instrument::writeCmd(QString cmd)
         return false;
     }
 
-    d_sp->write(cmd.toLatin1());
+    qint64 ret = d_sp->write(cmd.toLatin1());
 
-    if(!d_sp->flush())
+    if(ret == -1)
     {
         emit hardwareFailure();
 	   emit logMessage(QString("Could not write command. (Command = %1)").arg(cmd),NicerOhms::LogError);
@@ -79,9 +79,9 @@ QByteArray Rs232Instrument::queryCmd(QString cmd)
     if(d_sp->bytesAvailable())
         d_sp->readAll();
 
-    d_sp->write(cmd.toLatin1());
+    qint64 ret = d_sp->write(cmd.toLatin1());
 
-    if(!d_sp->flush())
+    if(ret == -1)
     {
         emit hardwareFailure();
 	   emit logMessage(QString("Could not write query. (query = %1)").arg(cmd),NicerOhms::LogError);

@@ -59,9 +59,9 @@ bool TcpInstrument::writeCmd(QString cmd)
         }
     }
 
-    d_socket->write(cmd.toLatin1());
+    qint64 ret = d_socket->write(cmd.toLatin1());
 
-    if(!d_socket->flush())
+    if(ret == -1)
     {
         emit hardwareFailure();
         emit logMessage(QString("Could not write command. (Command = %1)").arg(cmd),NicerOhms::LogError);
@@ -86,9 +86,9 @@ QByteArray TcpInstrument::queryCmd(QString cmd)
     if(d_socket->bytesAvailable())
         d_socket->readAll();
 
-    d_socket->write(cmd.toLatin1());
+    qint64 ret = d_socket->write(cmd.toLatin1());
 
-    if(!d_socket->flush())
+    if(ret == -1)
     {
         emit hardwareFailure();
         emit logMessage(QString("Could not write query. (query = %1)").arg(cmd),NicerOhms::LogError);
