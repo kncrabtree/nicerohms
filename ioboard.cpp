@@ -24,6 +24,6 @@ void IOBoard::readIOSettings()
 {
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
 	d_relockStep = s.value(QString("%1/%2/relockStep").arg(d_key).arg(d_subKey),0.1).toDouble();
-    d_readLockInterval = s.value(QString("%1/%2/lockReadInterval"),25).toInt(); //note: be careful! I've seen mysterious crashes when this was set to 5 ms....
+    d_readLockInterval = s.value(QString("%1/%2/lockReadInterval"),5).toInt();
 }
 

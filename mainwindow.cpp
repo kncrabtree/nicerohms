@@ -55,7 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::scanInitialized,this,&MainWindow::scanInitialized);
 	connect(p_hwm,&HardwareManager::laserPosUpdate,ui->laserDoubleSpinBox,&QDoubleSpinBox::setValue);
 	connect(p_hwm,&HardwareManager::lockStateUpdate,ui->lockLed,&Led::setState);
-	connect(p_hwm,&HardwareManager::lockStateCheck,ui->lockLed,&Led::setState);
     connect(p_hwm,&HardwareManager::wavemeterFreqUpdate,[=](double f){ ui->idlerDoubleSpinBox->setValue(f/1e9);});
 	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
 	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
