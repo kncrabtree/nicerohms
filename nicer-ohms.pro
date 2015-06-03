@@ -55,3 +55,6 @@ QMAKE_CXXFLAGS += -std=c++11
 RESOURCES += \
     resources.qrc
 
+DISTFILES += \
+    settings.readme
+

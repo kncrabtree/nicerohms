@@ -1,0 +1,77 @@
+Settings
+Most hardware-related settings need to be associated with the specific hardware key and subKey. Example:
+
+[aomSynth]                  <--- key
+virtual\lowTrip=158e6       <--- subKey\settingsKey
+
+This is so that you can switch between implementations without interference
+
+Note that for the generic GPIB, RS232, and TCP instruments, connection-specific information (ip, GPIB address, baud rate, etc)
+are all stored directly under the key for a hardwareobject, not under the subkey! One could change this, theoretically, but 
+you'd have to be careful to do it everywhere.
+
+----
+aomSynth
+----
+lowTrip (Hz)
+highTrip (Hz)
+
+----
+freqComb
+----
+uri (QString)
+
+----
+ioboard
+----
+relockStep (V)
+lockReadInterval (ms)
+serialNo (QString)
+numAnalogChannels (int)
+numDigitalChannels (int)
+reservedDigitalChannels (int) -- Channels for detecting lock state and asserting lock override; others you want to dedicate. These must all be the lowest pins by number; all above this will be available for general use.
+
+----
+laser
+----
+units (QString) -- Usually "V" note, if this changes, you need to think through things in the implementation
+decimals (int) -- number of decimals to display on controls and indicators
+slewStep (units) -- usually V
+slewInterval (ms) -- delay between steps when slewing laser
+minPos (units)
+maxPos (units)
+
+----
+wavemeter
+----
+readInterval (ms)
+
+
+----
+rs232insturment
+----
+baudrate (int) -- can be set from UI
+id (QString) -- can be set from UI
+databits -- (int) default QSerialPort::Data8 see QSerialPort::DataBits (the rest of these are all QSerialPort enums as well; none are available on UI)
+parity -- (int) default QSerialPort::NoParity
+stop -- (int) default QSerialPort::OneStop
+flowcontrol -- (int) default QSerialPort::NoFlowControl
+
+----
+gpibinstrument
+----
+address (int) -- can be configured on UI
+
+----
+tcpinstrument
+----
+ip (QString) -- can be configured on UI
+port (int) -- can be configured on UI
+
+----
+general
+----
+scanNum (int) number of next scan to be run. Note that UI shows last scan that was run, so scanNum will be one greater than what you see on UI
+savePath (QString) -- set in main() function; should not be changed
+knownValidationKeys -- set automatically, you can add/remove keys manually if you want. If you remove one, it will come back if it's used again
+

@@ -131,6 +131,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	hwmThread->start();
 	amThread->start();
 
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    ui->scanNumberSpinBox->setValue(s.value(QString("scanNum"),1).toInt()-1);
+
 	configureUi(Idle);
 }
 
