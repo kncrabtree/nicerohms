@@ -9,33 +9,33 @@ class CommunicationDialog;
 
 class CommunicationDialog : public QDialog
 {
-	Q_OBJECT
-	
+    Q_OBJECT
+
 public:
-	explicit CommunicationDialog(QWidget *parent = 0);
-	~CommunicationDialog();
-	
+    explicit CommunicationDialog(QWidget *parent = 0);
+    ~CommunicationDialog();
+
 private:
-	Ui::CommunicationDialog *ui;
+    Ui::CommunicationDialog *ui;
 
-	QStringList gpibDevices;
-	QStringList tcpDevices;
-	QStringList rs232Devices;
+    QList<QPair<QString,QString>> d_gpibDevices;
+    QList<QPair<QString,QString>> d_tcpDevices;
+    QList<QPair<QString,QString>> d_rs232Devices;
 
-	void startTest(QString type, QString key);
+    void startTest(QString type, QString key);
 
 public slots:
-	void gpibDeviceChanged(int index);
-	void tcpDeviceChanged(int index);
-	void rs232DeviceChanged(int index);
-	void testGpib();
-	void testTcp();
-	void testRs232();
+    void gpibDeviceChanged(int index);
+    void tcpDeviceChanged(int index);
+    void rs232DeviceChanged(int index);
+    void testGpib();
+    void testTcp();
+    void testRs232();
 
-	void testComplete(QString device, bool success, QString msg);
+    void testComplete(QString device, bool success, QString msg);
 
 signals:
-	void testConnection(QString, QString);
+    void testConnection(QString, QString);
 };
 
 #endif // COMMUNICATIONDIALOG_H

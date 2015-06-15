@@ -112,56 +112,59 @@ void HardwareManager::initialize()
 	s.endArray();
 	s.endGroup();
 
-	//now an array for all TCP instruments
-	s.beginGroup(QString("tcp"));
-	s.remove("");
-	s.beginWriteArray("instruments");
-	int index=0;
-	for(int i=0;i<d_hardwareList.size();i++)
-	{
+    //now an array for all TCP instruments
+    s.beginGroup(QString("tcp"));
+    s.remove("");
+    s.beginWriteArray("instruments");
+    int index=0;
+    for(int i=0;i<d_hardwareList.size();i++)
+    {
         if(d_hardwareList.at(i).first->type() == CommunicationProtocol::Tcp)
-		{
-			s.setArrayIndex(index);
-			s.setValue(QString("key"),d_hardwareList.at(i).first->key());
-			index++;
-		}
-	}
-	s.endArray();
-	s.endGroup();
+        {
+            s.setArrayIndex(index);
+            s.setValue(QString("key"),d_hardwareList.at(i).first->key());
+            s.setValue(QString("subKey"),d_hardwareList.at(i).first->subKey());
+            index++;
+        }
+    }
+    s.endArray();
+    s.endGroup();
 
-	//now an array for all RS232 instruments
-	s.beginGroup(QString("rs232"));
-	s.remove("");
-	s.beginWriteArray("instruments");
-	index=0;
-	for(int i=0;i<d_hardwareList.size();i++)
-	{
+    //now an array for all RS232 instruments
+    s.beginGroup(QString("rs232"));
+    s.remove("");
+    s.beginWriteArray("instruments");
+    index=0;
+    for(int i=0;i<d_hardwareList.size();i++)
+    {
         if(d_hardwareList.at(i).first->type() == CommunicationProtocol::Rs232)
-		{
-			s.setArrayIndex(index);
-			s.setValue(QString("key"),d_hardwareList.at(i).first->key());
-			index++;
-		}
-	}
-	s.endArray();
-	s.endGroup();
+        {
+            s.setArrayIndex(index);
+            s.setValue(QString("key"),d_hardwareList.at(i).first->key());
+            s.setValue(QString("subKey"),d_hardwareList.at(i).first->subKey());
+            index++;
+        }
+    }
+    s.endArray();
+    s.endGroup();
 
-	//now an array for all GPIB instruments
-	s.beginGroup(QString("gpib"));
-	s.remove("");
-	s.beginWriteArray("instruments");
-	index=0;
-	for(int i=0;i<d_hardwareList.size();i++)
-	{
-	   if(d_hardwareList.at(i).first->type() == CommunicationProtocol::Gpib)
-		{
-			s.setArrayIndex(index);
-			s.setValue(QString("key"),d_hardwareList.at(i).first->key());
-			index++;
-		}
-	}
-	s.endArray();
-	s.endGroup();
+    //now an array for all GPIB instruments
+    s.beginGroup(QString("gpib"));
+    s.remove("");
+    s.beginWriteArray("instruments");
+    index=0;
+    for(int i=0;i<d_hardwareList.size();i++)
+    {
+       if(d_hardwareList.at(i).first->type() == CommunicationProtocol::Gpib)
+        {
+            s.setArrayIndex(index);
+            s.setValue(QString("key"),d_hardwareList.at(i).first->key());
+            s.setValue(QString("subKey"),d_hardwareList.at(i).first->subKey());
+            index++;
+        }
+    }
+    s.endArray();
+    s.endGroup();
 
 	s.sync();
 
