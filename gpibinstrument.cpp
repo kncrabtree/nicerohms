@@ -40,7 +40,7 @@ void GpibInstrument::initialize()
 bool GpibInstrument::testConnection()
 {
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-	d_address = s.value(QString("%1/address").arg(key()),1).toInt();
+    d_address = s.value(QString("%1/address").arg(key()),1).toInt();
 
 	return true;
 }
