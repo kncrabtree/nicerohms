@@ -8,7 +8,7 @@ class Laser : public HardwareObject
 	Q_OBJECT
 public:
 	Laser(QObject *parent = nullptr);
-	~Laser();
+    virtual ~Laser();
 
 signals:
 	void laserPosChanged(double);

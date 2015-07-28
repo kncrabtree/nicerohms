@@ -8,7 +8,7 @@ class GpibController : public HardwareObject
 	Q_OBJECT
 public:
 	GpibController(QObject *parent = nullptr);
-	~GpibController();
+    virtual ~GpibController();
 
 	bool writeCmd(int address, QString cmd);
 	QByteArray queryCmd(int address, QString cmd);

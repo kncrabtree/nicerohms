@@ -8,7 +8,7 @@ class AomSynthesizer : public HardwareObject
 	Q_OBJECT
 public:
 	AomSynthesizer(QObject *parent = nullptr);
-	~AomSynthesizer();
+    virtual ~AomSynthesizer();
 
 signals:
 	void frequencyUpdate(double);

@@ -8,7 +8,7 @@ class CavityPZTDriver : public HardwareObject
 	Q_OBJECT
 public:
 	CavityPZTDriver(QObject *parent = nullptr);
-	~CavityPZTDriver();
+    virtual ~CavityPZTDriver();
 
 signals:
 	void cavityPZTUpdate(double);

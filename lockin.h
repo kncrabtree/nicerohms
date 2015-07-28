@@ -8,7 +8,7 @@ class LockIn : public HardwareObject
 	Q_OBJECT
 public:
 	LockIn(int num, QObject *parent = nullptr);
-	~LockIn();
+    virtual ~LockIn();
 
 protected:
 	const int d_id;

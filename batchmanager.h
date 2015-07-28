@@ -16,7 +16,7 @@ public:
     };
 
     explicit BatchManager(BatchType b);
-    ~BatchManager();
+    virtual ~BatchManager();
 
 signals:
     void logMessage(QString,NicerOhms::LogMessageCode = NicerOhms::LogNormal);

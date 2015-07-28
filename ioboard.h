@@ -10,7 +10,7 @@ class IOBoard : public HardwareObject
 	Q_OBJECT
 public:
 	IOBoard(QObject *parent = nullptr);
-	~IOBoard();
+    virtual ~IOBoard();
 
 signals:
 	void relockComplete(bool success);

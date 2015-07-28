@@ -12,7 +12,7 @@ class Wavemeter : public HardwareObject
 	Q_OBJECT
 public:
 	Wavemeter(QObject *parent = nullptr);
-	~Wavemeter();
+    virtual ~Wavemeter();
 
 signals:
     void freqUpdate(double);

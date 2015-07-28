@@ -10,7 +10,7 @@ class FrequencyComb : public HardwareObject
 	Q_OBJECT
 public:
 	FrequencyComb(QObject *parent = nullptr);
-	~FrequencyComb();
+    virtual ~FrequencyComb();
 
 	double pumpSign();
 	double signalSign();
