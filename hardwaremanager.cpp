@@ -40,13 +40,13 @@ HardwareManager::~HardwareManager()
 void HardwareManager::initialize()
 {    
 	//Laser does not need its own thread
-	p_laser = new LaserHardware();
-	connect(this,&HardwareManager::slewLaser,p_laser,&Laser::slewToPosition);
-	connect(p_laser,&Laser::laserPosChanged,this,&HardwareManager::laserPosUpdate);
-	connect(p_laser,&Laser::slewStarting,this,&HardwareManager::laserSlewStarted);
-	connect(p_laser,&Laser::slewComplete,this,&HardwareManager::laserSlewComplete);
+    p_laser = new LaserHardware();
+    connect(this,&HardwareManager::slewLaser,p_laser,&Laser::slewToPosition);
+    connect(p_laser,&Laser::laserPosChanged,this,&HardwareManager::laserPosUpdate);
+    connect(p_laser,&Laser::slewStarting,this,&HardwareManager::laserSlewStarted);
+    connect(p_laser,&Laser::slewComplete,this,&HardwareManager::laserSlewComplete);
     connect(this,&HardwareManager::uiAbort,p_laser,&Laser::abortSlew);
-	d_hardwareList.append(qMakePair(p_laser,nullptr));
+    d_hardwareList.append(qMakePair(p_laser,nullptr));
 
 	//Lock ins may need their own threads since comms might be slow
 	p_lockIn1 = new LockIn1Hardware(1);

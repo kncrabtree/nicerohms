@@ -1,7 +1,123 @@
 #include "lasermdt694b.h"
+#include "rs232instrument.h"
 
-LaserMDT694B::LaserMDT694B(QObject *parent) : QObject(parent)
+LaserMDT694B::LaserMDT694B(QObject *parent)
+    : Laser(parent)
 {
+    d_subKey = QString("MDT694b");
+    d_prettyName = QString("Laser");
+    d_isCritical = true;
+
+    p_comm = new Rs232Instrument(d_key,d_subKey,this);
+
+    connect(p_comm,&CommunicationProtocol::logMessage,this,&LaserMDT694B::logMessage);
+    connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){emit hardwareFailure();});
+
+
+
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    s.setValue(QString("%1/%2/controlStep").arg(d_key).arg(d_subKey),1.0);
+    s.setValue(QString("%1/%2/decimals").arg(d_key).arg(d_subKey),3);
+    s.setValue(QString("%1/%2/units").arg(d_key).arg(d_subKey),QString("V"));
+    s.setValue(QString("%1/%2/minPos").arg(d_key).arg(d_subKey),0.0);
+    s.setValue(QString("%1/%2/maxPos").arg(d_key).arg(d_subKey),150.0);
+
+
+    s.sync();
+
+
+}
+
+LaserMDT694B::~LaserMDT694B()
+{
+
+
+}
+
+bool LaserMDT694B::testConnection()
+{
+
+    p_comm->testConnection();
+    readPosition();
+    QByteArray response = "]\r";
+
+
+    if(p_comm->queryCmd("%\r").right(2)==response)
+    {
+        emit connected(true,QString());
+
+        return true;
+    }
+    else
+    {
+        emit hardwareFailure();
+       emit logMessage(QString("Connection failed"),NicerOhms::LogError);
+        connected(false,QString());
+
+        return false;
+
+    }
+
+}
+
+void LaserMDT694B::initialize()
+{
+    QByteArray termChar = "]\r";
+    p_comm->setReadOptions(500, true, termChar);
+    testConnection();
+
+}
+
+Scan LaserMDT694B::prepareForScan(Scan scan)
+{
+    readSlewParameters();
+    if(d_isActive)
+        scan.addNumDataPoints(1);
+
+    return scan;//virt
+}
+
+void LaserMDT694B::beginAcquisition()
+{
+
+}
+
+void LaserMDT694B::endAcquisition()
+{
+
+}
+
+void LaserMDT694B::readPointData()
+{
+    if(d_isActive)
+    {
+        QList<QPair<QString,QVariant>> out;
+        out.append(qMakePair(QString("laser"),readPosition()));
+        emit pointDataReadNoPlot(out);
+    }//virt
+}
+
+double LaserMDT694B::readPosition()
+{
+    bool ok;
+    d_currentPos = p_comm->queryCmd("XR?\r").right(7).left(5).toDouble(&ok);
+
+    emit laserPosChanged(d_currentPos);
+    return d_currentPos;
+}
+
+double LaserMDT694B::estimateFrequency()
+{
+    readPosition();
+
+    return (-2.115e-6*d_currentPos*d_currentPos*d_currentPos - 0.000185*d_currentPos*d_currentPos + 0.6606*d_currentPos + 2.818e5)*1e9;
+}
+
+double LaserMDT694B::setPosition(double target)
+{
+
+    p_comm->writeCmd(QString("XV%1\r").arg(target).toLatin1());
+    readPosition();
 
 }
 

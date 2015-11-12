@@ -3,6 +3,7 @@
 Rs232Instrument::Rs232Instrument(QString key, QString subKey, QObject *parent) :
     CommunicationProtocol(CommunicationProtocol::Rs232,key,subKey,parent)
 {
+    initialize();
 
 }
 
@@ -16,20 +17,31 @@ Rs232Instrument::~Rs232Instrument()
 
 void Rs232Instrument::initialize()
 {
+
     d_sp = new QSerialPort(this);
+
 }
 
 bool Rs232Instrument::testConnection()
 {
+
+
     if(d_sp->isOpen())
         d_sp->close();
 
     QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-    int baudRate = s.value(QString("%1/baudrate").arg(key()),57600).toInt();
+
+
+    int baudRate = s.value(QString("%1/baudrate").arg(key()),115200).toInt();//changed to 115200
+
     QSerialPort::DataBits db = (QSerialPort::DataBits)s.value(QString("%1/databits").arg(key()),QSerialPort::Data8).toInt();
+
     QSerialPort::Parity parity = (QSerialPort::Parity)s.value(QString("%1/parity").arg(key()),QSerialPort::NoParity).toInt();
+
     QSerialPort::StopBits stop = (QSerialPort::StopBits)s.value(QString("%1/stopbits").arg(key()),QSerialPort::OneStop).toInt();
+
     QSerialPort::FlowControl fc = (QSerialPort::FlowControl)s.value(QString("%1/flowcontrol").arg(key()),QSerialPort::NoFlowControl).toInt();
+
     QString id = s.value(QString("%1/id").arg(key()),QString("")).toString();
 
     d_sp->setPortName(id);
@@ -69,6 +81,8 @@ bool Rs232Instrument::writeCmd(QString cmd)
 
 QByteArray Rs232Instrument::queryCmd(QString cmd)
 {
+
+
     if(!d_sp->isOpen())
     {
         emit hardwareFailure();
@@ -91,6 +105,7 @@ QByteArray Rs232Instrument::queryCmd(QString cmd)
     //write to serial port here, return response
     if(!d_useTermChar || d_readTerminator.isEmpty())
     {
+
         if(!d_sp->waitForReadyRead(d_timeOut))
         {
             emit hardwareFailure();
@@ -113,6 +128,7 @@ QByteArray Rs232Instrument::queryCmd(QString cmd)
             if(out.endsWith(d_readTerminator))
                 return out;
         }
+
 
         emit hardwareFailure();
 	   emit logMessage(QString("Timed out while waiting for termination character. (query = %1, partial response = %2)").arg(cmd).arg(QString(out)),NicerOhms::LogError);

@@ -3,6 +3,7 @@
 
 #include "hardwareobject.h"
 
+
 class Laser : public HardwareObject
 {
 	Q_OBJECT
@@ -32,7 +33,8 @@ protected:
 };
 
 #if NICEROHMS_LASER == 1
-#include "lasermtd694b.h"
+#include "lasermdt694b.h"
+
 class LaserMDT694B;
 typedef LaserMDT694B LaserHardware;
 #else

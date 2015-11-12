@@ -18,7 +18,7 @@ public slots:
 };
 
 #if NICEROHMS_CAVITYPZT == 1
-#include "cavitymtd694b.h"
+#include "cavitymdt694b.h"
 class CavityMDT694B;
 typedef CavityMDT694B CavityPZTHardware;
 #else

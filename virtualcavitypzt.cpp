@@ -12,6 +12,8 @@ VirtualCavityPZT::VirtualCavityPZT(QObject *parent) :
 	p_comm = new VirtualInstrument(d_key,this);
 	connect(p_comm,&CommunicationProtocol::logMessage,this,&VirtualCavityPZT::logMessage);
 	connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
+
+
 }
 
 VirtualCavityPZT::~VirtualCavityPZT()
