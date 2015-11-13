@@ -22,6 +22,7 @@ IOBoardU6::~IOBoardU6()
 
 bool IOBoardU6::testConnection()
 {
+    //test anaolog read to see if device is already connected
     double dummyVoltage;
     //eAIN(devHandle, &calInf, xChan, 15, &dblVoltage, 0, 0, 0, 0, 0, 0)
     if(eAIN(u6Handle,&calInfo,0,15,&dummyVoltage,0, 0, 0, 0, 0, 0)==0)
@@ -134,19 +135,28 @@ void IOBoardU6::readPointData()
     {
         if(d_analogConfig.at(i).first)
         {
-            double r = static_cast<double>((qrand()%20000)-10000)/10000.0;
+            double r;
+            //eAIN(devHandle, &calInf, xChan, 15, &dblVoltage, 0, 0, 0, 0, 0, 0);
+
+
+
+//            double r = static_cast<double>((qrand()%20000)-10000)/10000.0;
             switch (d_analogConfig.at(i).second) {
             case NicerOhms::LJR10V:
                 analog.append(qMakePair(QString("ain%1").arg(i),r*10.0));
+                eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIP10V,0,0,0,0,0);
                 break;
             case NicerOhms::LJR1V:
                 analog.append(qMakePair(QString("ain%1").arg(i),r));
+                eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIP1V,0,0,0,0,0);
                 break;
             case NicerOhms::LJR100mV:
                 analog.append(qMakePair(QString("ain%1").arg(i),r*0.1));
+                eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIPP1V,0,0,0,0,0);
                 break;
             case NicerOhms::LJR10mV:
                 analog.append(qMakePair(QString("ain%1").arg(i),r*0.01));
+                eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIPP01V,0,0,0,0,0);
                 break;
             default:
                 break;
@@ -158,7 +168,10 @@ void IOBoardU6::readPointData()
     {
         if(d_digitalConfig.at(i).second)
         {
-            bool b = qrand() % 2;
+            long r;
+            eDI(u6Handle,i,&r);
+            bool b = r==1;
+
             digital.append(qMakePair(QString("din%1").arg(d_digitalConfig.at(i).first),b));
         }
     }
@@ -169,7 +182,11 @@ void IOBoardU6::readPointData()
 
 bool IOBoardU6::readCavityLocked()
 {
-    bool on = qrand() % 100;
+    long r;
+    eDI(u6Handle,0,&r);
+    bool on = r==1;
+
+//    bool on = qrand() % 100;
     emit lockState(on);
     return on;
 }
