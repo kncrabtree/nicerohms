@@ -7,7 +7,8 @@ HEADERS += \
     $$PWD/virtualgpibcontroller.h \
     $$PWD/virtualaomsynthesizer.h \
     $$PWD/virtualfreqcomb.h \
-    $$PWD/lasermdt694b.h
+    $$PWD/lasermdt694b.h \
+    $$PWD/ioboardu6.h
 
 SOURCES += \
     $$PWD/virtuallaser.cpp \
@@ -18,4 +19,5 @@ SOURCES += \
     $$PWD/virtualgpibcontroller.cpp \
     $$PWD/virtualaomsynthesizer.cpp \
     $$PWD/virtualfreqcomb.cpp \
-    $$PWD/lasermdt694b.cpp
+    $$PWD/lasermdt694b.cpp \
+    $$PWD/ioboardu6.cpp

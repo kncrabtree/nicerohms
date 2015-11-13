@@ -21,6 +21,7 @@ include(implementations.pri)
 SOURCES += main.cpp
 
 unix:!macx: LIBS += -lqwt
+LIBS    += -llabjackusb
 
 #Hardware configuration
 #Set the following variables to select hardware implementations
@@ -39,8 +40,7 @@ DEFINES += NICEROHMS_WAVEMETER=0
 DEFINES += NICEROHMS_CAVITYPZT=0
 
 #IO Board. 0 = virtual, 1 = LabJack U6
-DEFINES += NICEROHMS_IOBOARD=0
-
+DEFINES += NICEROHMS_IOBOARD=1
 #Gpib controller. 0 = virtual, 1 = Prologix USB
 DEFINES += NICEROHMS_GPIBCONTROLLER=0
 

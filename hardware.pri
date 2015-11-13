@@ -13,7 +13,8 @@ HEADERS += \
     $$PWD/gpibcontroller.h \
     $$PWD/gpibinstrument.h \
     $$PWD/aomsynthesizer.h \
-    $$PWD/frequencycomb.h
+    $$PWD/frequencycomb.h \
+    $$PWD/u6.h
 
 SOURCES += \
     $$PWD/hardwaremanager.cpp \
@@ -30,4 +31,5 @@ SOURCES += \
     $$PWD/gpibcontroller.cpp \
     $$PWD/gpibinstrument.cpp \
     $$PWD/aomsynthesizer.cpp \
-    $$PWD/frequencycomb.cpp
+    $$PWD/frequencycomb.cpp \
+    $$PWD/u6.cpp
