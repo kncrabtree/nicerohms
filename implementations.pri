@@ -9,7 +9,8 @@ HEADERS += \
     $$PWD/virtualfreqcomb.h \
     $$PWD/lasermdt694b.h \
     $$PWD/ioboardu6.h \
-    $$PWD/cavitymdt694b.h
+    $$PWD/cavitymdt694b.h \
+    $$PWD/bristol621.h
 
 SOURCES += \
     $$PWD/virtuallaser.cpp \
@@ -22,4 +23,5 @@ SOURCES += \
     $$PWD/virtualfreqcomb.cpp \
     $$PWD/lasermdt694b.cpp \
     $$PWD/ioboardu6.cpp \
-    $$PWD/cavitymdt694b.cpp
+    $$PWD/cavitymdt694b.cpp \
+    $$PWD/bristol621.cpp

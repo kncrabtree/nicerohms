@@ -38,6 +38,7 @@ Scan VirtualLockIn::prepareForScan(Scan scan)
 		scan.addNumDataPoints(2);
 
 	return scan;
+
 }
 
 void VirtualLockIn::beginAcquisition()
