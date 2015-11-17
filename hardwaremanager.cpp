@@ -67,10 +67,10 @@ void HardwareManager::initialize()
 	d_hardwareList.append(qMakePair(p_cavityPZT,nullptr));
 
 	//ioboard probably does not need its own thread
-	p_iob = new IOBoardHardware();
-	connect(p_iob,&IOBoard::relockComplete,this,&HardwareManager::relockComplete);
-	connect(p_iob,&IOBoard::lockState,this,&HardwareManager::lockStateUpdate);
-	connect(this,&HardwareManager::autoRelock,p_iob,&IOBoard::relock);
+    p_iob = new IOBoardHardware();
+    connect(p_iob,&IOBoard::relockComplete,this,&HardwareManager::relockComplete);
+    connect(p_iob,&IOBoard::lockState,this,&HardwareManager::lockStateUpdate);
+    connect(this,&HardwareManager::autoRelock,p_iob,&IOBoard::relock);
     d_hardwareList.append(qMakePair(p_iob,nullptr));
 
 	//GPIB controller may need its own thread, but may not...
@@ -445,19 +445,30 @@ double HardwareManager::estimateLaserFrequency()
 
 void HardwareManager::checkLock(bool pztEnabled)
 {
+
 	bool locked = false;
+
 	if(p_iob->thread() == thread())
-		locked = p_iob->readCavityLocked();
+    {
+        if(pztEnabled)
+            locked = p_iob->readCavityLocked();
+        else
+            locked = true;
+
+    }
 	else
 		QMetaObject::invokeMethod(p_iob,"readCavityLocked",Qt::BlockingQueuedConnection,Q_RETURN_ARG(bool,locked));
 
     if(!locked || !pztEnabled)
-		emit lockStateCheck(locked,-1.0);
+    {
+        emit lockStateCheck(locked,-1.0);
+    }
 	else
 	{
 		double v = checkCavityVoltage();
 		emit lockStateCheck(locked,v);
-	}
+    }
+
 }
 
 double HardwareManager::checkCavityVoltage()

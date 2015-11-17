@@ -21,7 +21,7 @@ void Laser::readSlewParameters()
 		return;
 
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-	d_slewStep = s.value(QString("%1/%2/slewStep").arg(d_key).arg(d_subKey),1.0).toDouble();
+    d_slewStep = s.value(QString("%1/%2/slewStep").arg(d_key).arg(d_subKey),1).toDouble();
 	d_slewInterval = s.value(QString("%1/%2/slewInterval").arg(d_key).arg(d_subKey),100).toInt();
 
 }
@@ -30,6 +30,7 @@ void Laser::slewToPosition(double target)
 {
 	if(d_slewing)
 		return;
+
 
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
 	double minPos = s.value(QString("%1/%2/minPos").arg(d_key).arg(d_subKey),0.0).toDouble();
@@ -61,6 +62,7 @@ void Laser::nextSlewPoint()
 	}
 
 	double direction = d_slewTarget > d_currentPos ? 1.0 : -1.0;
+
 	double nextPos = d_currentPos + direction*d_slewStep;
 
 	if(direction>0.0)

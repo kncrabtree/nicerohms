@@ -18,6 +18,7 @@ public slots:
 	void beginAcquisition();
 	void endAcquisition();
 	void readPointData();
+    void relock();
 
 	// IOBoard interface
 public slots:

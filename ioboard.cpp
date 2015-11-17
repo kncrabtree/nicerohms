@@ -14,12 +14,12 @@ IOBoard::~IOBoard()
 {
 
 }
-
+/*
 void IOBoard::relock()
 {
-	emit relockComplete(true);
+    emit relockComplete(true);
 }
-
+*/
 void IOBoard::readIOSettings()
 {
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());

@@ -29,6 +29,7 @@ protected:
 	double d_currentPos, d_slewStep, d_slewTarget;
 	int d_slewInterval;
 	virtual double setPosition(double target) =0;
+    virtual void calibrate() = 0;
 
 };
 

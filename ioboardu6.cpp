@@ -9,6 +9,8 @@ IOBoardU6::IOBoardU6(QObject *parent) :
     d_prettyName = QString("Labjack u6");
     d_isCritical = true;
 
+    d_relockChannel = 1;
+
     p_comm = new VirtualInstrument(d_key,this);
     connect(p_comm,&CommunicationProtocol::logMessage,this,&IOBoardU6::logMessage);
     connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
@@ -143,20 +145,20 @@ void IOBoardU6::readPointData()
 //            double r = static_cast<double>((qrand()%20000)-10000)/10000.0;
             switch (d_analogConfig.at(i).second) {
             case NicerOhms::LJR10V:
-                analog.append(qMakePair(QString("ain%1").arg(i),r*10.0));
                 eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIP10V,0,0,0,0,0);
+                analog.append(qMakePair(QString("ain%1").arg(i),r*10.0));                
                 break;
             case NicerOhms::LJR1V:
-                analog.append(qMakePair(QString("ain%1").arg(i),r));
                 eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIP1V,0,0,0,0,0);
+                analog.append(qMakePair(QString("ain%1").arg(i),r));                
                 break;
-            case NicerOhms::LJR100mV:
-                analog.append(qMakePair(QString("ain%1").arg(i),r*0.1));
+            case NicerOhms::LJR100mV:                
                 eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIPP1V,0,0,0,0,0);
+                analog.append(qMakePair(QString("ain%1").arg(i),r*0.1));
                 break;
             case NicerOhms::LJR10mV:
-                analog.append(qMakePair(QString("ain%1").arg(i),r*0.01));
                 eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIPP01V,0,0,0,0,0);
+                analog.append(qMakePair(QString("ain%1").arg(i),r*0.01));                
                 break;
             default:
                 break;
@@ -185,8 +187,8 @@ bool IOBoardU6::readCavityLocked()
     long r;
     eDI(u6Handle,0,&r);
     bool on = r==1;
+//    bool on = true;
 
-//    bool on = qrand() % 100;
     emit lockState(on);
     return on;
 }
@@ -200,3 +202,33 @@ void IOBoardU6::setCavityLockOverride(bool unlock)
 {
     Q_UNUSED(unlock)
 }
+
+void IOBoardU6::relock()
+{
+
+    bool locked = false;
+    int i = 0;
+
+    QSettings s(QSettings::SystemScope, QApplication::organizationName(), QApplication::applicationName());
+    s.beginGroup(d_key);
+    s.beginGroup(d_subKey);
+    int maxAttempts = s.value(QString("maxRelockAttempts"),100).toInt();
+    s.endGroup();
+    s.endGroup();
+
+    while(!locked && ++i<=maxAttempts)
+    {
+      //toggle lock and check
+      //NOTE: should detect if an error in reading occurs and break out of loop on error
+      eDO(u6Handle,d_relockChannel,1);
+      eDO(u6Handle,d_relockChannel,0);
+      locked = readCavityLocked();
+
+    }
+
+    if(!locked)
+      emit logMessage(QString("Could not automatically relock cavity after %1 attempts").arg(maxAttempts), NicerOhms::LogWarning);
+
+    emit relockComplete(locked);
+}
+

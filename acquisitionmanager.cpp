@@ -35,6 +35,7 @@ void AcquisitionManager::beginScan(Scan s)
 	emit beginAcquisition();
 
 	beginPoint();
+
 }
 
 void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool plot)
@@ -81,6 +82,7 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 
 void AcquisitionManager::beginPoint()
 {
+
 	if(d_currentState == Acquiring || d_currentState == WaitingForRedo)
 	{		
 		d_plotDataCache.clear();
@@ -94,11 +96,14 @@ void AcquisitionManager::beginPoint()
 
 void AcquisitionManager::frequencyReady()
 {
-	if(d_currentState == WaitingForFrequency)
-	{
+    if(d_currentState == WaitingForFrequency)
+    {
 		d_currentState = WaitingForLockCheck;
         QTimer::singleShot(d_currentScan.delay(),[=](){ emit checkLock(d_currentScan.isHardwareActive(QString("cavityPZT"))); });
+
+
 	}
+
 }
 
 void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
@@ -125,9 +130,10 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
 			if(d_currentScan.isAutoLockEnabled())
 			{
 				d_currentState = WaitingForAutoLock;
+
 				emit requestAutoLock();
 			}
-			else
+            else
 			{
 				if(d_currentScan.isAbortOnUnlock())
                 {
@@ -137,6 +143,7 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
 				else
 				{
 					d_currentState = WaitingForManualLock;
+
 					emit requestManualLock();
 				}
 			}
@@ -146,6 +153,7 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
 
 void AcquisitionManager::autoLockComplete(bool success)
 {
+
 	if(d_currentState == WaitingForAutoLock)
 	{
 		if(success)
@@ -188,7 +196,7 @@ void AcquisitionManager::abortScan()
 
 void AcquisitionManager::lockStateUpdate(bool locked)
 {
-	if(d_currentState == Acquiring && !locked)
+    if(d_currentState == Acquiring && !locked && d_currentScan.isHardwareActive(QString("cavityPZT")))
 	{
 		emit statusMessage(QString("Lost lock, redoing point after relock."));
 		d_currentState = WaitingForRedo;

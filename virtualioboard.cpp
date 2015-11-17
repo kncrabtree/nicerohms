@@ -160,3 +160,9 @@ void VirtualIOBoard::setCavityLockOverride(bool unlock)
 {
 	Q_UNUSED(unlock)
 }
+
+void VirtualIOBoard::relock()
+{
+    emit relockComplete(true);
+}
+

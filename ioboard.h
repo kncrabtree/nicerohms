@@ -17,8 +17,8 @@ signals:
 	void lockState(bool);
 
 public slots:
-	virtual bool readCavityLocked() =0;
-	void relock();
+    virtual bool readCavityLocked() =0;
+    virtual void relock() = 0;
 	void readIOSettings();
 
 protected:

@@ -8,7 +8,8 @@ HEADERS += \
     $$PWD/virtualaomsynthesizer.h \
     $$PWD/virtualfreqcomb.h \
     $$PWD/lasermdt694b.h \
-    $$PWD/ioboardu6.h
+    $$PWD/ioboardu6.h \
+    $$PWD/cavitymdt694b.h
 
 SOURCES += \
     $$PWD/virtuallaser.cpp \
@@ -20,4 +21,5 @@ SOURCES += \
     $$PWD/virtualaomsynthesizer.cpp \
     $$PWD/virtualfreqcomb.cpp \
     $$PWD/lasermdt694b.cpp \
-    $$PWD/ioboardu6.cpp
+    $$PWD/ioboardu6.cpp \
+    $$PWD/cavitymdt694b.cpp

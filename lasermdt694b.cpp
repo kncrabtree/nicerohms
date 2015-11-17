@@ -9,7 +9,7 @@ LaserMDT694B::LaserMDT694B(QObject *parent)
     d_isCritical = true;
 
     p_comm = new Rs232Instrument(d_key,d_subKey,this);
-
+    offset = 0;
     connect(p_comm,&CommunicationProtocol::logMessage,this,&LaserMDT694B::logMessage);
     connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){emit hardwareFailure();});
 
@@ -45,18 +45,17 @@ bool LaserMDT694B::testConnection()
     if(p_comm->queryCmd("%\r").right(2)==response)
     {
         emit connected(true,QString());
-
+        calibrate();
         return true;
     }
-    else
-    {
+
         emit hardwareFailure();
        emit logMessage(QString("Connection failed"),NicerOhms::LogError);
         connected(false,QString());
 
         return false;
 
-    }
+
 
 }
 
@@ -74,7 +73,7 @@ Scan LaserMDT694B::prepareForScan(Scan scan)
     if(d_isActive)
         scan.addNumDataPoints(1);
 
-    return scan;//virt
+    return scan;
 }
 
 void LaserMDT694B::beginAcquisition()
@@ -99,11 +98,12 @@ void LaserMDT694B::readPointData()
 
 double LaserMDT694B::readPosition()
 {
-    bool ok;
-    d_currentPos = p_comm->queryCmd("XR?\r").right(7).left(5).toDouble(&ok);
+    d_currentPos = parse(p_comm->queryCmd("XR?\r"));
+
 
     emit laserPosChanged(d_currentPos);
     return d_currentPos;
+
 }
 
 double LaserMDT694B::estimateFrequency()
@@ -116,8 +116,34 @@ double LaserMDT694B::estimateFrequency()
 double LaserMDT694B::setPosition(double target)
 {
 
-    p_comm->writeCmd(QString("XV%1\r").arg(target).toLatin1());
+    p_comm->writeCmd(QString("XV%1\r").arg(target + offset).toLatin1());
+
     readPosition();
 
 }
 
+void LaserMDT694B::calibrate()
+{
+    //removes offset between read/write
+    if(d_currentPos>=3)
+    {
+        double initial = d_currentPos;
+        p_comm->writeCmd(QString("XV%1\r").arg(d_currentPos).toLatin1());
+        offset = initial - parse(p_comm->queryCmd("XR?\r"));
+
+    }
+    else
+    {
+        p_comm->writeCmd(QString("XV3\r").toLatin1());
+        double initial = d_currentPos;
+        p_comm->writeCmd(QString("XV%1\r").arg(d_currentPos).toLatin1());
+        offset = initial - parse(p_comm->queryCmd("XR?\r"));
+    }
+
+
+}
+
+double LaserMDT694B::parse(QByteArray response)
+{
+    return response.right(7).left(5).toDouble();
+}

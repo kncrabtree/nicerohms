@@ -2,7 +2,7 @@
 #define ACQUISITIONMANAGER_H
 
 #include <QObject>
-
+#include <QDebug>
 #include "scan.h"
 #include "datastructs.h"
 

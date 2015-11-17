@@ -22,6 +22,7 @@ public slots:
     void beginAcquisition();
     void endAcquisition();
     void readPointData();
+    void relock();
 
     // IOBoard interface
 public slots:
@@ -36,6 +37,7 @@ private:
     QList<QPair<int,bool>> d_digitalConfig;
     HANDLE u6Handle;
     u6CalibrationInfo calInfo;
+    int d_relockChannel;
 };
 
 #endif // IOBOARDU6_H
