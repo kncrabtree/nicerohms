@@ -44,7 +44,7 @@ bool LaserMDT694B::testConnection()
 
     if(p_comm->queryCmd("%\r").right(2)==response)
     {
-        emit connected(true,QString());
+        emit connected();
         calibrate();
         return true;
     }

@@ -42,10 +42,10 @@ DEFINES += NICEROHMS_CAVITYPZT=1
 #IO Board. 0 = virtual, 1 = LabJack U6
 DEFINES += NICEROHMS_IOBOARD=1
 #Gpib controller. 0 = virtual, 1 = Prologix USB
-DEFINES += NICEROHMS_GPIBCONTROLLER=0
+DEFINES += NICEROHMS_GPIBCONTROLLER=1
 
-#AOMSynth. 0 = Virtual, 1 = ????
-DEFINES += NICEROHMS_AOMSYNTH=0
+#AOMSynth. 0 = Virtual, 1 = AOM control via 8657A
+DEFINES += NICEROHMS_AOMSYNTH=1
 
 #Frequency Comb. 0 = Virtual, 1 = Menlo
 DEFINES += NICEROHMS_FREQCOMB=0

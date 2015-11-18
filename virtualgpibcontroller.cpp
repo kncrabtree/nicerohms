@@ -50,6 +50,8 @@ void VirtualGpibController::readPointData()
 
 void VirtualGpibController::readAddress()
 {
+
+
 }
 
 void VirtualGpibController::setAddress(int a)

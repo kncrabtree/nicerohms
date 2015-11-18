@@ -52,7 +52,7 @@ bool IOBoardU6::testConnection()
     readCavityLocked();
 
     p_lockReadTimer->start();
-    emit connected(true,QString());
+    emit connected();
     return true;
     }
 }

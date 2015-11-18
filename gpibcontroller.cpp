@@ -1,4 +1,5 @@
 #include "gpibcontroller.h"
+#include <QDebug>
 
 GpibController::GpibController(QObject *parent) :
 	HardwareObject(parent)
@@ -15,7 +16,7 @@ bool GpibController::writeCmd(int address, QString cmd)
 {
 	if(address != d_currentAddress)
 		setAddress(address);
-
+    qDebug() << d_currentAddress;
 	return p_comm->writeCmd(cmd);
 }
 

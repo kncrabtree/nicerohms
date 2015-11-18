@@ -3,6 +3,7 @@
 
 #include "hardwareobject.h"
 
+
 class GpibController : public HardwareObject
 {
 	Q_OBJECT
@@ -14,7 +15,7 @@ public:
 	QByteArray queryCmd(int address, QString cmd);
 
 protected:
-	virtual void readAddress() =0;
+    virtual void readAddress() =0;
 	virtual void setAddress(int a) =0;
 
 	int d_currentAddress;

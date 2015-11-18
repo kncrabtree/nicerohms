@@ -21,7 +21,7 @@ public slots:
 
 	// GpibController interface
 protected:
-	void readAddress();
+    void readAddress();
 	void setAddress(int a);
 };
 

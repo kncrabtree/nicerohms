@@ -10,7 +10,9 @@ HEADERS += \
     $$PWD/lasermdt694b.h \
     $$PWD/ioboardu6.h \
     $$PWD/cavitymdt694b.h \
-    $$PWD/bristol621.h
+    $$PWD/bristol621.h \
+    $$PWD/prologixusb.h \
+    $$PWD/aom8657a.h
 
 SOURCES += \
     $$PWD/virtuallaser.cpp \
@@ -24,4 +26,6 @@ SOURCES += \
     $$PWD/lasermdt694b.cpp \
     $$PWD/ioboardu6.cpp \
     $$PWD/cavitymdt694b.cpp \
-    $$PWD/bristol621.cpp
+    $$PWD/bristol621.cpp \
+    $$PWD/prologixusb.cpp \
+    $$PWD/aom8657a.cpp

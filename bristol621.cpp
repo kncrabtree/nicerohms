@@ -30,7 +30,7 @@ bool Bristol621::testConnection()
         readTimerInterval();
 
         p_timer->start();
-        emit connected(true,QString());
+        emit connected();
         return true;
     }
 

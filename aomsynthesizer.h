@@ -27,9 +27,9 @@ protected:
 };
 
 #if NICEROHMS_AOMSYNTH == 1
-#include "xxxxx.h"
-class XXXXX;
-typedef XXXXX AomSynthesizerHardware;
+#include "aom8657a.h"
+class Aom8657A;
+typedef Aom8657A AomSynthesizerHardware;
 #else
 #include "virtualaomsynthesizer.h"
 class VirtualAomSynthesizer;
