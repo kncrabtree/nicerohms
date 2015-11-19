@@ -12,7 +12,8 @@ HEADERS += \
     $$PWD/cavitymdt694b.h \
     $$PWD/bristol621.h \
     $$PWD/prologixusb.h \
-    $$PWD/aom8657a.h
+    $$PWD/aom8657a.h \
+    $$PWD/menlocomb.h
 
 SOURCES += \
     $$PWD/virtuallaser.cpp \
@@ -28,4 +29,5 @@ SOURCES += \
     $$PWD/cavitymdt694b.cpp \
     $$PWD/bristol621.cpp \
     $$PWD/prologixusb.cpp \
-    $$PWD/aom8657a.cpp
+    $$PWD/aom8657a.cpp \
+    $$PWD/menlocomb.cpp

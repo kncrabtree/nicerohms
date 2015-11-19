@@ -23,6 +23,7 @@ public slots:
 public slots:
 	FreqCombData readComb();
 	bool setRepRate(double target);
+
 };
 
 #endif // VIRTUALFREQCOMB_H

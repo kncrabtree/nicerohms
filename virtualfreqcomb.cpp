@@ -80,6 +80,8 @@ void VirtualFreqComb::readPointData()
 FreqCombData VirtualFreqComb::readComb()
 {
 	FreqCombData out;
+
+
 	//normally, we'd make the network request, and all these would be set by calling out.parseXml()
 	out.setRepRate((d_currentDDSFreq + 980e6)/10.0);
 	out.setOffsetBeat(30e6 + static_cast<double>((qrand() % 20000) - 10000)/1e4);
@@ -112,3 +114,5 @@ bool VirtualFreqComb::setRepRate(double target)
 	emit repRateUpdate(target);
 	return true;
 }
+
+

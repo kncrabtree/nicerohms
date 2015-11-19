@@ -5,6 +5,8 @@ Rs232Instrument::Rs232Instrument(QString key, QString subKey, QObject *parent) :
 {
     initialize();
 
+
+
 }
 
 Rs232Instrument::~Rs232Instrument()
