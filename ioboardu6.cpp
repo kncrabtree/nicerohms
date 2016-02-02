@@ -146,19 +146,19 @@ void IOBoardU6::readPointData()
             switch (d_analogConfig.at(i).second) {
             case NicerOhms::LJR10V:
                 eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIP10V,0,0,0,0,0);
-                analog.append(qMakePair(QString("ain%1").arg(i),r*10.0));                
+                analog.append(qMakePair(QString("ain%1").arg(i),r));
                 break;
             case NicerOhms::LJR1V:
                 eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIP1V,0,0,0,0,0);
-                analog.append(qMakePair(QString("ain%1").arg(i),r));                
+                analog.append(qMakePair(QString("ain%1").arg(i),r*0.1));
                 break;
             case NicerOhms::LJR100mV:                
                 eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIPP1V,0,0,0,0,0);
-                analog.append(qMakePair(QString("ain%1").arg(i),r*0.1));
+                analog.append(qMakePair(QString("ain%1").arg(i),r*0.01));
                 break;
             case NicerOhms::LJR10mV:
                 eAIN(u6Handle,&calInfo,i,15,&r,LJ_rgBIPP01V,0,0,0,0,0);
-                analog.append(qMakePair(QString("ain%1").arg(i),r*0.01));                
+                analog.append(qMakePair(QString("ain%1").arg(i),r*0.001));
                 break;
             default:
                 break;
