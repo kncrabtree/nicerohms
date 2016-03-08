@@ -1,6 +1,6 @@
 #include "lasermdt694b.h"
 #include "rs232instrument.h"
-
+#include <QDebug>
 LaserMDT694B::LaserMDT694B(QObject *parent)
     : Laser(parent)
 {
@@ -91,9 +91,9 @@ void LaserMDT694B::readPointData()
     if(d_isActive)
     {
         QList<QPair<QString,QVariant>> out;
-        out.append(qMakePair(QString("laser"),readPosition()));
+        out.append(qMakePair(QString("laser"),readPosition()));//source of rounding?
         emit pointDataReadNoPlot(out);
-    }//virt
+    }
 }
 
 double LaserMDT694B::readPosition()

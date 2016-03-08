@@ -1,5 +1,4 @@
 #include "scan.h"
-
 #include <QSettings>
 #include <QApplication>
 #include <QDir>
@@ -514,7 +513,7 @@ void Scan::finishPoint()
             it++;
         }
         QVector<QVariant> vec = data->scanData.value(it.key());
-        t << vec.at(vec.size()-1).toDouble() << nl;
+        t << vec.at(vec.size()-1).toDouble() << nl; //noticed voltage rounds to first decimal
         f.close();
     }
 

@@ -1,5 +1,4 @@
 #include "acquisitionmanager.h"
-
 #include <QTimer>
 
 AcquisitionManager::AcquisitionManager(QObject *parent) : QObject(parent), d_currentState(Idle)

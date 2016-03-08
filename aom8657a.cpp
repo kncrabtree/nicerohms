@@ -1,6 +1,5 @@
 #include "aom8657a.h"
 #include "gpibinstrument.h"
-#include <QDebug>
 
 Aom8657A::Aom8657A(GpibController *c, QObject *parent) :
     AomSynthesizer(parent)

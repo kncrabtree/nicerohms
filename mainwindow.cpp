@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include <QThread>
 #include <QLabel>
 #include <QMessageBox>
@@ -56,8 +55,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(p_hwm,&HardwareManager::laserPosUpdate,ui->laserDoubleSpinBox,&QDoubleSpinBox::setValue);
 	connect(p_hwm,&HardwareManager::lockStateUpdate,ui->lockLed,&Led::setState);
     connect(p_hwm,&HardwareManager::wavemeterFreqUpdate,[=](double f){ ui->idlerDoubleSpinBox->setValue(f/1e9);});
-	connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
-	connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
+    connect(p_hwm,&HardwareManager::wavemeterFreqUpdate,[=](double f){ ui->idlerWNDoubleSpinBox->setValue(f/1e9/29.9792458); });
+    connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
+    connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
 	connect(p_hwm,&HardwareManager::aomSynthUpdate,[=](double f){ ui->aomDoubleSpinBox->setValue(f/1e6);});
     connect(p_hwm,&HardwareManager::cavityPZTUpdate,ui->cPZTDoubleSpinBox,&QDoubleSpinBox::setValue);
 	connect(p_hwm,&HardwareManager::repRateUpdate,this,&MainWindow::repRateUpdate);
@@ -124,8 +124,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->scanNumberSpinBox->blockSignals(true);
 	ui->laserDoubleSpinBox->blockSignals(true);
-	ui->idlerDoubleSpinBox->blockSignals(true);
-	ui->aomDoubleSpinBox->blockSignals(true);
+    ui->idlerDoubleSpinBox->blockSignals(true);
+    ui->idlerWNDoubleSpinBox->blockSignals(true);
+    ui->aomDoubleSpinBox->blockSignals(true);
 
 	hwmThread->start();
 	amThread->start();

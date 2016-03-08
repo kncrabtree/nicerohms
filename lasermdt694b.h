@@ -1,7 +1,6 @@
 #ifndef LaserMDT694B_H
 #define LaserMDT694B_H
 #include <QSerialPortInfo>
-#include <QDebug>
 #include "laser.h"
 
 class LaserMDT694B : public Laser

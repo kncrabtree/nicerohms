@@ -5,7 +5,6 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
-#include <QDebug>
 
 class XmlInstrument : public CommunicationProtocol
 {

@@ -4,7 +4,6 @@
 #include "labjackusb.h"
 #include "u6.h"
 #include <QObject>
-#include <QDebug>
 class IOBoardU6 : public IOBoard
 {
     Q_OBJECT

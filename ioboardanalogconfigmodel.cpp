@@ -58,7 +58,7 @@ void IOBoardAnalogConfigModel::saveToSettings()
 
 	s.beginGroup(QString("analogNames"));
 	for(int i=0; i<d_channelConfigList.size(); i++)
-		s.setValue(QString("ain%1").arg(i),d_channelConfigList.at(i).name);
+        s.setValue(QString("ain%1").arg(i),d_channelConfigList.at(i).name);
 	s.endGroup();
 
 }
@@ -244,7 +244,7 @@ QVariant IOBoardAnalogConfigModel::headerData(int section, Qt::Orientation orien
 	else
 	{
 		if(section >= 0 && section < d_channelConfigList.size())
-			out = QString("AIN%1").arg(section+1);
+            out = QString("AIN%1").arg(section);//changed section + 1 to section to have analog inputs match labjack
 	}
 
 	return out;

@@ -69,8 +69,6 @@ void Bristol621::readPointData()
 double Bristol621::read()
 {
     d_currentFreq = p_comm->queryCmd(QString('h').toLatin1()).toDouble();
-
-//    d_currentFreq = 8.1723094e13 + static_cast<double>((qrand()%10000)-5000.0)*1e4;
     emit freqUpdate(d_currentFreq);
     return d_currentFreq;
 }

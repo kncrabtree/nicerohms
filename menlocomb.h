@@ -2,7 +2,6 @@
 #define MENLOCOMB_H
 #include "frequencycomb.h"
 #include <QNetworkRequest>
-#include <QDebug>
 
 class MenloComb : public FrequencyComb
 {

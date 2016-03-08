@@ -1,5 +1,4 @@
 #include "gpibcontroller.h"
-#include <QDebug>
 
 GpibController::GpibController(QObject *parent) :
 	HardwareObject(parent)
