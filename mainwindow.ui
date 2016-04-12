@@ -528,12 +528,16 @@
     <addaction name="actionStart_Laser_Scan"/>
     <addaction name="actionStart_Comb_Scan"/>
     <addaction name="separator"/>
+    <addaction name="actionPause_Resume"/>
     <addaction name="actionAbort"/>
    </widget>
    <addaction name="menuAcquisition"/>
    <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonTextBesideIcon</enum>
    </property>
@@ -545,6 +549,8 @@
    </attribute>
    <addaction name="actionStart_Laser_Scan"/>
    <addaction name="actionStart_Comb_Scan"/>
+   <addaction name="separator"/>
+   <addaction name="actionPause_Resume"/>
    <addaction name="actionAbort"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -621,6 +627,15 @@
    </property>
    <property name="text">
     <string>Frequency Comb</string>
+   </property>
+  </action>
+  <action name="actionPause_Resume">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/play-pause.png</normaloff>:/icons/play-pause.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pause/Resume</string>
    </property>
   </action>
  </widget>

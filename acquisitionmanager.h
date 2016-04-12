@@ -15,6 +15,7 @@ public:
 	enum AcquisitionState {
 		Idle,
 		Acquiring,
+        Paused,
 		WaitingForFrequency,
 		WaitingForLockCheck,
 		WaitingForAutoLock,
@@ -46,6 +47,7 @@ public slots:
 	void autoLockComplete(bool success);
 	void manualLockComplete(bool abort);
 	void abortScan();
+    void pauseScan();
 	void lockStateUpdate(bool locked);
 
 private:

@@ -110,6 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionStart_Laser_Scan,&QAction::triggered,[=](){ startScan(Scan::LaserScan);} );
     connect(ui->actionStart_Comb_Scan,&QAction::triggered,[=](){ startScan(Scan::CombScan);} );
 	connect(ui->actionAbort,&QAction::triggered,p_am,&AcquisitionManager::abortScan);
+    connect(ui->actionPause_Resume,&QAction::triggered,p_am, &AcquisitionManager::pauseScan);
 	connect(ui->actionTest_All_Connections,&QAction::triggered,p_hwm,&HardwareManager::testAllConnections);
     connect(p_laserSlewAction,&LaserSlewAction::slewSignal,p_hwm,&HardwareManager::slewLaser);
     connect(p_readCombAction,&QAction::triggered,[=](){ configureUi(CombReading); });
@@ -119,6 +120,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionIOBoard,&QAction::triggered,this,&MainWindow::launchIOBoardDialog);
     connect(ui->actionFrequency_Comb,&QAction::triggered,this,&MainWindow::launchFreqCombDialog);
     connect(ui->actionNum_Data_Plots,&QAction::triggered,ui->dataPlotWidget,&DataPlotViewWidget::changeNumPlots);
+
+
 
 	p_batchThread = new QThread(this);
 
@@ -359,6 +362,7 @@ void MainWindow::configureUi(MainWindow::UiState s)
 	{
 	case Acquiring:
 		ui->actionStart_Laser_Scan->setEnabled(false);
+        ui->actionPause_Resume->setEnabled(true);
         ui->actionStart_Comb_Scan->setEnabled(false);
 		ui->actionAbort->setEnabled(true);
 		ui->actionCommunication->setEnabled(false);
@@ -390,10 +394,12 @@ void MainWindow::configureUi(MainWindow::UiState s)
 		p_readCombAction->setEnabled(false);
 		ui->actionIOBoard->setEnabled(true);
         ui->actionFrequency_Comb->setEnabled(true);
+        ui->actionPause_Resume->setEnabled(false);
 		break;
 	case Idle:
 	default:
 		ui->actionStart_Laser_Scan->setEnabled(true);
+        ui->actionPause_Resume->setEnabled(false);
         ui->actionStart_Comb_Scan->setEnabled(aom && wavemeter && comb);
 		ui->actionAbort->setEnabled(false);
 		ui->actionCommunication->setEnabled(true);

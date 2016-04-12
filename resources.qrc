@@ -12,5 +12,6 @@
         <file>icons/configure.png</file>
         <file>icons/laser.png</file>
         <file>icons/combscan.png</file>
+        <file>icons/play-pause.png</file>
     </qresource>
 </RCC>

@@ -1,5 +1,6 @@
 #include "acquisitionmanager.h"
 #include <QTimer>
+#include <QDebug>
 
 AcquisitionManager::AcquisitionManager(QObject *parent) : QObject(parent), d_currentState(Idle)
 {
@@ -218,3 +219,16 @@ void AcquisitionManager::endAcquisition()
 	d_currentState = Idle;
 }
 
+void AcquisitionManager::pauseScan() //added to pause/resume in the middle of scans. CRM
+{
+    if(d_currentState != Paused)
+    {
+        d_currentState = Paused;
+    }
+    else
+    {
+        d_currentState = Acquiring;
+        beginPoint();
+    }
+
+}
