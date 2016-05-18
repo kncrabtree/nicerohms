@@ -13,6 +13,8 @@
 #include "wavemeterreadcontroller.h"
 #include "frequencycomb.h"
 
+#include <QDebug>
+
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
 {
 
@@ -363,25 +365,33 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 	FreqCombData d = getLastCombReading();
 
 	//need to set rep rate, calculate what do do with aom and deltaN
+
 	double pumpFreqEstimate = estimateLaserFrequency();
     int pumpModeEstimate = qRound(pumpFreqEstimate/d.repRate());
     int signalModeEstimate = pumpModeEstimate - d.deltaN();
 
     double repRateShift = shiftMHz*1e6/qRound(pumpFreqEstimate/d.repRate());
 
+
     //figure out if aom needs ratchet
-    double nextAomFreq = d.aomFreq() + static_cast<double>(signalModeEstimate)*repRateShift/2.0;
+
+    double nextAomFreq = d.aomFreq()*1e6 + static_cast<double>(signalModeEstimate)*repRateShift/2.0 + p_freqComb->signalSign()*(30e6 - d.signalBeat()*p_freqComb->signalSign());//CRM: Corrected for difference of sbeat to 30 MHz to correct for initial offset and hysterisis in pump estimation. Also, aomFreq() needed to be multiplied by 10^6
+
     double lt = aomLowTrip();
     double ht = aomHighTrip();
+
+
 
     //since we're not updating the comb's knowledge of the idler frequency, we need to tell it the mode number difference
     if(nextAomFreq > ht)
     {
+
         nextAomFreq -= 50e6;
         setCombOverrideDN(d.deltaN()+1);
     }
     else if(nextAomFreq < lt)
     {
+
         nextAomFreq += 50e6;
         setCombOverrideDN(d.deltaN()-1);
     }

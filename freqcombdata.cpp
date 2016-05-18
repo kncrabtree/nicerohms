@@ -1,5 +1,5 @@
 #include "freqcombdata.h"
-
+#include <QDebug>
 FreqCombData::FreqCombData() : data(new FreqCombDataData)
 {
 
@@ -79,7 +79,10 @@ bool FreqCombData::repRateLocked() const
 
 double FreqCombData::calculatedIdlerFreq() const
 {
-	return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) - 2.0*data->aomFreq;
+
+    return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) + 2.0*data->aomFreq*1e6;
+
+
 }
 
 void FreqCombData::parseXml(const QDomDocument &d)
