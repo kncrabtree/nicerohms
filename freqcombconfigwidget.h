@@ -2,6 +2,8 @@
 #define FREQCOMBCONFIGWIDGET_H
 
 #include <QWidget>
+#include <QAbstractButton>
+#include <QRadioButton>
 
 class QLineEdit;
 class QSpinBox;
@@ -24,6 +26,10 @@ public slots:
 private:
     QLineEdit *p_uriEdit;
     QSpinBox *p_wmReadsBox;
+    QRadioButton *p_counter1RadioButton;
+    QRadioButton *p_counter2RadioButton;
+
+
 };
 
 #endif // FREQCOMBCONFIGWIDGET_H

@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QApplication>
+#include <QDebug>
 FreqCombData::FreqCombData() : data(new FreqCombDataData)
 {
 
@@ -99,6 +100,12 @@ double FreqCombData::calculatedIdlerFreq() const
 
 void FreqCombData::parseXml(const QDomDocument &d)
 {
+    QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    QString sk = set.value(QString("freqComb/subKey"),QString("virtual")).toString();
+
+    bool counterMode = set.value(QString("freqComb/%1/counterConfig").arg(sk),false).toBool();
+
+
 	QDomElement root = d.documentElement();
 	if(root.firstChild().nodeName() == QString("fault"))
 	{
@@ -124,10 +131,20 @@ void FreqCombData::parseXml(const QDomDocument &d)
 			data->offsetBeat = val.toDouble();
 		else if(dataName == QString("reprate.freq"))
 			data->repRate = val.toDouble();
-		else if(dataName == QString("counter2.freq"))
-			data->pumpBeat = val.toDouble();
-		else if(dataName == QString("counter3.freq"))
-			data->signalBeat = val.toDouble();
+        else if(dataName == QString("counter2.freq"))//counter 2 no internal bandpass
+        {
+            if(counterMode)
+                data->signalBeat = val.toDouble();
+            else
+                data->pumpBeat = val.toDouble();
+        }
+        else if(dataName == QString("counter3.freq"))//counter 3 has internal bandpass
+        {
+            if(counterMode)
+                data->pumpBeat = val.toDouble();
+            else
+                data->signalBeat = val.toDouble();
+        }
 		else if(dataName == QString("lb1.mon"))
 			data->repRateLockVoltage = val.toDouble();
 		else if(dataName == QString("lb1.status"))
