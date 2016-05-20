@@ -274,9 +274,12 @@ void HardwareManager::beginScanInitialization(Scan s)
         //turn off deltaN override if it was left on
         setCombOverrideDN(-1);
 
+
         QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
         QString sk = set.value(QString("freqComb/subKey"),QString("virtual")).toString();
+
         int numReads = set.value(QString("freqComb/%1/wavemeterReads").arg(sk),10).toInt();
+
 
        //use wavemeterReadcontroller to get readings
         WavemeterReadController *wmr = new WavemeterReadController(numReads);
@@ -355,12 +358,19 @@ void HardwareManager::completeScanInitialization(Scan s, bool stageOneSuccess, Q
 
 void HardwareManager::beginCombPoint(double shiftMHz)
 {
-	//if the shift is 0, then nothing needs to be done
-	if(qFuzzyCompare(1.0+shiftMHz,1.0))
-	{
+
+    QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    bool sigLock = set.value(QString("lastScanConfig/signalLock"),false).toBool();
+    double laserStart = set.value(QString("lastScanConfig/laserStart"),20).toDouble();
+    double MHzToV = set.value(QString("lastScanConfig/MHzToV"),.003).toDouble();
+
+    //if the shift is 0, then nothing needs to be done
+
+    if(qFuzzyCompare(1.0+shiftMHz,1.0))
+    {
         emit readyForPoint();
 		return;
-	}
+    }
 
 	FreqCombData d = getLastCombReading();
 
@@ -375,7 +385,15 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 
     //figure out if aom needs ratchet
 
-    double nextAomFreq = d.aomFreq()*1e6 + static_cast<double>(signalModeEstimate)*repRateShift/2.0 + p_freqComb->signalSign()*(30e6 - d.signalBeat()*p_freqComb->signalSign());//CRM: Corrected for difference of sbeat to 30 MHz to correct for initial offset and hysterisis in pump estimation. Also, aomFreq() needed to be multiplied by 10^6
+    double nextAomFreq ;
+    if(sigLock)
+    {
+        nextAomFreq = d.aomFreq()*1e6 - shiftMHz*1e6/2 + p_freqComb->signalSign()*(30e6 - d.signalBeat()*p_freqComb->pumpSign());//use signal beat for the pumps beat due to counter switch in this mode. shiftMhz/2 since double pass AOM
+    }
+    else
+    {
+        nextAomFreq = d.aomFreq()*1e6 + static_cast<double>(signalModeEstimate)*repRateShift/2.0 + p_freqComb->signalSign()*(30e6 - d.signalBeat()*p_freqComb->signalSign());//CRM: Corrected for difference of sbeat to 30 MHz to correct for initial offset and hysterisis in pump estimation. Also, aomFreq() needed to be multiplied by 10^6
+    }
 
     double lt = aomLowTrip();
     double ht = aomHighTrip();
@@ -398,7 +416,18 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     else
         setCombOverrideDN(d.deltaN());
 
-    setCombRepRate(d.repRate() + repRateShift);
+    if(sigLock)
+    {
+        laserStart += shiftMHz*MHzToV;
+        slewLaser(laserStart);
+        set.setValue("lastScanConfig/laserStart",laserStart);
+
+
+    }
+    else
+    {
+        setCombRepRate(d.repRate() + repRateShift);
+    }
 	setAomFrequency(nextAomFreq);
 
     emit readyForPoint();

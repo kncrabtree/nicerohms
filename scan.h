@@ -20,7 +20,7 @@ class Scan
 public:
 	enum ScanType {
 		LaserScan,
-		CombScan
+        CombScan,
 	};
 
 	Scan(ScanType t = LaserScan);

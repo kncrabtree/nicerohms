@@ -11,6 +11,7 @@
 #include <QApplication>
 #include <QMessageBox>
 
+#include <QDebug>
 ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
      QWidget(parent),
 	ui(new Ui::ScanConfigWidget), d_type(t)
@@ -87,6 +88,8 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 
 		ui->wavemeterCheckBox->setChecked(true);
 		ui->wavemeterCheckBox->setEnabled(false);
+
+        ui->SignalRadioButton->setChecked(true);
 
 		ui->aomCheckBox->setChecked(true);
 		ui->aomCheckBox->setEnabled(false);
@@ -303,6 +306,9 @@ void ScanConfigWidget::saveToSettings() const
 		s.setValue(QString("combLength"),ui->combLengthDoubleSpinBox->value());
 		s.setValue(QString("combStep"),ui->combStepDoubleSpinBox->value());
 		s.setValue(QString("combDelay"),ui->combDelaySpinBox->value());
+        s.setValue(QString("signalLock"),ui->SignalRadioButton->isChecked());
+
+
 	}
 
 	if(ui->cavityPZTBox->isChecked())
@@ -329,4 +335,48 @@ void ScanConfigWidget::saveToSettings() const
 
 	s.endGroup();
 	s.sync();
+}
+
+void ScanConfigWidget::on_SignalRadioButton_clicked()
+{
+    ui->UpPushButton->setEnabled(true);
+    ui->DownPushButton->setEnabled(true);
+}
+
+void ScanConfigWidget::on_pumpRadioButton_clicked()
+{
+    ui->UpPushButton->setEnabled(false);
+    ui->DownPushButton->setEnabled(false);
+}
+
+void ScanConfigWidget::on_UpPushButton_clicked()
+{
+    QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+     set.beginGroup("lastScanConfig");
+
+
+     double voltage = set.value("laserStart",20).toDouble() + ui->combStepDoubleSpinBox->value()*set.value("MHzToV",.003).toDouble();
+
+     emit slewLaser(voltage);
+
+     set.setValue(QString("laserStart"),voltage);
+
+     set.endGroup();
+
+}
+
+void ScanConfigWidget::on_DownPushButton_clicked()
+{
+    QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+     set.beginGroup("lastScanConfig");
+
+
+     double voltage = set.value("laserStart",20).toDouble() - ui->combStepDoubleSpinBox->value()*set.value("MHzToV",.003).toDouble();
+
+     emit slewLaser(voltage);
+
+     set.setValue(QString("laserStart"),voltage);
+
+     set.endGroup();
+
 }

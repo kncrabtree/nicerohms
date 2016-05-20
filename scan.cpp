@@ -4,7 +4,7 @@
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
-
+#include <QDebug>
 Scan::Scan(ScanType t) : data(new ScanData)
 {
 	data->type = t;

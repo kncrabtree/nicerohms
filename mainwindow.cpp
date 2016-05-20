@@ -306,6 +306,13 @@ void MainWindow::startScan(Scan::ScanType t)
 {
     if(p_batchThread->isRunning())
         return;
+    QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    set.beginGroup("lastScanConfig");
+
+    set.setValue(QString("laserStart"),ui->laserDoubleSpinBox->value());
+    set.setValue(QString("MHzToV"),.00281);
+
+    set.endGroup();
 
     QDialog d(this);
     d.setWindowTitle(QString("Configure Scan"));
@@ -319,6 +326,8 @@ void MainWindow::startScan(Scan::ScanType t)
     connect(bb->button(QDialogButtonBox::Cancel),&QPushButton::clicked,&d,&QDialog::reject);
     connect(bb->button(QDialogButtonBox::Ok),&QPushButton::clicked,scw,&ScanConfigWidget::validate);
     connect(scw,&ScanConfigWidget::scanValid,&d,&QDialog::accept);
+    connect(scw,&ScanConfigWidget::slewLaser,p_hwm,&HardwareManager::slewLaser);
+
 
     if(d.exec() == QDialog::Rejected)
         return;

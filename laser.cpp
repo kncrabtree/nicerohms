@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QApplication>
 #include <QTimer>
+#include <QDebug>
 
 Laser::Laser(QObject *parent) :
 	HardwareObject(parent), d_slewing(false), d_currentPos(0.0), d_slewStep(1.0), d_slewInterval(100)
@@ -49,7 +50,10 @@ void Laser::slewToPosition(double target)
 	else
 	{
 		setPosition(realTarget);
-		emit slewComplete();
+
+
+        emit slewComplete();
+
 	}
 }
 

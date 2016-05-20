@@ -23,10 +23,20 @@ public:
 
 signals:
 	void scanValid();
+    void slewLaser(double voltage);
 
 public slots:
 	void swapLaserStartStop();
 	void validate();
+
+private slots:
+    void on_SignalRadioButton_clicked();
+
+    void on_pumpRadioButton_clicked();
+
+    void on_UpPushButton_clicked();
+
+    void on_DownPushButton_clicked();
 
 private:
 	Ui::ScanConfigWidget *ui;

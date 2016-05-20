@@ -1,5 +1,7 @@
 #include "freqcombdata.h"
 #include <QDebug>
+#include <QSettings>
+#include <QApplication>
 FreqCombData::FreqCombData() : data(new FreqCombDataData)
 {
 
@@ -79,8 +81,18 @@ bool FreqCombData::repRateLocked() const
 
 double FreqCombData::calculatedIdlerFreq() const
 {
+    QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    bool sigLock = set.value(QString("lastScanConfig/signalLock"),false).toBool();
 
+    if(sigLock)
+    {
+    return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) - 2.0*data->aomFreq*1e6;
+    //Switched sign on AOM frequency to account for pump shift.
+    }
+    else
+    {
     return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) + 2.0*data->aomFreq*1e6;
+    }
 
 
 }
@@ -149,8 +161,17 @@ void FreqCombData::setDeltaN(double idlerFreq, double aomFreq)
 
 	data->aomFreq = aomFreq;
 
+    QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    bool sigLock = set.value(QString("lastScanConfig/signalLock"),false).toBool();
 	//idlerfreq is in Hz; so is rep rate
+    if(sigLock)
+    {
+    data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*aomFreq)/data->repRate);
+    }
+    else
+    {
 	data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat + 2.0*aomFreq)/data->repRate);
+    }
 }
 
 void FreqCombData::setDeltaN(int dN, double aomFreq)
