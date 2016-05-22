@@ -1,6 +1,6 @@
 #include "aom8657a.h"
 #include "gpibinstrument.h"
-
+#include <QDebug>
 
 Aom8657A::Aom8657A(GpibController *c, QObject *parent) :
     AomSynthesizer(parent)
@@ -86,7 +86,7 @@ void Aom8657A::readPointData()
 
 void Aom8657A::setFrequency(double f)
 {
-
+//    qDebug() << "aom set " << f/1e6;
     d_frequency = f/1e6;
 
     p_comm->writeCmd(QString("FR%1MZ\r").arg(d_frequency).toLatin1());

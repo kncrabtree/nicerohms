@@ -101,6 +101,8 @@ void AcquisitionManager::frequencyReady()
 		d_currentState = WaitingForLockCheck;
         QTimer::singleShot(d_currentScan.delay(),[=](){ emit checkLock(d_currentScan.isHardwareActive(QString("cavityPZT"))); });
 
+//        qDebug() << "delay" << d_currentScan.delay();
+
 
 	}
 

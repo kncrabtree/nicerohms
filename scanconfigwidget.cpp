@@ -375,6 +375,7 @@ void ScanConfigWidget::on_DownPushButton_clicked()
 
      emit slewLaser(voltage);
 
+
      set.setValue(QString("laserStart"),voltage);
 
      set.endGroup();

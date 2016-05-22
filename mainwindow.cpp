@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(p_hwm,&HardwareManager::lockStateCheck,p_am,&AcquisitionManager::lockCheckComplete);
     connect(p_hwm,&HardwareManager::pointData,p_am,&AcquisitionManager::processData);
     connect(p_hwm,&HardwareManager::relockComplete,p_am,&AcquisitionManager::autoLockComplete);
-    connect(p_am,&AcquisitionManager::startCombPoint,p_hwm,&HardwareManager::beginCombPoint);
+//    connect(p_am,&AcquisitionManager::startCombPoint,p_hwm,&HardwareManager::beginCombPoint);
     connect(p_hwm,&HardwareManager::readyForPoint,p_am,&AcquisitionManager::frequencyReady);
 
     QThread *amThread = new QThread(this);
@@ -310,7 +310,7 @@ void MainWindow::startScan(Scan::ScanType t)
     set.beginGroup("lastScanConfig");
 
     set.setValue(QString("laserStart"),ui->laserDoubleSpinBox->value());
-    set.setValue(QString("MHzToV"),.00281);
+    set.setValue(QString("MHzToV"),.0026997);
 
     set.endGroup();
 

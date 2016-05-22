@@ -135,10 +135,10 @@
            <number>1</number>
           </property>
           <property name="minimum">
-           <double>-500.000000000000000</double>
+           <double>-2000.000000000000000</double>
           </property>
           <property name="maximum">
-           <double>500.000000000000000</double>
+           <double>2000.000000000000000</double>
           </property>
           <property name="singleStep">
            <double>10.000000000000000</double>
@@ -164,7 +164,7 @@
            <number>1</number>
           </property>
           <property name="minimum">
-           <double>0.100000000000000</double>
+           <double>-5.000000000000000</double>
           </property>
           <property name="maximum">
            <double>5.000000000000000</double>
@@ -220,14 +220,14 @@
         <item row="3" column="1">
          <widget class="QPushButton" name="UpPushButton">
           <property name="text">
-           <string>Up</string>
+           <string>Step Up</string>
           </property>
          </widget>
         </item>
         <item row="4" column="1">
          <widget class="QPushButton" name="DownPushButton">
           <property name="text">
-           <string>Down</string>
+           <string>Step Down</string>
           </property>
          </widget>
         </item>

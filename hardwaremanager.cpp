@@ -386,13 +386,17 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     //figure out if aom needs ratchet
 
     double nextAomFreq ;
+
     if(sigLock)
     {
-        nextAomFreq = d.aomFreq()*1e6 - shiftMHz*1e6/2 + p_freqComb->signalSign()*(30e6 - d.signalBeat()*p_freqComb->pumpSign());//use signal beat for the pumps beat due to counter switch in this mode. shiftMhz/2 since double pass AOM
+        nextAomFreq = d.aomFreq()*1e6 - (shiftMHz*1e6)/2 + (30e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
+
+
+
     }
     else
     {
-        nextAomFreq = d.aomFreq()*1e6 + static_cast<double>(signalModeEstimate)*repRateShift/2.0 + p_freqComb->signalSign()*(30e6 - d.signalBeat()*p_freqComb->signalSign());//CRM: Corrected for difference of sbeat to 30 MHz to correct for initial offset and hysterisis in pump estimation. Also, aomFreq() needed to be multiplied by 10^6
+        nextAomFreq = d.aomFreq()*1e6 + static_cast<double>(signalModeEstimate)*repRateShift/2.0 + p_freqComb->signalSign()*(30e6 - fabs(d.signalBeat()))/2;//CRM: Corrected for difference of sbeat to 30 MHz to correct for initial offset and hysterisis in pump estimation. Also, aomFreq() needed to be multiplied by 10^6
     }
 
     double lt = aomLowTrip();
@@ -423,12 +427,14 @@ void HardwareManager::beginCombPoint(double shiftMHz)
         set.setValue("lastScanConfig/laserStart",laserStart);
 
 
+
     }
     else
     {
         setCombRepRate(d.repRate() + repRateShift);
     }
 	setAomFrequency(nextAomFreq);
+
 
     emit readyForPoint();
 }
