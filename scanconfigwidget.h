@@ -24,6 +24,8 @@ public:
 signals:
 	void scanValid();
     void slewLaser(double voltage);
+    void setPumpSign(bool);
+    void setSignalSign(bool);
 
 public slots:
 	void swapLaserStartStop();
@@ -37,6 +39,14 @@ private slots:
     void on_UpPushButton_clicked();
 
     void on_DownPushButton_clicked();
+
+    void on_PumpToolButton_clicked(bool checked);
+
+    void on_PumpToolButton_toggled(bool checked);
+
+    void on_SignalToolButton_toggled(bool checked);
+
+    void on_SignalToolButton_clicked(bool checked);
 
 private:
 	Ui::ScanConfigWidget *ui;

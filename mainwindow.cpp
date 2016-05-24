@@ -327,6 +327,8 @@ void MainWindow::startScan(Scan::ScanType t)
     connect(bb->button(QDialogButtonBox::Ok),&QPushButton::clicked,scw,&ScanConfigWidget::validate);
     connect(scw,&ScanConfigWidget::scanValid,&d,&QDialog::accept);
     connect(scw,&ScanConfigWidget::slewLaser,p_hwm,&HardwareManager::slewLaser);
+    connect(scw,&ScanConfigWidget::setPumpSign,p_hwm,&HardwareManager::setCombPumpBeat);
+    connect(scw,&ScanConfigWidget::setSignalSign,p_hwm,&HardwareManager::setCombSignalBeat);
 
 
     if(d.exec() == QDialog::Rejected)

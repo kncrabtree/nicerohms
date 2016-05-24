@@ -390,9 +390,6 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     if(sigLock)
     {
         nextAomFreq = d.aomFreq()*1e6 - (shiftMHz*1e6)/2 + (30e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
-
-
-
     }
     else
     {
@@ -409,13 +406,35 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     {
 
         nextAomFreq -= 50e6;
-        setCombOverrideDN(d.deltaN()+1);
+
+        if(nextAomFreq<lt||nextAomFreq>ht)
+            nextAomFreq +=50e6;
+        else
+        {
+            if(sigLock)
+                setCombOverrideDN(d.deltaN()-1);
+            else
+                setCombOverrideDN(d.deltaN()+1);
+        }
+
+
+
+
     }
     else if(nextAomFreq < lt)
     {
 
         nextAomFreq += 50e6;
-        setCombOverrideDN(d.deltaN()-1);
+
+        if(nextAomFreq<lt||nextAomFreq>ht)
+            nextAomFreq -=50e6;
+        else
+        {
+            if(sigLock)
+                setCombOverrideDN(d.deltaN()+1);
+            else
+                setCombOverrideDN(d.deltaN()-1);
+        }
     }
     else
         setCombOverrideDN(d.deltaN());

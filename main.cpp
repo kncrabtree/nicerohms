@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     QSettings::setPath(QSettings::NativeFormat,QSettings::SystemScope,appDataPath);
     const QString lockFilePath = QString("%1/%2").arg(appDataPath).arg(QApplication::organizationName());
 
-    //test to make sure data path is writable
+    //test to make sure 0data path is writable
     QDir home(appDataPath);
     if(!home.exists())
     {

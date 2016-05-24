@@ -89,6 +89,7 @@ double FreqCombData::calculatedIdlerFreq() const
     {
     return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) - 2.0*data->aomFreq*1e6;
     //Switched sign on AOM frequency to account for pump shift.
+    qDebug() << "delta N" << data->deltaN;
     }
     else
     {

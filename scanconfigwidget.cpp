@@ -94,6 +94,12 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		ui->aomCheckBox->setChecked(true);
 		ui->aomCheckBox->setEnabled(false);
 
+
+        emit setPumpSign(true);
+        emit setSignalSign(true);
+
+
+
 		double length = s.value(QString("%1/combLength").arg(d_key),150.0).toDouble();
 		double step = s.value(QString("%1/combStep").arg(d_key),2.0).toDouble();
 		int lastDelay = s.value(QString("%1/combDelay").arg(d_key),1000).toInt();
@@ -379,5 +385,41 @@ void ScanConfigWidget::on_DownPushButton_clicked()
      set.setValue(QString("laserStart"),voltage);
 
      set.endGroup();
+
+}
+
+
+void ScanConfigWidget::on_PumpToolButton_toggled(bool checked)
+{
+    if(!checked)
+    {
+        ui->PumpToolButton->setText("+");
+    }
+    else
+        ui->PumpToolButton->setText(QString::fromUtf16(u"−"));
+
+}
+
+void ScanConfigWidget::on_SignalToolButton_toggled(bool checked)
+{
+    if(!checked)
+    {
+        ui->SignalToolButton->setText("+");
+    }
+    else
+        ui->SignalToolButton->setText(QString::fromUtf16(u"−"));
+
+}
+
+void ScanConfigWidget::on_SignalToolButton_clicked(bool checked)
+{
+    emit setSignalSign(!checked);
+
+}
+
+void ScanConfigWidget::on_PumpToolButton_clicked(bool checked)
+{
+    emit setPumpSign(!checked);
+
 
 }

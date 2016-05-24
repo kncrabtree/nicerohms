@@ -39,7 +39,7 @@ QWidget *ReadCombAction::createWidget(QWidget *parent)
 	QWidgetAction *cfgwa = new QWidgetAction(cfgMenu);
 	QWidget *cfgw = new QWidget(parent);
 	QFormLayout *fl = new QFormLayout;
-
+/*
 	QToolButton *pButton = new QToolButton(cfgw);
 	pButton->setText(QString("+"));
 	pButton->setCheckable(true);
@@ -67,6 +67,7 @@ QWidget *ReadCombAction::createWidget(QWidget *parent)
 	fl->addRow(QString("Pump Beat Sign"),pButton);
 	fl->addRow(QString("Signal Beat Sign"),sButton);
 	cfgw->setLayout(fl);
+    */
 	cfgwa->setDefaultWidget(cfgw);
 
 	cfgMenu->addAction(cfgwa);
