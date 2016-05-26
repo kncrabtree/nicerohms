@@ -56,12 +56,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(p_hwm,&HardwareManager::lockStateUpdate,ui->lockLed,&Led::setState);
     connect(p_hwm,&HardwareManager::wavemeterFreqUpdate,[=](double f){ ui->idlerDoubleSpinBox->setValue(f/1e9);});
     connect(p_hwm,&HardwareManager::wavemeterFreqUpdate,[=](double f){ ui->idlerWNDoubleSpinBox->setValue(f/1e9/29.9792458); });
+    connect(p_hwm,&HardwareManager::counterFreqUpdate,[=](double f){ ui->CounterDoubleSpinBox->setValue(f/1e6); });
     connect(p_hwm,&HardwareManager::laserSlewStarted,[=](){ configForSlew(true);} );
     connect(p_hwm,&HardwareManager::laserSlewComplete,[=](){ configForSlew(false);} );
     connect(p_hwm,&HardwareManager::aomSynthUpdate,[=](double f){ ui->aomDoubleSpinBox->setValue(f/1e6);});
     connect(p_hwm,&HardwareManager::cavityPZTUpdate,ui->cPZTDoubleSpinBox,&QDoubleSpinBox::setValue);
     connect(p_hwm,&HardwareManager::repRateUpdate,this,&MainWindow::repRateUpdate);
     connect(p_hwm,&HardwareManager::combUpdate,this,&MainWindow::combUpdate);
+
 
     QThread *hwmThread = new QThread(this);
     connect(hwmThread,&QThread::started,p_hwm,&HardwareManager::initialize);
@@ -74,7 +76,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(p_am,&AcquisitionManager::statusMessage,statusLabel,&QLabel::setText);
     connect(p_am,&AcquisitionManager::pointComplete,ui->scanProgressBar,&QProgressBar::setValue);
     connect(p_am,&AcquisitionManager::requestManualLock,this,&MainWindow::manualRelock);
+    connect(p_am,&AcquisitionManager::pumpRelock,this,&MainWindow::manualPumpRelock);
     connect(this,&MainWindow::manualRelockComplete,p_am,&AcquisitionManager::manualLockComplete);
+    connect(this, &MainWindow::manualPumpRelockComplete,p_hwm,&HardwareManager::manualPumpRelockCheck);
+    connect(p_hwm,&HardwareManager::manualPumpRelockComp,p_am,&AcquisitionManager::manualPumpRelockComplete);
     connect(p_am,&AcquisitionManager::beginAcquisition,p_hwm,&HardwareManager::beginAcquisition);
     connect(p_am,&AcquisitionManager::startLaserPoint,p_hwm,&HardwareManager::slewLaser);
     connect(p_am,&AcquisitionManager::startCombPoint,p_hwm,&HardwareManager::beginCombPoint);
@@ -88,7 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(p_hwm,&HardwareManager::relockComplete,p_am,&AcquisitionManager::autoLockComplete);
 //    connect(p_am,&AcquisitionManager::startCombPoint,p_hwm,&HardwareManager::beginCombPoint);
     connect(p_hwm,&HardwareManager::readyForPoint,p_am,&AcquisitionManager::frequencyReady);
-
+    connect(p_hwm,&HardwareManager::pauseAcquisition,p_am,&AcquisitionManager::pauseScan);
     QThread *amThread = new QThread(this);
     connect(amThread,&QThread::started,p_am,&AcquisitionManager::initialize);
     connect(amThread,&QThread::finished,p_am,&AcquisitionManager::deleteLater);
@@ -237,6 +242,17 @@ void MainWindow::manualRelock()
         emit manualRelockComplete(true);
     else
         emit manualRelockComplete(false);
+}
+
+void MainWindow::manualPumpRelock(bool tripH)
+{
+    int ret = QMessageBox::question(this,QString("Manual Relock"),QString("AOM has reached trip. Press ok when the lock is restored, or press abort to terminate the scan."),QMessageBox::Ok|QMessageBox::Abort, QMessageBox::Ok);
+
+    if(ret == QMessageBox::Abort)
+        emit manualPumpRelockComplete(true, tripH);
+    else
+        emit manualPumpRelockComplete(false, tripH);
+
 }
 
 void MainWindow::scanInitialized(const Scan s)

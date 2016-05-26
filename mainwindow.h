@@ -45,6 +45,7 @@ public slots:
 	void configForSlew(bool slewing);
 
 	void manualRelock();
+    void manualPumpRelock(bool tripH);
 	void scanInitialized(const Scan s);
 	void batchComplete(bool aborted);
 	void combUpdate(FreqCombData d);
@@ -55,6 +56,7 @@ public slots:
 signals:
     void statusMessage(const QString);
     void manualRelockComplete(bool abort);
+    void manualPumpRelockComplete(bool abort,bool tripH);
 
 private:
 	Ui::MainWindow *ui;

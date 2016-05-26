@@ -61,6 +61,7 @@ public:
 	bool isAbortOnUnlock() const;
 	int delay() const;
 	QPair<double,double> cavityPZTRange() const;
+    QPair<double,double> counterRange() const;
 	QString endLogMessage() const;
 	NicerOhms::LogMessageCode endLogCode() const;
 	bool isHardwareActive(QString key) const;
@@ -80,8 +81,10 @@ public:
 	void setScanParams(double start, double stop, double step, int delay);
 	void addHardwareItem(QString key, bool active = true);
 	void setCavityPZTRange(double min, double max);
+    void setPumpLockRange(double min, double max);
 	void setAutoRelock(bool enabled);
 	void setAbortOnUnlock(bool abort);
+    void setPumpLock(bool enabled);
 	void setComments(QString c);
 	void finalSave();
 	void setIOBoardAnalog(QList<QPair<bool,NicerOhms::LabJackRange>> l);
@@ -101,7 +104,7 @@ class ScanData : public QSharedData
 {
 public:
 	ScanData() : type(Scan::LaserScan), number(0), isInitialized(false), hardwareSuccess(true), aborted(false), completedPoints(0),
-		totalPoints(0), autoLockEnabled(false), cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), scanDelay(0),
+        totalPoints(0), autoLockEnabled(false),  cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), pumpLockEnabled(false), counterMin(0.0), counterMax(0.0), scanDelay(0),
 		numDataPoints(0), redo(false), scanStart(0.0), scanStop(0.0), scanStep(0.0) {}
 
 	Scan::ScanType type;
@@ -114,6 +117,8 @@ public:
 	int totalPoints;
 	bool autoLockEnabled;
 	double cavityMin, cavityMax;
+    bool pumpLockEnabled;
+    double counterMin, counterMax;
 	bool abortOnUnlock;
 	int scanDelay;
 	int numDataPoints;

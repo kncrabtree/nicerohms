@@ -22,6 +22,7 @@ public slots:
     void endAcquisition();
     void readPointData();
     void relock();
+    void relockPump();
 
     // IOBoard interface
 public slots:
@@ -37,6 +38,7 @@ private:
     HANDLE u6Handle;
     u6CalibrationInfo calInfo;
     int d_relockChannel;
+    int d_pumpLockChannel;
 };
 
 #endif // IOBOARDU6_H

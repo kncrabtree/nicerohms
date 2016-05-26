@@ -12,16 +12,19 @@
 #include "datastructs.h"
 #include "scan.h"
 #include "freqcombdata.h"
+#include "frequencycounter.h"
 
 class HardwareObject;
 class Laser;
 class LockIn;
 class Wavemeter;
+class FrequencyCounter;
 class CavityPZTDriver;
 class IOBoard;
 class GpibController;
 class AomSynthesizer;
 class FrequencyComb;
+
 
 class HardwareManager : public QObject
 {
@@ -43,6 +46,7 @@ signals:
     void testComplete(QString,bool,QString);
     void beginAcquisition();
     void abortAcquisition();
+    void pauseAcquisition();
     void scanInitialized(Scan);
     void endAcquisition();
     void pointData(const QList<QPair<QString,QVariant>>, bool plot);
@@ -56,13 +60,17 @@ signals:
     void abortSlew();
 
     void wavemeterFreqUpdate(double);
+    void counterFreqUpdate(double);
     void updateWavemeterTimer();
+    void updateCounterTimer();
     void cavityPZTUpdate(double);
 
     void relockComplete(bool);
     void lockStateUpdate(bool);
-    void lockStateCheck(bool locked, double cavityVoltage);
+    void lockStateCheck(bool locked, double cavityVoltage, double counterF);
     void autoRelock();
+    void relockPump();
+    void requestPumpManualRelock();
 
     void aomSynthUpdate(double);
 
@@ -70,6 +78,7 @@ signals:
     void repRateUpdate(double);
     void setCombPumpBeat(bool);
     void setCombSignalBeat(bool);
+    void manualPumpRelockComp(bool abort);
     void readyForPoint();
 
 public slots:
@@ -100,8 +109,9 @@ public slots:
 
     double estimateLaserFrequency();
 
-    void checkLock(bool pztEnabled);
+    void checkLock(bool pztEnabled,bool pumpLockEnabled);
     double checkCavityVoltage();
+    void manualPumpRelockCheck(bool abort, bool tripH);
 
     double getAomFrequency();
     void setAomFrequency(double f);
@@ -114,6 +124,7 @@ public slots:
     void setCombOverrideDN(int dN);
     FreqCombData getLastCombReading();
 
+    double getCounterFrequency();
 private:
     QHash<QString,bool> d_status;
     void checkStatus();
@@ -121,6 +132,7 @@ private:
     Laser *p_laser;
     LockIn *p_lockIn1, *p_lockIn2;
     Wavemeter *p_wavemeter;
+    FrequencyCounter *p_counter;
     CavityPZTDriver *p_cavityPZT;
     IOBoard *p_iob;
     GpibController *p_gpibController;

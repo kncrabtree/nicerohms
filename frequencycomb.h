@@ -2,7 +2,7 @@
 #define FREQUENCYCOMB_H
 
 #include "hardwareobject.h"
-
+#include <QDebug>
 #include "freqcombdata.h"
 
 class FrequencyComb : public HardwareObject
@@ -26,14 +26,15 @@ public slots:
 	virtual FreqCombData readComb() =0;
 	virtual bool setRepRate(double target) =0;
 	void setIdlerFreq(double f) { d_currentIdlerFreq = f; }
-	void setAOMFreq(double f){ d_currentAOMFreq = f; }
+    void setAOMFreq(double f){ d_currentAOMFreq = f; }
+    void setCounterFreq(double f){d_currentCounterFreq = f;}
 	void setSignalBeat(bool pos){ d_signalBeatPositive = pos; }
 	void setPumpBeat(bool pos){ d_pumpBeatPositive = pos; }
 	FreqCombData getLastMeasurement() const { return d_lastMeasurement; }
 
 protected:
 	bool d_pumpBeatPositive, d_signalBeatPositive, d_overrideNext;
-	double d_currentDDSFreq, d_currentIdlerFreq, d_currentAOMFreq;
+    double d_currentDDSFreq, d_currentIdlerFreq, d_currentAOMFreq, d_currentCounterFreq;
 
 	int d_nextDeltaN;
 

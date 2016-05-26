@@ -90,9 +90,10 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		ui->wavemeterCheckBox->setEnabled(false);
 
         ui->SignalRadioButton->setChecked(true);
+        ui->pumpLockCheckBox->setChecked(true);
 
-		ui->aomCheckBox->setChecked(true);
-		ui->aomCheckBox->setEnabled(false);
+        ui->aomCheckBox->setChecked(false);
+        ui->aomCheckBox->setEnabled(false);
 
 
         emit setPumpSign(true);
@@ -207,8 +208,14 @@ BatchManager *ScanConfigWidget::toBatchManager()
 		s.setScanParams(0.0,ui->combLengthDoubleSpinBox->value(),ui->combStepDoubleSpinBox->value(),ui->combDelaySpinBox->value());
 
 		s.addHardwareItem(QString("wavemeter"),true);
-		s.addHardwareItem(QString("aomSynth"),true);
+        s.addHardwareItem(QString("aomSynth"),ui->aomCheckBox->isChecked());
 		s.addHardwareItem(QString("freqComb"),true);
+        s.addHardwareItem(QString("frequencyCounter"),ui->pumpLockCheckBox->isChecked());
+            if(ui->pumpLockCheckBox->isChecked())
+            {
+                s.setPumpLock(ui->pumpLockCheckBox->isChecked());
+
+            }
 	}
 
 	s.addHardwareItem(QString("cavityPZT"),ui->cavityPZTBox->isChecked());
@@ -313,6 +320,7 @@ void ScanConfigWidget::saveToSettings() const
 		s.setValue(QString("combStep"),ui->combStepDoubleSpinBox->value());
 		s.setValue(QString("combDelay"),ui->combDelaySpinBox->value());
         s.setValue(QString("signalLock"),ui->SignalRadioButton->isChecked());
+        s.setValue(QString("pumpLock"),ui->pumpLockCheckBox->isChecked());
 
 
 	}
@@ -422,4 +430,14 @@ void ScanConfigWidget::on_PumpToolButton_clicked(bool checked)
     emit setPumpSign(!checked);
 
 
+}
+
+void ScanConfigWidget::on_pumpLockCheckBox_toggled(bool checked)
+{
+    ui->aomCheckBox->setChecked(!checked);
+}
+
+void ScanConfigWidget::on_pumpRadioButton_toggled(bool checked)
+{
+    ui->pumpLockCheckBox->setChecked(false);
 }

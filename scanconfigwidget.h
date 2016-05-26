@@ -48,6 +48,10 @@ private slots:
 
     void on_SignalToolButton_clicked(bool checked);
 
+    void on_pumpLockCheckBox_toggled(bool checked);
+
+    void on_pumpRadioButton_toggled(bool checked);
+
 private:
 	Ui::ScanConfigWidget *ui;
 

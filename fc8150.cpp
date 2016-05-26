@@ -1,25 +1,25 @@
-#include "bristol621.h"
+#include "fc8150.h"
 #include "tcpinstrument.h"
-
-Bristol621::Bristol621(QObject *parent) :
-    Wavemeter(parent)
+#include <QDebug>
+FC8150::FC8150(QObject *parent) :
+    FrequencyCounter(parent)
 {
-    d_subKey = QString("Bristol621");
-    d_prettyName = QString("Bristol Wavemeter");
+    d_subKey = QString("FC8150");
+    d_prettyName = QString("Uni Frequency Counter");
     d_isCritical = false;
 
     p_comm = new TcpInstrument(d_key,d_subKey,this);
-    connect(p_comm,&CommunicationProtocol::logMessage,this,&Bristol621::logMessage);
+    connect(p_comm,&CommunicationProtocol::logMessage,this,&FC8150::logMessage);
     connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
 
 }
 
-Bristol621::~Bristol621()
+FC8150::~FC8150()
 {
 
 }
 
-bool Bristol621::testConnection()
+bool FC8150::testConnection()
 {
     p_timer->stop();
     p_comm->initialize();
@@ -27,6 +27,7 @@ bool Bristol621::testConnection()
 
     if(p_comm->queryCmd(QString('h').toLatin1()) != QByteArray())
     {
+
         readTimerInterval();
 
         p_timer->start();
@@ -35,43 +36,43 @@ bool Bristol621::testConnection()
     }
 
     emit connected(false,QString('could not connect'));
-
-
     readTimerInterval();
 
     p_timer->start();
     emit connected(false);
     return true;
+
 }
 
-void Bristol621::initialize()
+void FC8150::initialize()
 {
     testConnection();
-
 }
 
-Scan Bristol621::prepareForScan(Scan scan)
+Scan FC8150::prepareForScan(Scan scan)
 {
     if(d_isActive)
         scan.addNumDataPoints(1);
     return scan;
 }
 
-void Bristol621::readPointData()
+void FC8150::readPointData()
 {
     if(d_isActive)
     {
         QList<QPair<QString,QVariant>> out;
-        out.append(qMakePair(QString("wavemeter"),read()));
+        out.append(qMakePair(QString("frequencyCounter"),read()));
         emit pointDataRead(out);
     }
 }
 
-double Bristol621::read()
+double FC8150::read()
 {
     d_currentFreq = p_comm->queryCmd(QString('h').toLatin1()).toDouble();
     if(d_currentFreq > 1e16)
-        d_currentFreq = -1;
+        d_currentFreq = -1;//determine error trap
+
     emit freqUpdate(d_currentFreq);
     return d_currentFreq;
 }
+

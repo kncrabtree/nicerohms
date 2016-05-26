@@ -13,7 +13,8 @@ HEADERS += \
     $$PWD/bristol621.h \
     $$PWD/prologixusb.h \
     $$PWD/aom8657a.h \
-    $$PWD/menlocomb.h
+    $$PWD/menlocomb.h \
+    $$PWD/fc8150.h
 
 SOURCES += \
     $$PWD/virtuallaser.cpp \
@@ -30,4 +31,5 @@ SOURCES += \
     $$PWD/bristol621.cpp \
     $$PWD/prologixusb.cpp \
     $$PWD/aom8657a.cpp \
-    $$PWD/menlocomb.cpp
+    $$PWD/menlocomb.cpp \
+    $$PWD/fc8150.cpp

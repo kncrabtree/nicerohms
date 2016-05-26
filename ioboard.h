@@ -19,6 +19,8 @@ signals:
 public slots:
     virtual bool readCavityLocked() =0;
     virtual void relock() = 0;
+    virtual void relockPump() = 0;
+
 	void readIOSettings();
 
 protected:

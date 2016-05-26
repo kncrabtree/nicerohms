@@ -10,10 +10,13 @@ IOBoardU6::IOBoardU6(QObject *parent) :
     d_isCritical = true;
 
     d_relockChannel = 1;
+    d_pumpLockChannel =2;
 
     p_comm = new VirtualInstrument(d_key,this);
     connect(p_comm,&CommunicationProtocol::logMessage,this,&IOBoardU6::logMessage);
     connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){ emit hardwareFailure(); });
+
+
 
 }
 
@@ -53,6 +56,7 @@ bool IOBoardU6::testConnection()
 
     p_lockReadTimer->start();
     emit connected();
+    eDO(u6Handle,d_relockChannel,1);
     return true;
     }
 }
@@ -232,3 +236,8 @@ void IOBoardU6::relock()
     emit relockComplete(locked);
 }
 
+void IOBoardU6::relockPump()
+{
+    eDO(u6Handle,d_pumpLockChannel,1);//switches off and on integrator on pump lock box
+    eDO(u6Handle,d_pumpLockChannel,0);
+}

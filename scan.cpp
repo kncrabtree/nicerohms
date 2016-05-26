@@ -137,6 +137,11 @@ QPair<double, double> Scan::cavityPZTRange() const
 	return qMakePair(data->cavityMin,data->cavityMax);
 }
 
+QPair<double, double> Scan::counterRange() const
+{
+    return qMakePair(data->counterMin,data->counterMax);
+}
+
 QString Scan::endLogMessage() const
 {
 	return data->endLogMessage;
@@ -393,6 +398,14 @@ void Scan::setCavityPZTRange(double min, double max)
 	data->cavityMax = max;
 }
 
+void Scan::setPumpLockRange(double min, double max)
+{
+
+    data->counterMin = min;
+    data->counterMax = max;
+
+}
+
 void Scan::setAutoRelock(bool enabled)
 {
 	data->autoLockEnabled = enabled;
@@ -401,6 +414,11 @@ void Scan::setAutoRelock(bool enabled)
 void Scan::setAbortOnUnlock(bool abort)
 {
 	data->abortOnUnlock = abort;
+}
+
+void Scan::setPumpLock(bool enabled)
+{
+    data->pumpLockEnabled = enabled;
 }
 
 void Scan::setComments(QString c)

@@ -99,17 +99,15 @@ void AcquisitionManager::frequencyReady()
     if(d_currentState == WaitingForFrequency)
     {
 		d_currentState = WaitingForLockCheck;
-        QTimer::singleShot(d_currentScan.delay(),[=](){ emit checkLock(d_currentScan.isHardwareActive(QString("cavityPZT"))); });
-
-//        qDebug() << "delay" << d_currentScan.delay();
-
+        QTimer::singleShot(d_currentScan.delay(),[=](){ emit checkLock(d_currentScan.isHardwareActive(QString("cavityPZT")),d_currentScan.isHardwareActive(QString("frequencyCounter"))); });
 
 	}
 
 }
 
-void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
-{
+void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage,double counterF)
+{//add AOM manual relock call here
+
 	if(d_currentState == WaitingForLockCheck)
 	{
 		if(d_currentScan.isAutoLockEnabled() && locked)
@@ -121,19 +119,54 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
                     locked = false;
             }
 		}
+    }
 
 		if(locked)
 		{
-			d_currentState = Acquiring;
-			emit getPointData();
+            if(d_currentScan.isHardwareActive(QString("frequencyCounter")))
+            {
+                if(counterF > d_currentScan.counterRange().second||counterF<d_currentScan.counterRange().first)
+                {
+                    emit pumpRelock(counterF > d_currentScan.counterRange().second);
+                }
+                else
+                {
+                    d_currentState = Acquiring;
+                    emit getPointData();
+                }
+            }
+            else
+            {
+                d_currentState = Acquiring;
+                emit getPointData();
+            }
 		}
 		else
-		{
+        {
 			if(d_currentScan.isAutoLockEnabled())
 			{
-				d_currentState = WaitingForAutoLock;
+                if(d_currentScan.isHardwareActive(QString("frequencyCounter")))
+                {
+                    if(counterF > d_currentScan.counterRange().second||counterF<d_currentScan.counterRange().first)
+                    {
+                        d_currentState = WaitingForAutoLock;
+                        emit pumpRelock(counterF > d_currentScan.counterRange().second);
 
-				emit requestAutoLock();
+                    }
+                    else
+                    {
+                        d_currentState = WaitingForAutoLock;
+                        emit requestAutoLock();
+                    }
+
+
+                }
+                else
+                {
+                    d_currentState = WaitingForAutoLock;
+
+                    emit requestAutoLock();
+                }
 			}
             else
 			{
@@ -143,10 +176,19 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage)
 					abortScan();
                 }
 				else
-				{
-					d_currentState = WaitingForManualLock;
-
-					emit requestManualLock();
+                {//add fcounter rails here
+                    if(d_currentScan.isHardwareActive(QString("frequencyCounter")))
+                    {
+                        if(counterF > d_currentScan.counterRange().second||counterF<d_currentScan.counterRange().first)
+                        {
+                            d_currentState = WaitingForManualLock;
+                            emit pumpRelock(counterF > d_currentScan.counterRange().second);
+                        }
+                        else
+                        {
+                            d_currentState = WaitingForManualLock;
+                            emit requestManualLock();
+                        }
 				}
 			}
 		}
@@ -185,6 +227,19 @@ void AcquisitionManager::manualLockComplete(bool abort)
 		d_currentState = Acquiring;
 		emit getPointData();
 	}
+}
+
+void AcquisitionManager::manualPumpRelockComplete(bool abort)
+{
+    if(abort)
+        abortScan();
+    else
+    {
+        qDebug() << "manualPumpRelockComplete";
+        d_currentState = WaitingForFrequency;
+        frequencyReady();
+    }
+
 }
 
 void AcquisitionManager::abortScan()

@@ -2,7 +2,7 @@
 
 FrequencyComb::FrequencyComb(QObject *parent) :
 	HardwareObject(parent), d_pumpBeatPositive(true), d_signalBeatPositive(true), d_overrideNext(false), d_currentDDSFreq(0.0),
-	d_currentIdlerFreq(0.0), d_currentAOMFreq(0.0), d_nextDeltaN(-1)
+    d_currentIdlerFreq(0.0), d_currentAOMFreq(0.0),d_currentCounterFreq(0.0), d_nextDeltaN(-1)
 {
 	d_key = QString("freqComb");
 }

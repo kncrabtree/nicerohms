@@ -30,12 +30,13 @@ signals:
 	void scanComplete(Scan);
 	void startLaserPoint(double);
 	void startCombPoint(double);
-    void checkLock(bool cPZT);
+    void checkLock(bool cPZT, bool pLocked);
 	void requestAutoLock();
 	void requestManualLock();
 	void getPointData();
 	void pointComplete(int);
 	void plotData(QList<QPair<QString,QVariant>>,double);
+    void pumpRelock(bool tripHigh);
 
 public slots:
 	void initialize();
@@ -43,9 +44,10 @@ public slots:
 	void processData(QList<QPair<QString,QVariant>> l, bool plot);
 	void beginPoint();
 	void frequencyReady();
-	void lockCheckComplete(bool locked, double cavityVoltage);
+    void lockCheckComplete(bool locked, double cavityVoltage, double counterF);
 	void autoLockComplete(bool success);
 	void manualLockComplete(bool abort);
+    void manualPumpRelockComplete(bool abort);
 	void abortScan();
     void pauseScan();
 	void lockStateUpdate(bool locked);

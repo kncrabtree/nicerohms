@@ -102,11 +102,12 @@ FreqCombData MenloComb::readComb()
     out.setBeatSigns(d_pumpBeatPositive,d_signalBeatPositive);
     if(d_overrideNext)
     {
-        out.setDeltaN(d_nextDeltaN,d_currentAOMFreq);
+        out.setDeltaN(d_nextDeltaN,d_currentAOMFreq,d_currentCounterFreq);
+
         d_overrideNext = false;
     }
     else
-        out.setDeltaN(d_currentIdlerFreq,d_currentAOMFreq);
+        out.setDeltaN(d_currentIdlerFreq,d_currentAOMFreq,d_currentCounterFreq);
 
     d_lastMeasurement = out;
     d_currentDDSFreq = out.repRate()*10.0 - 980e6;

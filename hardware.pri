@@ -15,7 +15,8 @@ HEADERS += \
     $$PWD/aomsynthesizer.h \
     $$PWD/frequencycomb.h \
     $$PWD/u6.h \
-    $$PWD/xmlinstrument.h
+    $$PWD/xmlinstrument.h \
+    $$PWD/frequencycounter.h
 
 SOURCES += \
     $$PWD/hardwaremanager.cpp \
@@ -34,4 +35,5 @@ SOURCES += \
     $$PWD/aomsynthesizer.cpp \
     $$PWD/frequencycomb.cpp \
     $$PWD/u6.cpp \
-    $$PWD/xmlinstrument.cpp
+    $$PWD/xmlinstrument.cpp \
+    $$PWD/frequencycounter.cpp

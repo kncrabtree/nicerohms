@@ -39,7 +39,7 @@ QWidget *ReadCombAction::createWidget(QWidget *parent)
 	QWidgetAction *cfgwa = new QWidgetAction(cfgMenu);
 	QWidget *cfgw = new QWidget(parent);
 	QFormLayout *fl = new QFormLayout;
-/*
+/* //removed since these buttons did not update with ones in scanconfigwidget
 	QToolButton *pButton = new QToolButton(cfgw);
 	pButton->setText(QString("+"));
 	pButton->setCheckable(true);

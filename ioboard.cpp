@@ -17,6 +17,7 @@ IOBoard::~IOBoard()
 /*
 void IOBoard::relock()
 {
+ain0_759	ain1_759	ain2_759	ain3_759	ain8_759	ain9_759	deltaN_759
     emit relockComplete(true);
 }
 */
