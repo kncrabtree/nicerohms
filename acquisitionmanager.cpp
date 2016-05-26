@@ -127,7 +127,7 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage,dou
             {
                 if(counterF > d_currentScan.counterRange().second||counterF<d_currentScan.counterRange().first)
                 {
-                    emit pumpRelock(counterF > d_currentScan.counterRange().second);
+                    emit pumpRelock(counterF > d_currentScan.counterRange().second);//check if correct signal
                 }
                 else
                 {
@@ -235,7 +235,6 @@ void AcquisitionManager::manualPumpRelockComplete(bool abort)
         abortScan();
     else
     {
-        qDebug() << "manualPumpRelockComplete";
         d_currentState = WaitingForFrequency;
         frequencyReady();
     }

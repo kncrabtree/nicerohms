@@ -26,10 +26,16 @@ void FrequencyComb::setDeltaNOverride(int dN)
 {
 	if(dN > 0)
 	{
-		d_overrideNext = true;
+        d_overrideNext = true; //originally true
 		d_nextDeltaN = dN;
 	}
 	else
-		d_overrideNext = false;
+    {
+        d_overrideNext = false;//originally false
+
+    }
+
 }
+
+
 

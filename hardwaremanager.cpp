@@ -103,6 +103,7 @@ void HardwareManager::initialize()
     connect(p_counter,&FrequencyCounter::freqUpdate,p_freqComb,&FrequencyComb::setCounterFreq);
 	connect(this,&HardwareManager::setCombPumpBeat,p_freqComb,&FrequencyComb::setPumpBeat);
 	connect(this,&HardwareManager::setCombSignalBeat,p_freqComb,&FrequencyComb::setSignalBeat);
+//    connect(this,&HardwareManager::setNextDn,p_freqComb,&FrequencyComb::setNextDeltaN);
 	d_hardwareList.append(qMakePair(p_freqComb,nullptr));
 
 
@@ -284,6 +285,7 @@ void HardwareManager::beginScanInitialization(Scan s)
         //Add AOM lock parameters here
         //turn off deltaN override if it was left on
         setCombOverrideDN(-1);
+        emit setNextDn(-1);
 
 
         QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
@@ -307,6 +309,7 @@ void HardwareManager::beginScanInitialization(Scan s)
             else
             {
                 //note: can test wmr->stdev here
+                setCombIdlerFreq(wmr->freqMean());
 
                 completeScanInitialization(s);
             }
@@ -385,7 +388,6 @@ void HardwareManager::completeScanInitialization(Scan s, bool stageOneSuccess, Q
 
 void HardwareManager::beginCombPoint(double shiftMHz)
 {
-
     QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
     bool sigLock = set.value(QString("lastScanConfig/signalLock"),false).toBool();
     bool pumpLock = set.value(QString("lastScanConfig/pumpLock"),false).toBool();
@@ -401,6 +403,9 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     }
 
 	FreqCombData d = getLastCombReading();
+
+    setCombOverrideDN(d.deltaN());
+
 
 	//need to set rep rate, calculate what do do with aom and deltaN
 
@@ -443,7 +448,6 @@ void HardwareManager::beginCombPoint(double shiftMHz)
                 if(!pumpLock)
                 {
                     setCombOverrideDN(d.deltaN()-1);
-                    qDebug() << "ht siglock !pumplock" ;
                 }
             }
             else
@@ -451,7 +455,6 @@ void HardwareManager::beginCombPoint(double shiftMHz)
                 if(!pumpLock)
                 {
                 setCombOverrideDN(d.deltaN()+1);
-                qDebug() << "ht !siglock !pumplock" ;
                 }
             }
         }
@@ -470,7 +473,6 @@ void HardwareManager::beginCombPoint(double shiftMHz)
                 if(!pumpLock)
                 {
                     setCombOverrideDN(d.deltaN()+1);
-                    qDebug() << "lt siglock !pumplock" ;
                 }
             }
             else
@@ -478,7 +480,6 @@ void HardwareManager::beginCombPoint(double shiftMHz)
                 if(!pumpLock)
                 {
                     setCombOverrideDN(d.deltaN()-1);
-                    qDebug() << "lt !siglock !pumplock" ;
                 }
             }
         }
@@ -486,7 +487,10 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     else
     {
         if(!pumpLock)
+        {
             setCombOverrideDN(d.deltaN());
+        }
+
     }
 
     if(sigLock)
@@ -503,22 +507,6 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     if(!pumpLock)
     {
         setAomFrequency(nextAomFreq);
-    }
-    else
-    {
-
-        if(d.counterFreq()>ht)
-        {
-//            setCombOverrideDN(d.deltaN()-1);
-            qDebug() << "ht" ;
-//            emit pauseAcquisition();
-        }
-        else if(d.counterFreq()<lt)
-        {
-//            setCombOverrideDN(d.deltaN()+1);
-            qDebug() << "lt" ;
-//            emit pauseAcquisition();
-        }
     }
 
 
@@ -553,8 +541,11 @@ void HardwareManager::testAllConnections()
 
 void HardwareManager::getPointData()
 {
+
     for(int i=0; i<d_hardwareList.size(); i++)
         QMetaObject::invokeMethod(d_hardwareList.at(i).first,"readPointData");
+
+
 }
 
 void HardwareManager::cleanUpAfterScan()
@@ -576,7 +567,6 @@ double HardwareManager::estimateLaserFrequency()
 
 void HardwareManager::checkLock(bool pztEnabled, bool pumpLockEnabled)
 {
-
 	bool locked = false;
 
 	if(p_iob->thread() == thread())
@@ -685,6 +675,7 @@ void HardwareManager::readComb()
 {
 	//use wavemeterReadcontroller to get readings (TODO: use settings to get target reads...)
     //turn off deltaN override if it was left on
+
     setCombOverrideDN(-1);
 
     QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
@@ -734,7 +725,6 @@ void HardwareManager::setCombIdlerFreq(double f)
 
 void HardwareManager::setCombOverrideDN(int dN)
 {
-    qDebug() << "changing dN to " << dN;
 	if(p_freqComb->thread() == thread())
 		p_freqComb->setDeltaNOverride(dN);
 	else
@@ -771,12 +761,16 @@ void HardwareManager::checkStatus()
 
 void HardwareManager::manualPumpRelockCheck(bool abort, bool tripH)
 {
-    qDebug() << "hwm manPumprelockcheck";
     FreqCombData d = getLastCombReading();
     if(tripH)
+    {
         setCombOverrideDN(d.deltaN()-1);
+
+    }
     else
+    {
         setCombOverrideDN(d.deltaN()+1);
+    }
 
 
     emit manualPumpRelockComp(abort);

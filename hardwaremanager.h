@@ -80,6 +80,7 @@ signals:
     void setCombSignalBeat(bool);
     void manualPumpRelockComp(bool abort);
     void readyForPoint();
+    void setNextDn(int nextDN);
 
 public slots:
     void initialize();

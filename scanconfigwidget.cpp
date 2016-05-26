@@ -34,6 +34,8 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		double step = s.value(QString("laser/%1/controlStep").arg(sk),1.0).toDouble();
 		int dec = s.value(QString("laser/%1/decimals").arg(sk),3).toInt();
 
+
+
 		ui->laserStartDoubleSpinBox->setRange(min,max);
 		ui->laserStartDoubleSpinBox->setSuffix(units);
 		ui->laserStartDoubleSpinBox->setDecimals(dec);
@@ -104,6 +106,8 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		double length = s.value(QString("%1/combLength").arg(d_key),150.0).toDouble();
 		double step = s.value(QString("%1/combStep").arg(d_key),2.0).toDouble();
 		int lastDelay = s.value(QString("%1/combDelay").arg(d_key),1000).toInt();
+
+        slewLaser(s.value(QString("%1/laserStart").arg(d_key),0).toDouble());
 
 		ui->combLengthDoubleSpinBox->setValue(length);
 		ui->combStepDoubleSpinBox->setValue(step);

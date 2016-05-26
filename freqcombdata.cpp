@@ -2,7 +2,6 @@
 #include <QDebug>
 #include <QSettings>
 #include <QApplication>
-#include <QDebug>
 FreqCombData::FreqCombData() : data(new FreqCombDataData)
 {
 
@@ -96,14 +95,14 @@ double FreqCombData::calculatedIdlerFreq() const
     {
         if(pumpLock)
         {
-            return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) - 2.0*data->counterFreq;//change aom to counter frequency
+            return data->repRate*static_cast<double>(data->deltaN) + (-data->pumpBeat + data->signalBeat) - 2.0*data->counterFreq;//change aom to counter frequency, changed -pb + sb
 
         }
         else
         {
-            return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) - 2.0*data->aomFreq*1e6;
+            return data->repRate*static_cast<double>(data->deltaN) + (-data->pumpBeat + data->signalBeat) - 2.0*data->aomFreq*1e6;
 
-        }
+        }//changed to +pb - sb
 
 
     //Switched sign on AOM frequency to account for pump shift.
@@ -111,8 +110,8 @@ double FreqCombData::calculatedIdlerFreq() const
     }
     else
     {
-    return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) + 2.0*data->aomFreq*1e6;
-    }
+    return data->repRate*static_cast<double>(data->deltaN) + (-data->pumpBeat + data->signalBeat) + 2.0*data->aomFreq*1e6;
+    }//changed to -pb +sb
 
 
 }
@@ -190,11 +189,12 @@ void FreqCombData::setBeatSigns(bool pumpPositive, bool signalPositive)
 		data->signalBeat = -fabs(data->signalBeat);
 }
 
-void FreqCombData::setDeltaN(double idlerFreq, double aomFreq, double counterFreq)
+int FreqCombData::setDeltaN(double idlerFreq, double aomFreq, double counterFreq)
 {
+
     //add counter calc
 	if(data->repRate < 1.0)
-		return;
+        return 0.0;
 
 	data->aomFreq = aomFreq;
     data->counterFreq = counterFreq;
@@ -207,17 +207,18 @@ void FreqCombData::setDeltaN(double idlerFreq, double aomFreq, double counterFre
     {
         if(pumpLock)
         {
-            data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*counterFreq)/data->repRate);
-        }
+            data->deltaN = qRound((idlerFreq + data->pumpBeat - data->signalBeat + 2.0*counterFreq)/data->repRate);
+        }//changed to +pumpbeat - signalbeat + 2 counter
         else
         {
-            data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*aomFreq*1e6)/data->repRate);//check units aomfreq...changed to be in Hz
-        }
+            data->deltaN = qRound((idlerFreq + data->pumpBeat - data->signalBeat + 2.0*aomFreq*1e6)/data->repRate);//check units aomfreq...changed to be in Hz
+        }//changed to +pumpbeat - signalbeat + 2 aom
     }
     else
     {
-        data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat + 2.0*aomFreq)*1e6/data->repRate);
-    }
+        data->deltaN = qRound((idlerFreq + data->pumpBeat - data->signalBeat - 2.0*aomFreq)*1e6/data->repRate);
+    }//changed to +pump - signal -2aom
+    return data->deltaN;
 }
 
 void FreqCombData::setDeltaN(int dN, double aomFreq, double counterFreq)

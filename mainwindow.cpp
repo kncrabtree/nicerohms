@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(p_hwm,&HardwareManager::pointData,p_am,&AcquisitionManager::processData);
     connect(p_hwm,&HardwareManager::relockComplete,p_am,&AcquisitionManager::autoLockComplete);
 //    connect(p_am,&AcquisitionManager::startCombPoint,p_hwm,&HardwareManager::beginCombPoint);
-    connect(p_hwm,&HardwareManager::readyForPoint,p_am,&AcquisitionManager::frequencyReady);
+    connect(p_hwm,&HardwareManager::readyForPoint,p_am,&AcquisitionManager::frequencyReady);//check
     connect(p_hwm,&HardwareManager::pauseAcquisition,p_am,&AcquisitionManager::pauseScan);
     QThread *amThread = new QThread(this);
     connect(amThread,&QThread::started,p_am,&AcquisitionManager::initialize);
@@ -125,6 +125,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionIOBoard,&QAction::triggered,this,&MainWindow::launchIOBoardDialog);
     connect(ui->actionFrequency_Comb,&QAction::triggered,this,&MainWindow::launchFreqCombDialog);
     connect(ui->actionNum_Data_Plots,&QAction::triggered,ui->dataPlotWidget,&DataPlotViewWidget::changeNumPlots);
+
 
 
 

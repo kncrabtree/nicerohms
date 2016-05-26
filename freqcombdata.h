@@ -32,7 +32,7 @@ public:
 
 	void parseXml(const QDomDocument &d);
 	void setBeatSigns(bool pumpPositive, bool signalPositive);
-    void setDeltaN(double idlerFreq, double aomFreq,double counterFreq);
+    int setDeltaN(double idlerFreq, double aomFreq,double counterFreq);
     void setDeltaN(int dN, double aomFreq,double counterFreq);
 
 	//the following functions are not recommended for use outside a virtual implementation!

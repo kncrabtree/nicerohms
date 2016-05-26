@@ -22,6 +22,7 @@ signals:
 	void repRateUpdate(double);
 
 
+
 public slots:
 	virtual FreqCombData readComb() =0;
 	virtual bool setRepRate(double target) =0;
@@ -30,7 +31,8 @@ public slots:
     void setCounterFreq(double f){d_currentCounterFreq = f;}
 	void setSignalBeat(bool pos){ d_signalBeatPositive = pos; }
 	void setPumpBeat(bool pos){ d_pumpBeatPositive = pos; }
-	FreqCombData getLastMeasurement() const { return d_lastMeasurement; }
+    FreqCombData getLastMeasurement() const {d_nextDeltaN; return d_lastMeasurement; }
+
 
 protected:
 	bool d_pumpBeatPositive, d_signalBeatPositive, d_overrideNext;
