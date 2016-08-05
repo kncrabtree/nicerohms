@@ -62,7 +62,9 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		ui->laserStepDoubleSpinBox->setValue(lastStep);
 		ui->laserDelaySpinBox->setValue(lastDelay);
 
-        ui->cavityPZTBox->setChecked(false);
+        bool cb = s.value(QString("%1/cavityPZT").arg(d_key),false).toBool();
+        ui->cavityPZTBox->setChecked(cb);
+
 
 		bool wmAlive = s.value(QString("wavemeter/connected"),false).toBool();
 		bool wm = s.value(QString("%1/wavemeterEnabled").arg(d_key),true).toBool();
@@ -150,7 +152,7 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		ui->lowTripDoubleSpinBox->setValue(low);
 		ui->highTripDoubleSpinBox->setValue(high);
 
-		bool ar = s.value(QString("%1/autoRelock").arg(d_key),true).toBool();
+        bool ar = s.value(QString("%1/autoRelock").arg(d_key),false).toBool();
 		bool af = s.value(QString("%1/abortOnFail").arg(d_key),false).toBool();
 
 		ui->autoRelockCheckBox->setChecked(ar);
@@ -336,12 +338,15 @@ void ScanConfigWidget::saveToSettings() const
 
 	}
 
+    s.setValue(QString("cavityPZT"),ui->cavityPZTBox->isChecked());
+
 	if(ui->cavityPZTBox->isChecked())
 	{
 		s.setValue(QString("lowTrip"),ui->lowTripDoubleSpinBox->value());
 		s.setValue(QString("highTrip"),ui->highTripDoubleSpinBox->value());
 		s.setValue(QString("autoRelock"),ui->autoRelockCheckBox->isChecked());
 		s.setValue(QString("abortOnFail"),ui->abortOnFailCheckBox->isChecked());
+
 	}
 
 	if(ui->lockin1CheckBox->isEnabled())

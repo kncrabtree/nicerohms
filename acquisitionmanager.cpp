@@ -26,6 +26,7 @@ void AcquisitionManager::beginScan(Scan s)
 	}
 
 	d_currentScan = s;
+    paused = false;
 
 	d_currentState = Acquiring;
     if(s.type() == Scan::LaserScan)
@@ -84,9 +85,8 @@ void AcquisitionManager::beginPoint()
 {
 
 
-
-    if(d_currentState != Paused )
-    {
+     if(!paused)
+     {
         if(d_currentState == Acquiring || d_currentState == WaitingForRedo)
         {
             d_plotDataCache.clear();
@@ -96,8 +96,9 @@ void AcquisitionManager::beginPoint()
             else
                 emit startCombPoint(d_currentScan.combShift());
         }
+     }
 
-    }
+
 
 }
 
@@ -285,13 +286,14 @@ void AcquisitionManager::endAcquisition()
 
 void AcquisitionManager::pauseScan() //added to pause/resume in the middle of scans. CRM
 {
-    if(d_currentState != Paused)
+
+    if(!paused)
     {
-        d_currentState = Paused;
+        paused = true;
     }
     else
     {
-        d_currentState = Acquiring;
+        paused = false;
         beginPoint();
     }
 

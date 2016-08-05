@@ -570,6 +570,7 @@ double HardwareManager::estimateLaserFrequency()
 
 void HardwareManager::checkLock(bool pztEnabled, bool pumpLockEnabled)
 {
+
 	bool locked = false;
 
 	if(p_iob->thread() == thread())
@@ -617,6 +618,7 @@ double HardwareManager::checkCavityVoltage()
 		out = p_cavityPZT->readVoltage();
 	else
 		QMetaObject::invokeMethod(p_iob,"readVoltage",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
+
 
 	return out;
 }

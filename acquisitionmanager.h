@@ -15,13 +15,13 @@ public:
 	enum AcquisitionState {
 		Idle,
 		Acquiring,
-        Paused,
 		WaitingForFrequency,
 		WaitingForLockCheck,
 		WaitingForAutoLock,
 		WaitingForManualLock,
 		WaitingForRedo
 	};
+    bool paused;
 
 signals:
 	void logMessage(const QString,const NicerOhms::LogMessageCode = NicerOhms::LogNormal);
