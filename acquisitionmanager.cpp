@@ -83,15 +83,22 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 void AcquisitionManager::beginPoint()
 {
 
-	if(d_currentState == Acquiring || d_currentState == WaitingForRedo)
-	{		
-		d_plotDataCache.clear();
-		d_currentState = WaitingForFrequency;
-		if(d_currentScan.type() == Scan::LaserScan)
-			emit startLaserPoint(d_currentScan.currentPos());
-		else
-			emit startCombPoint(d_currentScan.combShift());
-	}
+
+
+    if(d_currentState != Paused )
+    {
+        if(d_currentState == Acquiring || d_currentState == WaitingForRedo)
+        {
+            d_plotDataCache.clear();
+            d_currentState = WaitingForFrequency;
+            if(d_currentScan.type() == Scan::LaserScan)
+                emit startLaserPoint(d_currentScan.currentPos());
+            else
+                emit startCombPoint(d_currentScan.combShift());
+        }
+
+    }
+
 }
 
 void AcquisitionManager::frequencyReady()
@@ -128,6 +135,7 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage,dou
                 if(counterF > d_currentScan.counterRange().second||counterF<d_currentScan.counterRange().first)
                 {
                     emit pumpRelock(counterF > d_currentScan.counterRange().second);//check if correct signal
+
                 }
                 else
                 {

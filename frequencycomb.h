@@ -30,7 +30,7 @@ public slots:
     void setAOMFreq(double f){ d_currentAOMFreq = f; }
     void setCounterFreq(double f){d_currentCounterFreq = f;}
 	void setSignalBeat(bool pos){ d_signalBeatPositive = pos; }
-	void setPumpBeat(bool pos){ d_pumpBeatPositive = pos; }
+    void setPumpBeat(bool pos){ d_pumpBeatPositive = pos; }
     FreqCombData getLastMeasurement() const {d_nextDeltaN; return d_lastMeasurement; }
 
 

@@ -98,5 +98,5 @@ double Aom8657A::readFrequency()
     //QByteArray resp = p_comm->queryCmd(QString("freq?\r\n"));
     // unfortunately the HP 8657a cannot respond -CRM
     emit frequencyUpdate(d_frequency);
-    return d_frequency;
+    return d_frequency;// should be converted to Hz
 }

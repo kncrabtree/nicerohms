@@ -62,6 +62,8 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		ui->laserStepDoubleSpinBox->setValue(lastStep);
 		ui->laserDelaySpinBox->setValue(lastDelay);
 
+        ui->cavityPZTBox->setChecked(false);
+
 		bool wmAlive = s.value(QString("wavemeter/connected"),false).toBool();
 		bool wm = s.value(QString("%1/wavemeterEnabled").arg(d_key),true).toBool();
 		if(!wmAlive)
@@ -86,6 +88,7 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 	}
 	else
 	{
+        connect(this,&ScanConfigWidget::stepOnce,this,&ScanConfigWidget::on_UpPushButton_clicked);
 		ui->laserScanBox->hide();
 
 		ui->wavemeterCheckBox->setChecked(true);
@@ -100,6 +103,8 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 
         emit setPumpSign(true);
         emit setSignalSign(true);
+        emit stepOnce();
+
 
 
 
@@ -220,7 +225,9 @@ BatchManager *ScanConfigWidget::toBatchManager()
                 s.setPumpLock(ui->pumpLockCheckBox->isChecked());
 
             }
-	}
+            emit setPumpSign(!ui->PumpToolButton->isChecked());
+            emit setSignalSign(!ui->SignalToolButton->isChecked());
+    }
 
 	s.addHardwareItem(QString("cavityPZT"),ui->cavityPZTBox->isChecked());
 	if(ui->cavityPZTBox->isChecked())
@@ -444,4 +451,9 @@ void ScanConfigWidget::on_pumpLockCheckBox_toggled(bool checked)
 void ScanConfigWidget::on_pumpRadioButton_toggled(bool checked)
 {
     ui->pumpLockCheckBox->setChecked(false);
+}
+
+void ScanConfigWidget::on_PumpToolButton_clicked()
+{
+
 }

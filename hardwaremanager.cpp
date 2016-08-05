@@ -330,18 +330,20 @@ void HardwareManager::completeScanInitialization(Scan s, bool stageOneSuccess, Q
         //do phase 2 initialization
         //if successful, call Scan::setInitialized()
 
-        if(p_counter->read()<180e6)
-        {
-            double min  = p_counter->read() - 5e6;
-            double max = min + 50e6;
-            s.setPumpLockRange(min,max);
-        }
-        else
-        {
-            double max  = p_counter->read() + 5e6;
-            double min = max - 50e6;
-            s.setPumpLockRange(min, max);
-        }
+
+        s.setPumpLockRange(p_counter->read() - 50e6,p_counter->read()+50e6);
+//        if(p_counter->read()<225e6)
+//        {
+//            double min  = p_counter->read() - 5e6;
+//            double max = min + 50e6;
+//            s.setPumpLockRange(min,max);
+//        }
+//        else
+//        {
+//            double max  = p_counter->read() + 5e6;
+//            double min = max - 50e6;
+//            s.setPumpLockRange(min, max);
+//        }
 
 
         bool success = true;
@@ -393,6 +395,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     bool pumpLock = set.value(QString("lastScanConfig/pumpLock"),false).toBool();
     double laserStart = set.value(QString("lastScanConfig/laserStart"),20).toDouble();
     double MHzToV = set.value(QString("lastScanConfig/MHzToV"),.003).toDouble();
+
 
     //if the shift is 0, then nothing needs to be done
 
