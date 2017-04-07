@@ -51,7 +51,7 @@ void LaserSlewAction::readLaserConfig()
     double step = fabs(s.value(QString("%1/controlStep").arg(subKey),1.0).toDouble());
     if(qFuzzyCompare(1.0+step,1.0))
         step = 1.0;
-    int decimals = s.value(QString("%1/decimals").arg(subKey),3).toInt();
+    int decimals = s.value(QString("%1/decimals").arg(subKey),4).toInt();
     QString units = s.value(QString("%1/%2/units").arg(subKey),QString(" V")).toString();
     if(!units.startsWith(QChar(' ')))
         units.prepend(QChar(' '));

@@ -32,7 +32,7 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		double min = s.value(QString("laser/%1/minPos").arg(sk),0.0).toDouble();
 		double max = s.value(QString("laser/%1/maxPos").arg(sk),150.0).toDouble();
 		double step = s.value(QString("laser/%1/controlStep").arg(sk),1.0).toDouble();
-		int dec = s.value(QString("laser/%1/decimals").arg(sk),3).toInt();
+        int dec = s.value(QString("laser/%1/decimals").arg(sk),4).toInt();
 
 
 

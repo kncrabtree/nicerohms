@@ -15,7 +15,7 @@ VirtualLaser::VirtualLaser(QObject *parent) :
 
     QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
     s.setValue(QString("%1/%2/controlStep").arg(d_key).arg(d_subKey),1.0);
-    s.setValue(QString("%1/%2/decimals").arg(d_key).arg(d_subKey),3);
+    s.setValue(QString("%1/%2/decimals").arg(d_key).arg(d_subKey),4);
     s.setValue(QString("%1/%2/units").arg(d_key).arg(d_subKey),QString("V"));
     s.setValue(QString("%1/%2/minPos").arg(d_key).arg(d_subKey),0.0);
     s.setValue(QString("%1/%2/maxPos").arg(d_key).arg(d_subKey),150.0);
