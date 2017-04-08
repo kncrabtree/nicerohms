@@ -216,7 +216,7 @@ int FreqCombData::setDeltaN(double idlerFreq, double aomFreq, double counterFreq
     }
     else
     {
-        data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*aomFreq)*1e6/data->repRate);
+        data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*aomFreq*1e6)/data->repRate);
     }//changed to +pump - signal -2aom
     return data->deltaN;
 }
