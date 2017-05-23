@@ -7,7 +7,7 @@
 #include <QThread>
 #include <QPair>
 #include <QVariant>
-
+#include <QTimer>
 
 #include "datastructs.h"
 #include "scan.h"
@@ -126,10 +126,16 @@ public slots:
     FreqCombData getLastCombReading();
 
     double getCounterFrequency();
+    void relockPumpToAom();
+    void setIntegrator(bool hold);
+
 private:
     QHash<QString,bool> d_status;
     void checkStatus();
 
+    QTimer *p_intTimer;
+    int relockStep;
+    double relockFrequency;
     Laser *p_laser;
     LockIn *p_lockIn1, *p_lockIn2;
     Wavemeter *p_wavemeter;

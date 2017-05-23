@@ -97,7 +97,7 @@ ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
 		ui->wavemeterCheckBox->setEnabled(false);
 
         ui->SignalRadioButton->setChecked(true);
-        ui->pumpLockCheckBox->setChecked(true);
+        ui->pumpLockRadioButton->setChecked(true);
 
         ui->aomCheckBox->setChecked(false);
         ui->aomCheckBox->setEnabled(false);
@@ -221,10 +221,10 @@ BatchManager *ScanConfigWidget::toBatchManager()
 		s.addHardwareItem(QString("wavemeter"),true);
         s.addHardwareItem(QString("aomSynth"),ui->aomCheckBox->isChecked());
 		s.addHardwareItem(QString("freqComb"),true);
-        s.addHardwareItem(QString("frequencyCounter"),ui->pumpLockCheckBox->isChecked());
-            if(ui->pumpLockCheckBox->isChecked())
+        s.addHardwareItem(QString("frequencyCounter"),ui->pumpLockRadioButton->isChecked());
+            if(ui->pumpLockRadioButton->isChecked())
             {
-                s.setPumpLock(ui->pumpLockCheckBox->isChecked());
+                s.setPumpLock(ui->pumpLockRadioButton->isChecked());
 
             }
             emit setPumpSign(!ui->PumpToolButton->isChecked());
@@ -333,7 +333,8 @@ void ScanConfigWidget::saveToSettings() const
 		s.setValue(QString("combStep"),ui->combStepDoubleSpinBox->value());
 		s.setValue(QString("combDelay"),ui->combDelaySpinBox->value());
         s.setValue(QString("signalLock"),ui->SignalRadioButton->isChecked());
-        s.setValue(QString("pumpLock"),ui->pumpLockCheckBox->isChecked());
+        s.setValue(QString("pumpLock"),ui->pumpLockRadioButton->isChecked());
+        s.setValue(QString("pumpLocktoAOM"),ui->pumpToAOMRadioButton->isChecked());
 
 
 	}
@@ -371,12 +372,18 @@ void ScanConfigWidget::on_SignalRadioButton_clicked()
 {
     ui->UpPushButton->setEnabled(true);
     ui->DownPushButton->setEnabled(true);
+    ui->pumpLockRadioButton->setEnabled(true);
+    ui->pumpToAOMRadioButton->setEnabled(true);
+    ui->feedForwardRadioButton->setEnabled(true);
 }
 
 void ScanConfigWidget::on_pumpRadioButton_clicked()
 {
     ui->UpPushButton->setEnabled(false);
     ui->DownPushButton->setEnabled(false);
+    ui->pumpLockRadioButton->setEnabled(false);
+    ui->pumpToAOMRadioButton->setEnabled(false);
+    ui->feedForwardRadioButton->setEnabled(false);
 }
 
 void ScanConfigWidget::on_UpPushButton_clicked()
@@ -448,14 +455,14 @@ void ScanConfigWidget::on_PumpToolButton_clicked(bool checked)
 
 }
 
-void ScanConfigWidget::on_pumpLockCheckBox_toggled(bool checked)
+void ScanConfigWidget::on_pumpLockRadioButton_toggled(bool checked)
 {
     ui->aomCheckBox->setChecked(!checked);
 }
 
 void ScanConfigWidget::on_pumpRadioButton_toggled(bool checked)
 {
-    ui->pumpLockCheckBox->setChecked(false);
+    ui->pumpLockRadioButton->setChecked(false);
 }
 
 void ScanConfigWidget::on_PumpToolButton_clicked()

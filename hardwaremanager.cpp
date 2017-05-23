@@ -1,7 +1,7 @@
 #include "hardwaremanager.h"
 
 #include <QSettings>
-
+#include <QTimer>
 #include "hardwareobject.h"
 #include "laser.h"
 #include "lockin.h"
@@ -105,6 +105,13 @@ void HardwareManager::initialize()
 	connect(this,&HardwareManager::setCombSignalBeat,p_freqComb,&FrequencyComb::setSignalBeat);
 //    connect(this,&HardwareManager::setNextDn,p_freqComb,&FrequencyComb::setNextDeltaN);
 	d_hardwareList.append(qMakePair(p_freqComb,nullptr));
+
+    //Make a timer for relocking the pump to the comb after shifting AOM
+    p_intTimer = new QTimer();
+    p_intTimer->setSingleShot(true);
+    connect(p_intTimer,&QTimer::timeout,this,&HardwareManager::relockPumpToAom);
+    relockStep = 0;
+
 
 
 	//write arrays of the connected devices for use in the Hardware Settings menu
@@ -393,6 +400,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
     bool sigLock = set.value(QString("lastScanConfig/signalLock"),false).toBool();
     bool pumpLock = set.value(QString("lastScanConfig/pumpLock"),false).toBool();
+    bool pumpToAOM = set.value(QString("lastScanConfig/pumpLocktoAOM"),false).toBool();
     double laserStart = set.value(QString("lastScanConfig/laserStart"),20).toDouble();
     double MHzToV = set.value(QString("lastScanConfig/MHzToV"),.003).toDouble();
 
@@ -420,12 +428,17 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 
 
     //figure out if aom needs ratchet
+    //set next AOM frequency here
+
 
     double nextAomFreq ;
 
     if(sigLock)
     {
-        nextAomFreq = d.aomFreq()*1e6 - (shiftMHz*1e6)/2 + (30e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
+        if(!pumpToAOM)
+            nextAomFreq = d.aomFreq()*1e6 - (shiftMHz*1e6)/2 + (30e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
+        else
+            nextAomFreq = d.aomFreq()*1e6 - shiftMHz*1e6/2 ;//when corrections sent to pump, just shift AOM by freq
     }
     else
     {
@@ -437,9 +450,8 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 
     //since we're not updating the comb's knowledge of the idler frequency, we need to tell it the mode number difference
 
-    if(nextAomFreq > ht)
+    if(nextAomFreq > ht && !pumpToAOM)
     {
-
         nextAomFreq -= 50e6;
 
         if(nextAomFreq<lt||nextAomFreq>ht)
@@ -462,9 +474,8 @@ void HardwareManager::beginCombPoint(double shiftMHz)
             }
         }
     }
-    else if(nextAomFreq < lt)
+    else if(nextAomFreq < lt&&!pumpToAOM)
     {
-
         nextAomFreq += 50e6;
 
         if(nextAomFreq<lt||nextAomFreq>ht)
@@ -498,9 +509,38 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 
     if(sigLock)
     {
+        if(!pumpToAOM)
+        {
         laserStart += shiftMHz*MHzToV;
         slewLaser(laserStart);
         set.setValue("lastScanConfig/laserStart",laserStart);
+        }
+        else
+        {
+            if(nextAomFreq >= ht)
+            {
+                relockFrequency = nextAomFreq - 50e6;
+                setCombOverrideDN(d.deltaN()-1);
+                p_intTimer->start(50);
+
+                //relockPumpToAom(nextAomFreq-50e6);
+                //emit readyForPoint();
+            }
+            else if(nextAomFreq <= lt)
+            {
+                relockFrequency = nextAomFreq + 50e6;
+                setCombOverrideDN(d.deltaN()+1);
+                p_intTimer->start(50);
+                //relockPumpToAom(nextAomFreq + 50e6);
+                //emit readyForPoint();
+            }
+            else
+            {
+                setAomFrequency(nextAomFreq);
+                emit readyForPoint();
+            }
+
+        }
     }
     else
     {
@@ -510,10 +550,11 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     if(!pumpLock)
     {
         setAomFrequency(nextAomFreq);
+        emit readyForPoint();
     }
 
 
-    emit readyForPoint();
+    //emit readyForPoint();
 }
 
 void HardwareManager::testObjectConnection(const QString type, const QString key)
@@ -779,7 +820,51 @@ void HardwareManager::manualPumpRelockCheck(bool abort, bool tripH)
 
 
     emit manualPumpRelockComp(abort);
+}
+
+void HardwareManager::setIntegrator(bool hold)
+{
+    if(p_iob->thread() == thread())
+        p_iob->holdIntegrator(hold);
+    else
+        QMetaObject::invokeMethod(p_iob,"holdIntegrator",Qt::BlockingQueuedConnection,Q_ARG(bool,hold));
+
+}
+
+void HardwareManager::relockPumpToAom()
+{
+    int delay1=100;
+    int delay2=50;
+    int delay3=1000;
+    if(relockStep==0)
+    {
+        setIntegrator(true);
+        relockStep = 1;
+        p_intTimer->start(delay1);
+
+    }
+    else if(relockStep==1)
+    {
+        setAomFrequency(relockFrequency);
+        relockStep=2;
+        p_intTimer->start(delay2);
+
+    }
+    else if(relockStep == 2)
+    {
+        setIntegrator(false);
+        p_intTimer->start(delay3);
+        relockStep=3;
+    }
+    else
+    {
+        qDebug() << "continueing";
+        relockStep=0;
+        emit readyForPoint();
+    }
 
 
+    //QTimer::singleShot(delay1,this,SLOT(setAomFrequency(f)));
+    //QTimer::singleShot(delay2,this,SLOT(setIntegrator(false)));
 
 }

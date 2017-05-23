@@ -210,8 +210,11 @@
         <item row="3" column="0">
          <widget class="QRadioButton" name="SignalRadioButton">
           <property name="text">
-           <string>Laser Scan</string>
+           <string>Rep Rate fixed</string>
           </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup</string>
+          </attribute>
          </widget>
         </item>
         <item row="3" column="1">
@@ -226,6 +229,9 @@
           <property name="text">
            <string>Rep Rate Scan</string>
           </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup</string>
+          </attribute>
          </widget>
         </item>
         <item row="4" column="1">
@@ -235,33 +241,47 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Pump</string>
+        <item row="5" column="0">
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QRadioButton" name="pumpLockRadioButton">
+          <property name="text">
+           <string>AOM-&gt; Pump</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup_2</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QRadioButton" name="pumpToAOMRadioButton">
+          <property name="text">
+           <string>pump-&gt; AOM</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup_2</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QRadioButton" name="feedForwardRadioButton">
+          <property name="text">
+           <string>feed forward</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup_2</string>
+          </attribute>
          </widget>
         </item>
         <item row="6" column="1">
          <widget class="QLabel" name="label_6">
           <property name="text">
            <string>Signal</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QToolButton" name="PumpToolButton">
-          <property name="text">
-           <string>+</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-          <property name="autoExclusive">
-           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -275,10 +295,26 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QCheckBox" name="pumpLockCheckBox">
+        <item row="8" column="1">
+         <widget class="QLabel" name="label_5">
           <property name="text">
-           <string>Pump Locked</string>
+           <string>Pump</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QToolButton" name="PumpToolButton">
+          <property name="text">
+           <string>+</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -593,4 +629,8 @@
   <include location="resources.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>
