@@ -11,7 +11,7 @@
 #include <QApplication>
 #include <QMessageBox>
 
-#include <QDebug>
+
 ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
      QWidget(parent),
 	ui(new Ui::ScanConfigWidget), d_type(t)
