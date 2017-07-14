@@ -11,6 +11,7 @@ IOBoardU6::IOBoardU6(QObject *parent) :
 
     d_relockChannel = 1;
     d_pumpLockChannel =2;
+    d_integratorChannel = 3;
 
     p_comm = new VirtualInstrument(d_key,this);
     connect(p_comm,&CommunicationProtocol::logMessage,this,&IOBoardU6::logMessage);
@@ -240,4 +241,9 @@ void IOBoardU6::relockPump()
 {
     eDO(u6Handle,d_pumpLockChannel,1);//switches off and on integrator on pump lock box
     eDO(u6Handle,d_pumpLockChannel,0);
+}
+void IOBoardU6::holdIntegrator(bool hold)
+{
+    eDO(u6Handle,d_integratorChannel,int(hold));//holds integrator
+
 }

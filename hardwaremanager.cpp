@@ -536,8 +536,10 @@ void HardwareManager::beginCombPoint(double shiftMHz)
             }
             else
             {
-                setAomFrequency(nextAomFreq);
-                emit readyForPoint();
+                relockFrequency = nextAomFreq;
+                p_intTimer->start(50);
+                //setAomFrequency(nextAomFreq);
+                //emit readyForPoint();
             }
 
         }
@@ -858,7 +860,6 @@ void HardwareManager::relockPumpToAom()
     }
     else
     {
-        qDebug() << "continueing";
         relockStep=0;
         emit readyForPoint();
     }
