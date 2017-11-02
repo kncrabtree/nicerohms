@@ -115,7 +115,6 @@ double LaserMDT694B::estimateFrequency()
 
 double LaserMDT694B::setPosition(double target)
 {
-
     p_comm->writeCmd(QString("XV%1\r").arg(target + offset).toLatin1());
 
     readPosition();
@@ -124,6 +123,7 @@ double LaserMDT694B::setPosition(double target)
 
 void LaserMDT694B::calibrate()
 {
+
     //removes offset between read/write
     if(d_currentPos>=3)
     {

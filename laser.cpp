@@ -51,7 +51,6 @@ void Laser::slewToPosition(double target)
 	{
 		setPosition(realTarget);
 
-
         emit slewComplete();
 
 	}

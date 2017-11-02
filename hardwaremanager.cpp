@@ -405,6 +405,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     double MHzToV = set.value(QString("lastScanConfig/MHzToV"),.003).toDouble();
 
 
+
     //if the shift is 0, then nothing needs to be done
 
     if(qFuzzyCompare(1.0+shiftMHz,1.0))
