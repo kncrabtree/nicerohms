@@ -9,7 +9,6 @@ LaserMDT694B::LaserMDT694B(QObject *parent)
     d_isCritical = true;
 
     p_comm = new Rs232Instrument(d_key,d_subKey,this);
-    offset = 0;
     connect(p_comm,&CommunicationProtocol::logMessage,this,&LaserMDT694B::logMessage);
     connect(p_comm,&CommunicationProtocol::hardwareFailure,[=](){emit hardwareFailure();});
 
@@ -115,6 +114,8 @@ double LaserMDT694B::estimateFrequency()
 
 double LaserMDT694B::setPosition(double target)
 {
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    double offset = s.value(QString("%1/laserOffset").arg(d_key),0.0).toDouble();
     p_comm->writeCmd(QString("XV%1\r").arg(target + offset).toLatin1());
 
     readPosition();
@@ -123,13 +124,16 @@ double LaserMDT694B::setPosition(double target)
 
 void LaserMDT694B::calibrate()
 {
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    s.beginGroup(d_key);
 
     //removes offset between read/write
     if(d_currentPos>=3)
     {
+
         double initial = d_currentPos;
         p_comm->writeCmd(QString("XV%1\r").arg(d_currentPos).toLatin1());
-        offset = initial - parse(p_comm->queryCmd("XR?\r"));
+        s.setValue(QString("laserOffset"), initial - parse(p_comm->queryCmd("XR?\r")));
 
     }
     else
@@ -137,8 +141,10 @@ void LaserMDT694B::calibrate()
         p_comm->writeCmd(QString("XV3\r").toLatin1());
         double initial = d_currentPos;
         p_comm->writeCmd(QString("XV%1\r").arg(d_currentPos).toLatin1());
-        offset = initial - parse(p_comm->queryCmd("XR?\r"));
+        s.setValue(QString("laserOffset"), initial - parse(p_comm->queryCmd("XR?\r")));
     }
+    s.endGroup();
+    s.sync();
 
 
 }

@@ -29,7 +29,6 @@ protected:
     double setPosition(double target);
     void disableEcho();
     void calibrate();
-    double offset;
     double parse(QByteArray response);
 
 };
