@@ -114,14 +114,11 @@ void AcquisitionManager::frequencyReady()
 }
 
 void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage,double counterF)
-{//add AOM manual relock call here
+{
 
 
 	if(d_currentState == WaitingForLockCheck)
 	{
-
-    //    if(d_currentScan.isAutoLockEnabled() && locked)
-        //{
             if(d_currentScan.isHardwareActive(QString("cavityPZT")))
             {
                 auto range = d_currentScan.cavityPZTRange();
@@ -134,12 +131,12 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage,dou
                 }
             }
 
-		}
+    }
 
     //}
 
 
-		if(locked)
+        if(locked)//If locked,check relock if pump locked
 		{
 
             if(d_currentScan.isHardwareActive(QString("frequencyCounter")))

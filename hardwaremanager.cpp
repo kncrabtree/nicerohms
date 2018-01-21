@@ -30,11 +30,11 @@ HardwareManager::~HardwareManager()
         QPair<HardwareObject*,QThread*> p = d_hardwareList.takeFirst();
         if(p.second != nullptr)
         {
-		   if(p.second->isRunning())
-		   {
-			   p.second->quit();
-			   p.second->wait();
-		   }
+           if(p.second->isRunning())
+           {
+               p.second->quit();
+               p.second->wait();
+           }
         }
         else
             p.first->deleteLater();
@@ -42,8 +42,8 @@ HardwareManager::~HardwareManager()
 }
 
 void HardwareManager::initialize()
-{    
-	//Laser does not need its own thread
+{
+    //Laser does not need its own thread
     p_laser = new LaserHardware();
     connect(this,&HardwareManager::slewLaser,p_laser,&Laser::slewToPosition);
     connect(p_laser,&Laser::laserPosChanged,this,&HardwareManager::laserPosUpdate);
@@ -52,18 +52,18 @@ void HardwareManager::initialize()
     connect(this,&HardwareManager::uiAbort,p_laser,&Laser::abortSlew);
     d_hardwareList.append(qMakePair(p_laser,nullptr));
 
-	//Lock ins may need their own threads since comms might be slow
-	p_lockIn1 = new LockIn1Hardware(1);
-	p_lockIn2 = new LockIn2Hardware(2);
-	d_hardwareList.append(qMakePair(p_lockIn1,new QThread(this)));
-	d_hardwareList.append(qMakePair(p_lockIn2,new QThread(this)));
+    //Lock ins may need their own threads since comms might be slow
+    p_lockIn1 = new LockIn1Hardware(1);
+    p_lockIn2 = new LockIn2Hardware(2);
+    d_hardwareList.append(qMakePair(p_lockIn1,new QThread(this)));
+    d_hardwareList.append(qMakePair(p_lockIn2,new QThread(this)));
 
-	//wavemeter unlikely to need its own thread unless reads are very slow
-	//calls are designed generally to be asynchronous
-	p_wavemeter = new WavemeterHardware();
+    //wavemeter unlikely to need its own thread unless reads are very slow
+    //calls are designed generally to be asynchronous
+    p_wavemeter = new WavemeterHardware();
     connect(p_wavemeter,&Wavemeter::freqUpdate,this,&HardwareManager::wavemeterFreqUpdate);
-	connect(this,&HardwareManager::updateWavemeterTimer,p_wavemeter,&Wavemeter::readTimerInterval);
-	d_hardwareList.append(qMakePair(p_wavemeter,nullptr));
+    connect(this,&HardwareManager::updateWavemeterTimer,p_wavemeter,&Wavemeter::readTimerInterval);
+    d_hardwareList.append(qMakePair(p_wavemeter,nullptr));
 
     //Frequency counter
     p_counter = new CounterHardware();
@@ -71,12 +71,12 @@ void HardwareManager::initialize()
     connect(this,&HardwareManager::updateCounterTimer,p_counter,&FrequencyCounter::readTimerInterval);
     d_hardwareList.append(qMakePair(p_counter,nullptr));
 
-	//cavity pzt driver probably does not need to be in its own thread
-	p_cavityPZT = new CavityPZTHardware();
-	connect(p_cavityPZT,&CavityPZTDriver::cavityPZTUpdate,this,&HardwareManager::cavityPZTUpdate);
-	d_hardwareList.append(qMakePair(p_cavityPZT,nullptr));
+    //cavity pzt driver probably does not need to be in its own thread
+    p_cavityPZT = new CavityPZTHardware();
+    connect(p_cavityPZT,&CavityPZTDriver::cavityPZTUpdate,this,&HardwareManager::cavityPZTUpdate);
+    d_hardwareList.append(qMakePair(p_cavityPZT,nullptr));
 
-	//ioboard probably does not need its own thread
+    //ioboard probably does not need its own thread
     p_iob = new IOBoardHardware();
     connect(p_iob,&IOBoard::relockComplete,this,&HardwareManager::relockComplete);
     connect(p_iob,&IOBoard::lockState,this,&HardwareManager::lockStateUpdate);
@@ -84,27 +84,27 @@ void HardwareManager::initialize()
     connect(this,&HardwareManager::relockPump,p_iob,&IOBoard::relockPump);
     d_hardwareList.append(qMakePair(p_iob,nullptr));
 
-	//GPIB controller may need its own thread, but may not...
-	//If GPIB controller has its own thread, then all GPIB instruments MUST be in that same thread
-	p_gpibController = new GpibControllerHardware();
-	QThread *gpibThread = nullptr;
-	d_hardwareList.append(qMakePair(p_gpibController,gpibThread));
+    //GPIB controller may need its own thread, but may not...
+    //If GPIB controller has its own thread, then all GPIB instruments MUST be in that same thread
+    p_gpibController = new GpibControllerHardware();
+    QThread *gpibThread = nullptr;
+    d_hardwareList.append(qMakePair(p_gpibController,gpibThread));
 
-	//Assuming AOM synth is a GPIB instrument...
-	p_aomSynth = new AomSynthesizerHardware(p_gpibController);
-	connect(p_aomSynth,&AomSynthesizer::frequencyUpdate,this,&HardwareManager::aomSynthUpdate);
-	d_hardwareList.append(qMakePair(p_aomSynth,gpibThread));
+    //Assuming AOM synth is a GPIB instrument...
+    p_aomSynth = new AomSynthesizerHardware(p_gpibController);
+    connect(p_aomSynth,&AomSynthesizer::frequencyUpdate,this,&HardwareManager::aomSynthUpdate);
+    d_hardwareList.append(qMakePair(p_aomSynth,gpibThread));
 
-	//freq comb might need thread, depending on how long network comms take (probably not)
-	p_freqComb = new FreqCombHardware();
-	connect(p_freqComb,&FrequencyComb::combUpdate,this,&HardwareManager::combUpdate);
-	connect(p_freqComb,&FrequencyComb::repRateUpdate,this,&HardwareManager::repRateUpdate);
-	connect(p_aomSynth,&AomSynthesizer::frequencyUpdate,p_freqComb,&FrequencyComb::setAOMFreq);
+    //freq comb might need thread, depending on how long network comms take (probably not)
+    p_freqComb = new FreqCombHardware();
+    connect(p_freqComb,&FrequencyComb::combUpdate,this,&HardwareManager::combUpdate);
+    connect(p_freqComb,&FrequencyComb::repRateUpdate,this,&HardwareManager::repRateUpdate);
+    connect(p_aomSynth,&AomSynthesizer::frequencyUpdate,p_freqComb,&FrequencyComb::setAOMFreq);
     connect(p_counter,&FrequencyCounter::freqUpdate,p_freqComb,&FrequencyComb::setCounterFreq);
-	connect(this,&HardwareManager::setCombPumpBeat,p_freqComb,&FrequencyComb::setPumpBeat);
-	connect(this,&HardwareManager::setCombSignalBeat,p_freqComb,&FrequencyComb::setSignalBeat);
+    connect(this,&HardwareManager::setCombPumpBeat,p_freqComb,&FrequencyComb::setPumpBeat);
+    connect(this,&HardwareManager::setCombSignalBeat,p_freqComb,&FrequencyComb::setSignalBeat);
 //    connect(this,&HardwareManager::setNextDn,p_freqComb,&FrequencyComb::setNextDeltaN);
-	d_hardwareList.append(qMakePair(p_freqComb,nullptr));
+    d_hardwareList.append(qMakePair(p_freqComb,nullptr));
 
     //Make a timer for relocking the pump to the comb after shifting AOM
     p_intTimer = new QTimer();
@@ -114,23 +114,23 @@ void HardwareManager::initialize()
 
 
 
-	//write arrays of the connected devices for use in the Hardware Settings menu
-	//first array is for all objects accessible to the hardware manager
-	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-	s.beginGroup(QString("hardware"));
-	s.remove("");
-	s.beginWriteArray("instruments");
-	for(int i=0;i<d_hardwareList.size();i++)
-	{
-		HardwareObject *obj = d_hardwareList.at(i).first;
-		s.setArrayIndex(i);
-		s.setValue(QString("key"),obj->key());
-		s.setValue(QString("subKey"),obj->subKey());
-		s.setValue(QString("prettyName"),obj->name());
-		s.setValue(QString("critical"),obj->isCritical());
-	}
-	s.endArray();
-	s.endGroup();
+    //write arrays of the connected devices for use in the Hardware Settings menu
+    //first array is for all objects accessible to the hardware manager
+    QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
+    s.beginGroup(QString("hardware"));
+    s.remove("");
+    s.beginWriteArray("instruments");
+    for(int i=0;i<d_hardwareList.size();i++)
+    {
+        HardwareObject *obj = d_hardwareList.at(i).first;
+        s.setArrayIndex(i);
+        s.setValue(QString("key"),obj->key());
+        s.setValue(QString("subKey"),obj->subKey());
+        s.setValue(QString("prettyName"),obj->name());
+        s.setValue(QString("critical"),obj->isCritical());
+    }
+    s.endArray();
+    s.endGroup();
 
     //now an array for all TCP instruments
     s.beginGroup(QString("tcp"));
@@ -186,7 +186,7 @@ void HardwareManager::initialize()
     s.endArray();
     s.endGroup();
 
-	s.sync();
+    s.sync();
 
     for(int i=0;i<d_hardwareList.size();i++)
     {
@@ -194,20 +194,20 @@ void HardwareManager::initialize()
         HardwareObject *obj = d_hardwareList.at(i).first;
 
         s.setValue(QString("%1/prettyName").arg(obj->key()),obj->name());
-	   s.setValue(QString("%1/subKey").arg(obj->key()),obj->subKey());
-	   s.setValue(QString("%1/connected").arg(obj->key()),false);
-	   s.setValue(QString("%1/critical").arg(obj->key()),obj->isCritical());
+       s.setValue(QString("%1/subKey").arg(obj->key()),obj->subKey());
+       s.setValue(QString("%1/connected").arg(obj->key()),false);
+       s.setValue(QString("%1/critical").arg(obj->key()),obj->isCritical());
 
-	   connect(obj,&HardwareObject::logMessage,[=](QString msg, NicerOhms::LogMessageCode mc){
+       connect(obj,&HardwareObject::logMessage,[=](QString msg, NicerOhms::LogMessageCode mc){
             emit logMessage(QString("%1: %2").arg(obj->name()).arg(msg),mc);
         });
         connect(obj,&HardwareObject::connected,[=](bool success, QString msg){ connectionResult(obj,success,msg); });
         connect(obj,&HardwareObject::hardwareFailure,[=](bool abort){ hardwareFailure(obj,abort); });
-	   connect(obj,&HardwareObject::pointDataRead,[=](QList<QPair<QString,QVariant>> l){ emit pointData(l,true);});
-	   connect(obj,&HardwareObject::pointDataReadNoPlot,[=](QList<QPair<QString,QVariant>> l){ emit pointData(l,false);});
+       connect(obj,&HardwareObject::pointDataRead,[=](QList<QPair<QString,QVariant>> l){ emit pointData(l,true);});
+       connect(obj,&HardwareObject::pointDataReadNoPlot,[=](QList<QPair<QString,QVariant>> l){ emit pointData(l,false);});
         connect(this,&HardwareManager::beginAcquisition,obj,&HardwareObject::beginAcquisition);
         connect(this,&HardwareManager::endAcquisition,obj,&HardwareObject::endAcquisition);
-	   connect(this,&HardwareManager::readPointData,obj,&HardwareObject::readPointData);
+       connect(this,&HardwareManager::readPointData,obj,&HardwareObject::readPointData);
 
         if(thread != nullptr)
         {
@@ -222,12 +222,12 @@ void HardwareManager::initialize()
     //now, start all threads
     for(int i=0;i<d_hardwareList.size();i++)
     {
-	   QThread *thread = d_hardwareList.at(i).second;
-	   if(thread != nullptr)
-	   {
-		   if(!thread->isRunning())
-			   thread->start();
-	   }
+       QThread *thread = d_hardwareList.at(i).second;
+       if(thread != nullptr)
+       {
+           if(!thread->isRunning())
+               thread->start();
+       }
     }
 
     connect(this,&HardwareManager::endAcquisition,this,&HardwareManager::cleanUpAfterScan);
@@ -236,14 +236,14 @@ void HardwareManager::initialize()
 void HardwareManager::connectionResult(HardwareObject *obj, bool success, QString msg)
 {
     if(success)
-	    emit logMessage(obj->name().append(QString(": Connected successfully.")));
+        emit logMessage(obj->name().append(QString(": Connected successfully.")));
     else
     {
-	    emit logMessage(obj->name().append(QString(": Failed to connect.")),NicerOhms::LogError);
-	    if(obj->isCritical())
-		    emit logMessage(msg,NicerOhms::LogError);
-	    else
-		    emit logMessage(msg,NicerOhms::LogWarning);
+        emit logMessage(obj->name().append(QString(": Failed to connect.")),NicerOhms::LogError);
+        if(obj->isCritical())
+            emit logMessage(msg,NicerOhms::LogError);
+        else
+            emit logMessage(msg,NicerOhms::LogWarning);
     }
 
     bool ok = success;
@@ -273,7 +273,7 @@ void HardwareManager::hardwareFailure(HardwareObject *obj, bool abort)
     s.sync();
 
     if(!obj->isCritical())
-	   return;
+       return;
 
     d_status[obj->key()] = false;
     checkStatus();
@@ -398,9 +398,9 @@ void HardwareManager::completeScanInitialization(Scan s, bool stageOneSuccess, Q
 void HardwareManager::beginCombPoint(double shiftMHz)
 {
     QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-    bool sigLock = set.value(QString("lastScanConfig/signalLock"),false).toBool();
-    bool pumpLock = set.value(QString("lastScanConfig/pumpLock"),false).toBool();
-    bool pumpToAOM = set.value(QString("lastScanConfig/pumpLocktoAOM"),false).toBool();
+    bool sigLock = set.value(QString("lastScanConfig/signalLock"),false).toBool();//Either scanning the Rep rate or not
+    bool pumpLock = set.value(QString("lastScanConfig/pumpLock"),false).toBool(); //Is pump locked to comb with AOM
+    bool pumpToAOM = set.value(QString("lastScanConfig/pumpLocktoAOM"),false).toBool();//Is pump locked to comb with laser voltage
     double laserStart = set.value(QString("lastScanConfig/laserStart"),20).toDouble();
     double MHzToV = set.value(QString("lastScanConfig/MHzToV"),.003).toDouble();
 
@@ -411,17 +411,17 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     if(qFuzzyCompare(1.0+shiftMHz,1.0))
     {
         emit readyForPoint();
-		return;
+        return;
     }
 
-	FreqCombData d = getLastCombReading();
+    FreqCombData d = getLastCombReading();
 
     setCombOverrideDN(d.deltaN());
 
 
-	//need to set rep rate, calculate what do do with aom and deltaN
+    //need to set rep rate, calculate what do do with aom and deltaN
 
-	double pumpFreqEstimate = estimateLaserFrequency();
+    double pumpFreqEstimate = estimateLaserFrequency();
     int pumpModeEstimate = qRound(pumpFreqEstimate/d.repRate());
     int signalModeEstimate = pumpModeEstimate - d.deltaN();
 
@@ -443,7 +443,9 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     }
     else
     {
-        nextAomFreq = d.aomFreq()*1e6 + static_cast<double>(signalModeEstimate)*repRateShift/2.0 + p_freqComb->signalSign()*(30e6 - fabs(d.signalBeat()))/2;//CRM: Corrected for difference of sbeat to 30 MHz to correct for initial offset and hysterisis in pump estimation. Also, aomFreq() needed to be multiplied by 10^6
+        nextAomFreq = d.aomFreq()*1e6 + static_cast<double>(signalModeEstimate)*repRateShift/2.0 + p_freqComb->signalSign()*(30e6 - fabs(d.signalBeat()))/2;
+        //CRM: Corrected for difference of sbeat to 30 MHz to correct for
+        //initial offset and hysterisis in pump estimation. Also, aomFreq() needed to be multiplied by 10^6
     }
 
     double lt = aomLowTrip();
@@ -451,6 +453,8 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 
     //since we're not updating the comb's knowledge of the idler frequency, we need to tell it the mode number difference
 
+    //For feed forward signal or pump, switch to next comb mode when out of range.
+    //If above, -1 for ff pump, +1 for ff signal
     if(nextAomFreq > ht && !pumpToAOM)
     {
         nextAomFreq -= 50e6;
@@ -459,14 +463,14 @@ void HardwareManager::beginCombPoint(double shiftMHz)
             nextAomFreq +=50e6;
         else
         {
-            if(sigLock)
+            if(sigLock)//If pump ff
             {
-                if(!pumpLock)
+                if(!pumpLock) //and AOM is not used to lock pump
                 {
                     setCombOverrideDN(d.deltaN()-1);
                 }
             }
-            else
+            else //is signal ff
             {
                 if(!pumpLock)
                 {
@@ -474,7 +478,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
                 }
             }
         }
-    }
+    }//if below, +1 for pump ff, -1 for signal ff
     else if(nextAomFreq < lt&&!pumpToAOM)
     {
         nextAomFreq += 50e6;
@@ -499,7 +503,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
             }
         }
     }
-    else
+    else //if not above or below with feed forward, no change
     {
         if(!pumpLock)
         {
@@ -508,7 +512,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 
     }
 
-    if(sigLock)
+    if(sigLock) //if doing pump feed forward, slew the pump. If rep rate scan, slew rep rate
     {
         if(!pumpToAOM)
         {
@@ -516,7 +520,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
         slewLaser(laserStart);
         set.setValue("lastScanConfig/laserStart",laserStart);
         }
-        else
+        else //attempt at locking pump and signal, including relocking the pump.
         {
             if(nextAomFreq >= ht)
             {
@@ -546,12 +550,13 @@ void HardwareManager::beginCombPoint(double shiftMHz)
         }
     }
     else
-    {
+    { //for signal feed forward, where scanned with rep rate
         setCombRepRate(d.repRate() + repRateShift);
     }
 
     if(!pumpLock)
     {
+        //if doing feed forward of pump or signal, send next aom
         setAomFrequency(nextAomFreq);
         emit readyForPoint();
     }
@@ -572,7 +577,7 @@ void HardwareManager::testObjectConnection(const QString type, const QString key
     if(obj == nullptr)
         emit testComplete(key,false,QString("Device not found!"));
     else
-	    QMetaObject::invokeMethod(obj,"testConnection");
+        QMetaObject::invokeMethod(obj,"testConnection");
 }
 
 void HardwareManager::testAllConnections()
@@ -602,22 +607,22 @@ void HardwareManager::cleanUpAfterScan()
 
 double HardwareManager::estimateLaserFrequency()
 {
-	if(p_laser->thread() == thread())
-		return p_laser->estimateFrequency();
-	else
-	{
-		double out;
-		QMetaObject::invokeMethod(p_laser,"estimateFrequency",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
-		return out;
-	}
+    if(p_laser->thread() == thread())
+        return p_laser->estimateFrequency();
+    else
+    {
+        double out;
+        QMetaObject::invokeMethod(p_laser,"estimateFrequency",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
+        return out;
+    }
 }
 
 void HardwareManager::checkLock(bool pztEnabled, bool pumpLockEnabled)
 {
 
-	bool locked = false;
+    bool locked = false;
 
-	if(p_iob->thread() == thread())
+    if(p_iob->thread() == thread())
     {
         if(pztEnabled)
             locked = p_iob->readCavityLocked();
@@ -625,8 +630,8 @@ void HardwareManager::checkLock(bool pztEnabled, bool pumpLockEnabled)
             locked = true;
 
     }
-	else
-		QMetaObject::invokeMethod(p_iob,"readCavityLocked",Qt::BlockingQueuedConnection,Q_RETURN_ARG(bool,locked));
+    else
+        QMetaObject::invokeMethod(p_iob,"readCavityLocked",Qt::BlockingQueuedConnection,Q_RETURN_ARG(bool,locked));
 
     if(!locked || !pztEnabled)
     {
@@ -638,8 +643,8 @@ void HardwareManager::checkLock(bool pztEnabled, bool pumpLockEnabled)
         else
             emit lockStateCheck(locked,-1.0,-1.0);
     }
-	else
-	{
+    else
+    {
         if(pumpLockEnabled)
         {
             double v = checkCavityVoltage();
@@ -657,14 +662,14 @@ void HardwareManager::checkLock(bool pztEnabled, bool pumpLockEnabled)
 
 double HardwareManager::checkCavityVoltage()
 {
-	double out = 0.0;
-	if(p_cavityPZT->thread() == thread())
-		out = p_cavityPZT->readVoltage();
-	else
-		QMetaObject::invokeMethod(p_iob,"readVoltage",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
+    double out = 0.0;
+    if(p_cavityPZT->thread() == thread())
+        out = p_cavityPZT->readVoltage();
+    else
+        QMetaObject::invokeMethod(p_iob,"readVoltage",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
 
 
-	return out;
+    return out;
 }
 
 double HardwareManager::getCounterFrequency()
@@ -678,21 +683,21 @@ double HardwareManager::getCounterFrequency()
 
 double HardwareManager::getAomFrequency()
 {
-	if(p_aomSynth->thread() == thread())
-		return p_aomSynth->getLastFrequency();
-	else
-	{
-		double out;
-		QMetaObject::invokeMethod(p_aomSynth,"getLastFrequency",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
-		return out;
-	}
+    if(p_aomSynth->thread() == thread())
+        return p_aomSynth->getLastFrequency();
+    else
+    {
+        double out;
+        QMetaObject::invokeMethod(p_aomSynth,"getLastFrequency",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
+        return out;
+    }
 }
 
 void HardwareManager::setAomFrequency(double f)
 {
-	if(p_aomSynth->thread() == thread())
-		p_aomSynth->setFrequency(f);
-	else
+    if(p_aomSynth->thread() == thread())
+        p_aomSynth->setFrequency(f);
+    else
         QMetaObject::invokeMethod(p_aomSynth,"setFrequency",Qt::BlockingQueuedConnection,Q_ARG(double,f));
 }
 
@@ -722,7 +727,7 @@ double HardwareManager::aomHighTrip()
 
 void HardwareManager::readComb()
 {
-	//use wavemeterReadcontroller to get readings (TODO: use settings to get target reads...)
+    //use wavemeterReadcontroller to get readings (TODO: use settings to get target reads...)
     //turn off deltaN override if it was left on
 
     setCombOverrideDN(-1);
@@ -733,63 +738,63 @@ void HardwareManager::readComb()
 
     WavemeterReadController *wmr = new WavemeterReadController(numReads);
     emit statusMessage(QString("Collecting %1 wavemeter readings to determine mode numbers...").arg(wmr->targetReads()));
-	connect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
+    connect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
     connect(this,&HardwareManager::uiAbort,wmr,&WavemeterReadController::abort);
-	connect(wmr,&WavemeterReadController::readsComplete,[=](bool aborted) {
-	    disconnect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
-	    disconnect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
+    connect(wmr,&WavemeterReadController::readsComplete,[=](bool aborted) {
+        disconnect(p_wavemeter,&Wavemeter::freqUpdate,wmr,&WavemeterReadController::readComplete);
+        disconnect(this,&HardwareManager::abortAcquisition,wmr,&WavemeterReadController::abort);
 
-	    if(!aborted)
-	    {
-		    //NOTE: can cancel read if stdev too high!
-		    setCombIdlerFreq(wmr->freqMean());
-		    QMetaObject::invokeMethod(p_freqComb,"readComb");
-	    }
-	    else
+        if(!aborted)
+        {
+            //NOTE: can cancel read if stdev too high!
+            setCombIdlerFreq(wmr->freqMean());
+            QMetaObject::invokeMethod(p_freqComb,"readComb");
+        }
+        else
         {
             FreqCombData out;
             out.setSuccess(false);
             emit combUpdate(out);
         }
-	    wmr->deleteLater();
+        wmr->deleteLater();
 
-	});
+    });
 }
 
 void HardwareManager::setCombRepRate(double f)
 {
-	if(p_freqComb->thread() == thread())
-		p_freqComb->setRepRate(f);
-	else
-		QMetaObject::invokeMethod(p_freqComb,"setRepRate",Qt::BlockingQueuedConnection,Q_ARG(double,f));
+    if(p_freqComb->thread() == thread())
+        p_freqComb->setRepRate(f);
+    else
+        QMetaObject::invokeMethod(p_freqComb,"setRepRate",Qt::BlockingQueuedConnection,Q_ARG(double,f));
 }
 
 void HardwareManager::setCombIdlerFreq(double f)
 {
-	if(p_freqComb->thread() == thread())
-		p_freqComb->setIdlerFreq(f);
-	else
-		QMetaObject::invokeMethod(p_freqComb,"setIdlerFreq",Q_ARG(double,f));
+    if(p_freqComb->thread() == thread())
+        p_freqComb->setIdlerFreq(f);
+    else
+        QMetaObject::invokeMethod(p_freqComb,"setIdlerFreq",Q_ARG(double,f));
 }
 
 void HardwareManager::setCombOverrideDN(int dN)
 {
-	if(p_freqComb->thread() == thread())
-		p_freqComb->setDeltaNOverride(dN);
-	else
-		QMetaObject::invokeMethod(p_freqComb,"setDeltaNOverride",Qt::BlockingQueuedConnection,Q_ARG(int,dN));
+    if(p_freqComb->thread() == thread())
+        p_freqComb->setDeltaNOverride(dN);
+    else
+        QMetaObject::invokeMethod(p_freqComb,"setDeltaNOverride",Qt::BlockingQueuedConnection,Q_ARG(int,dN));
 }
 
 FreqCombData HardwareManager::getLastCombReading()
 {
-	if(p_freqComb->thread() == thread())
-		return p_freqComb->getLastMeasurement();
-	else
-	{
-		FreqCombData out;
-		QMetaObject::invokeMethod(p_freqComb,"getLastMeasurement",Qt::BlockingQueuedConnection,Q_RETURN_ARG(FreqCombData,out));
-		return out;
-	}
+    if(p_freqComb->thread() == thread())
+        return p_freqComb->getLastMeasurement();
+    else
+    {
+        FreqCombData out;
+        QMetaObject::invokeMethod(p_freqComb,"getLastMeasurement",Qt::BlockingQueuedConnection,Q_RETURN_ARG(FreqCombData,out));
+        return out;
+    }
 }
 
 void HardwareManager::checkStatus()
