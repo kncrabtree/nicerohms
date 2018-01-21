@@ -14,7 +14,6 @@
 #include "wavemeterreadcontroller.h"
 #include "frequencycomb.h"
 
-
 #include <QDebug>
 
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
@@ -289,6 +288,7 @@ void HardwareManager::beginScanInitialization(Scan s)
     //if the comb is active, we need to go into the wavemeter read procedure
     if(s.type() == Scan::CombScan)
     {
+        useLoop = true;
         //Add AOM lock parameters here
         //turn off deltaN override if it was left on
         setCombOverrideDN(-1);
@@ -390,13 +390,15 @@ void HardwareManager::completeScanInitialization(Scan s, bool stageOneSuccess, Q
     }
 
     if(s.type() == Scan::LaserScan)
+    {
         connect(p_laser,&Laser::slewComplete,this,&HardwareManager::readyForPoint,Qt::UniqueConnection);
-
+    }
     emit scanInitialized(s);
 }
 
 void HardwareManager::beginCombPoint(double shiftMHz)
 {
+    qDebug() << "beginning comb point";
     QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
     bool sigLock = set.value(QString("lastScanConfig/signalLock"),false).toBool();//Either scanning the Rep rate or not
     bool pumpLock = set.value(QString("lastScanConfig/pumpLock"),false).toBool(); //Is pump locked to comb with AOM
@@ -437,7 +439,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     if(sigLock)
     {
         if(!pumpToAOM)
-            nextAomFreq = d.aomFreq()*1e6 - (shiftMHz*1e6)/2 + (30e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
+            nextAomFreq = d.aomFreq()*1e6 - (shiftMHz*1e6)/2 + (30.5e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
         else
             nextAomFreq = d.aomFreq()*1e6 - shiftMHz*1e6/2 ;//when corrections sent to pump, just shift AOM by freq
     }
@@ -557,11 +559,12 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     if(!pumpLock)
     {
         //if doing feed forward of pump or signal, send next aom
+        centerPump();
         setAomFrequency(nextAomFreq);
         emit readyForPoint();
     }
 
-
+    //need emit point for when pumpLock=True
     //emit readyForPoint();
 }
 
@@ -593,7 +596,6 @@ void HardwareManager::testAllConnections()
 
 void HardwareManager::getPointData()
 {
-
     for(int i=0; i<d_hardwareList.size(); i++)
         QMetaObject::invokeMethod(d_hardwareList.at(i).first,"readPointData");
 
@@ -602,7 +604,12 @@ void HardwareManager::getPointData()
 
 void HardwareManager::cleanUpAfterScan()
 {
-    connect(p_laser,&Laser::slewComplete,this,&HardwareManager::readyForPoint);
+    //Probably was originally supposed to be disconnect
+    //connect(p_laser,&Laser::slewComplete,this,&HardwareManager::readyForPoint);
+    disconnect(p_laser,&Laser::slewComplete,this,&HardwareManager::readyForPoint);
+    useLoop = false;
+
+
 }
 
 double HardwareManager::estimateLaserFrequency()
@@ -868,6 +875,7 @@ void HardwareManager::relockPumpToAom()
     {
         relockStep=0;
         emit readyForPoint();
+        qDebug() << "ready for point 882";
     }
 
 
@@ -875,3 +883,46 @@ void HardwareManager::relockPumpToAom()
     //QTimer::singleShot(delay2,this,SLOT(setIntegrator(false)));
 
 }
+
+void HardwareManager::centerPump()
+{
+    qDebug() << "Test loop";
+    int i=0;
+    QMetaObject::invokeMethod(p_freqComb,"readComb");
+    FreqCombData d;
+
+    double prevAomFreq = d.aomFreq();
+    double nextAomFreq = prevAomFreq;
+
+
+    QTime t;
+    t.start();
+
+    while(((fabs(d.pumpBeat()) < 30.25e6 || fabs(d.pumpBeat() > 30.75e6)))&&useLoop)
+    {
+        qDebug() << "\t loop " << i;
+        QMetaObject::invokeMethod(p_freqComb,"readComb");
+        d = getLastCombReading();
+        prevAomFreq = d.aomFreq();
+        nextAomFreq = prevAomFreq*1e6;
+
+        nextAomFreq += (30.5e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
+        qDebug() << "\t Pump beat" << d.pumpBeat()/1e6;
+        qDebug() << "\t Prev AOM" << d.aomFreq();
+        qDebug() << "\t next AOM" << nextAomFreq/1e6;
+
+        setAomFrequency(nextAomFreq);
+
+
+
+        t.restart();
+        while(true)
+        {
+            if(t.elapsed() > 1500)
+                break;
+        }
+        i+=1;
+    }
+    qDebug() << "\t Final pb: " << d.pumpBeat();
+}
+

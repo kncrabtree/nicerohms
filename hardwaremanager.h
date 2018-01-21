@@ -132,10 +132,13 @@ public slots:
 private:
     QHash<QString,bool> d_status;
     void checkStatus();
+    void centerPump();
 
     QTimer *p_intTimer;
     int relockStep;
     double relockFrequency;
+    bool useLoop;
+
     Laser *p_laser;
     LockIn *p_lockIn1, *p_lockIn2;
     Wavemeter *p_wavemeter;
@@ -145,6 +148,7 @@ private:
     GpibController *p_gpibController;
     AomSynthesizer *p_aomSynth;
     FrequencyComb *p_freqComb;
+
 
     QList<QPair<HardwareObject*,QThread*> > d_hardwareList;
 

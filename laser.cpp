@@ -32,7 +32,6 @@ void Laser::slewToPosition(double target)
 	if(d_slewing)
 		return;
 
-//    qDebug() << "slew" << target;
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
 	double minPos = s.value(QString("%1/%2/minPos").arg(d_key).arg(d_subKey),0.0).toDouble();
 	double maxPos = s.value(QString("%1/%2/maxPos").arg(d_key).arg(d_subKey),100.0).toDouble();
