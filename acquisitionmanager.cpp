@@ -35,7 +35,6 @@ void AcquisitionManager::beginScan(Scan s)
 	emit logMessage(s.startString(),NicerOhms::LogHighlight);
 	emit beginAcquisition();
 
-    qDebug() << "first point start";
 	beginPoint();
 
 }
@@ -69,7 +68,6 @@ void AcquisitionManager::processData(QList<QPair<QString, QVariant> > l, bool pl
 			{
 				if(d_currentState == WaitingForRedo)
                 {
-                    qDebug() << "begin point waiting for redeo";
 					beginPoint();
                 }
 				else
@@ -152,7 +150,6 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage,dou
                 }
                 else
                 {
-                    qDebug() << "getpoint 1";
                     d_currentState = Acquiring;
                     emit getPointData();
                 }
@@ -160,7 +157,6 @@ void AcquisitionManager::lockCheckComplete(bool locked, double cavityVoltage,dou
             else
             {
                 d_currentState = Acquiring;
-                qDebug() << "getPoint 2";
                 emit getPointData();
             }
 		}
@@ -226,7 +222,6 @@ void AcquisitionManager::autoLockComplete(bool success)
 		if(success)
 		{
 			d_currentState = Acquiring;
-            qDebug() << "getPoint3";
 			emit getPointData();
 		}
 		else
@@ -249,7 +244,6 @@ void AcquisitionManager::manualLockComplete(bool abort)
 	else
 	{
 		d_currentState = Acquiring;
-        qDebug() << "getpoint4";
         emit getPointData();
 	}
 }
@@ -291,7 +285,6 @@ void AcquisitionManager::checkScanComplete()
 		endAcquisition();
 	else
     {
-        qDebug() << "checkscancomplete beginpoint";
         beginPoint();
     }
 }

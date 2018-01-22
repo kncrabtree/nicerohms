@@ -398,7 +398,7 @@ void HardwareManager::completeScanInitialization(Scan s, bool stageOneSuccess, Q
 
 void HardwareManager::beginCombPoint(double shiftMHz)
 {
-    qDebug() << "beginning comb point";
+
     QSettings set(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
     bool sigLock = set.value(QString("lastScanConfig/signalLock"),false).toBool();//Either scanning the Rep rate or not
     bool pumpLock = set.value(QString("lastScanConfig/pumpLock"),false).toBool(); //Is pump locked to comb with AOM
@@ -412,8 +412,6 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 
     if(qFuzzyCompare(1.0+shiftMHz,1.0))
     {
-        if(!pumpLock)
-            centerPump();
         emit readyForPoint();
         return;
     }
@@ -511,6 +509,8 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     {
         if(!pumpLock)
         {
+            //changed to -1
+            //setCombOverrideDN(d.deltaN());
             setCombOverrideDN(d.deltaN());
         }
 
@@ -521,7 +521,6 @@ void HardwareManager::beginCombPoint(double shiftMHz)
         if(!pumpToAOM)
         {
         laserStart += shiftMHz*MHzToV;
-        qDebug() << "slewing laser";
         slewLaser(laserStart);
         set.setValue("lastScanConfig/laserStart",laserStart);
         }
@@ -600,7 +599,6 @@ void HardwareManager::testAllConnections()
 
 void HardwareManager::getPointData()
 {
-    qDebug() << "hm getpointata";
     for(int i=0; i<d_hardwareList.size(); i++)
         QMetaObject::invokeMethod(d_hardwareList.at(i).first,"readPointData");
 
@@ -880,7 +878,6 @@ void HardwareManager::relockPumpToAom()
     {
         relockStep=0;
         emit readyForPoint();
-        qDebug() << "ready for point 882";
     }
 
 
@@ -891,10 +888,11 @@ void HardwareManager::relockPumpToAom()
 
 void HardwareManager::centerPump()
 {
-    qDebug() << "Test loop";
+    qDebug() << "\rcenter pump";
     int i=0;
     QMetaObject::invokeMethod(p_freqComb,"readComb");
-    FreqCombData d;
+    FreqCombData d = getLastCombReading();
+    setCombOverrideDN(d.deltaN());
 
     double prevAomFreq = d.aomFreq();
     double nextAomFreq = prevAomFreq;
@@ -912,11 +910,11 @@ void HardwareManager::centerPump()
         nextAomFreq = prevAomFreq*1e6;
 
         nextAomFreq += (30.5e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
-        qDebug() << "\t Pump beat" << d.pumpBeat()/1e6;
-        qDebug() << "\t Prev AOM" << d.aomFreq();
-        qDebug() << "\t next AOM" << nextAomFreq/1e6;
+        qDebug() << "\t pump beat << " << d.pumpBeat()/1e6;
+        qDebug() << "\t next AOM " << nextAomFreq/1e6;
 
         setAomFrequency(nextAomFreq);
+        setCombOverrideDN(d.deltaN());
 
 
 
@@ -928,6 +926,5 @@ void HardwareManager::centerPump()
         }
         i+=1;
     }
-    qDebug() << "\t Final pb: " << d.pumpBeat();
 }
 

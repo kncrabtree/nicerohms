@@ -83,8 +83,6 @@ void MenloComb::readPointData()
         noPlotData.append(qMakePair(QString("replockv"),d.repRateLockVoltage()));
         noPlotData.append(qMakePair(QString("replocked"),d.repRateLocked()));
 
-        qDebug() << "comb point data, pump " << d.pumpBeat()/1e6;
-        qDebug() << "comb point data, AOM" << d.aomFreq();
         emit pointDataRead(plotData);
         emit pointDataReadNoPlot(noPlotData);
 
@@ -102,18 +100,16 @@ FreqCombData MenloComb::readComb()
     out.parseXml(document);
 
     out.setBeatSigns(d_pumpBeatPositive,d_signalBeatPositive);
+    //Supposed to use override, unless it is first point, then setDeltaN calculates first deltaN
     if(d_overrideNext)//changed from override next to >0
     {
-        out.setDeltaN(d_nextDeltaN,d_currentAOMFreq,d_currentCounterFreq);
+        out.setDeltaN(d_nextDeltaN,d_currentAOMFreq,d_currentCounterFreq);//overload
 
         d_overrideNext = false;
     }
     else
     {
         d_nextDeltaN = out.setDeltaN(d_currentIdlerFreq,d_currentAOMFreq,d_currentCounterFreq);
-
-
-
     }
 
     d_lastMeasurement = out;
