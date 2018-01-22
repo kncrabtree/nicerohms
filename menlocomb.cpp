@@ -83,6 +83,8 @@ void MenloComb::readPointData()
         noPlotData.append(qMakePair(QString("replockv"),d.repRateLockVoltage()));
         noPlotData.append(qMakePair(QString("replocked"),d.repRateLocked()));
 
+        qDebug() << "comb point data, pump " << d.pumpBeat()/1e6;
+        qDebug() << "comb point data, AOM" << d.aomFreq();
         emit pointDataRead(plotData);
         emit pointDataReadNoPlot(noPlotData);
 

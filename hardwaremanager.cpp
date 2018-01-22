@@ -412,6 +412,8 @@ void HardwareManager::beginCombPoint(double shiftMHz)
 
     if(qFuzzyCompare(1.0+shiftMHz,1.0))
     {
+        if(!pumpLock)
+            centerPump();
         emit readyForPoint();
         return;
     }
@@ -519,6 +521,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
         if(!pumpToAOM)
         {
         laserStart += shiftMHz*MHzToV;
+        qDebug() << "slewing laser";
         slewLaser(laserStart);
         set.setValue("lastScanConfig/laserStart",laserStart);
         }
@@ -559,8 +562,9 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     if(!pumpLock)
     {
         //if doing feed forward of pump or signal, send next aom
-        centerPump();
         setAomFrequency(nextAomFreq);
+        centerPump();
+
         emit readyForPoint();
     }
 
@@ -596,6 +600,7 @@ void HardwareManager::testAllConnections()
 
 void HardwareManager::getPointData()
 {
+    qDebug() << "hm getpointata";
     for(int i=0; i<d_hardwareList.size(); i++)
         QMetaObject::invokeMethod(d_hardwareList.at(i).first,"readPointData");
 
