@@ -901,7 +901,7 @@ void HardwareManager::centerPump()
     QTime t;
     t.start();
 
-    while(((fabs(d.pumpBeat()) < 30.25e6 || fabs(d.pumpBeat() > 30.75e6)))&&useLoop)
+    while(((fabs(d.pumpBeat()) < 30.25e6 || fabs(d.pumpBeat()) > 30.75e6))&&useLoop)
     {
         qDebug() << "\t loop " << i;
         QMetaObject::invokeMethod(p_freqComb,"readComb");

@@ -75,9 +75,9 @@ void MenloComb::readPointData()
 
         plotData.append(qMakePair(QString("reprate"),d.repRate()));
         plotData.append(qMakePair(QString("idler"),d.calculatedIdlerFreq()));
-
         noPlotData.append(qMakePair(QString("offsetBeat"),d.offsetBeat()));
         noPlotData.append(qMakePair(QString("pumpBeat"),d.pumpBeat()));
+        qDebug() << "\tfinal pump " << d.pumpBeat() / 1e6;
         noPlotData.append(qMakePair(QString("signalBeat"),d.signalBeat()));
         noPlotData.append(qMakePair(QString("deltaN"),d.deltaN()));
         noPlotData.append(qMakePair(QString("replockv"),d.repRateLockVoltage()));

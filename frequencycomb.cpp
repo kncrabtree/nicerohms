@@ -34,8 +34,6 @@ void FrequencyComb::setDeltaNOverride(int dN)
         d_overrideNext = false;//originally false
 
     }
-    qDebug() << "\t\tsetDeltaNOverride " << d_overrideNext << " Next: " << d_nextDeltaN;
-
 
 }
 
