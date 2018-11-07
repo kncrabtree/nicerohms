@@ -110,8 +110,8 @@ double FreqCombData::calculatedIdlerFreq() const
     }
     else
     {
-        qDebug() << "Else, line 113";
-    return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) + 2.0*data->aomFreq*1e6;
+    return data->repRate*static_cast<double>(data->deltaN)+data->signalBeat + data->offsetBeat;
+    //return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) + 2.0*data->aomFreq*1e6;
     }
 
 
@@ -217,7 +217,9 @@ int FreqCombData::setDeltaN(double idlerFreq, double aomFreq, double counterFreq
     }
     else
     {
-        data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*aomFreq*1e6)/data->repRate);
+        qDebug() << "else set dN";
+        data->deltaN = qRound((idlerFreq -data->signalBeat-data->offsetBeat)/data->repRate);
+        ;data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*aomFreq*1e6)/data->repRate);
     }//changed to +pump - signal -2aom
     return data->deltaN;
 }
