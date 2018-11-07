@@ -555,14 +555,20 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     }
     else
     { //for signal feed forward, where scanned with rep rate
+        //repRateShift = shiftMHz*1e6/qRound(pumpFreqEstimate/d.repRate())
+        repRateShift = shiftMHz*1e6/1500000;//estimating 2 um signal
         setCombRepRate(d.repRate() + repRateShift);
+
+        emit readyForPoint(); //Added here for A module scanning where there is no AOM
     }
+
 
     if(!pumpLock)
     {
         //if doing feed forward of pump or signal, send next aom
         setAomFrequency(nextAomFreq);
         centerPump();
+        //qDebug() << "emit readyForPoint";
 
         emit readyForPoint();
     }

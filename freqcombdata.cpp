@@ -110,6 +110,7 @@ double FreqCombData::calculatedIdlerFreq() const
     }
     else
     {
+        qDebug() << "Else, line 113";
     return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) + 2.0*data->aomFreq*1e6;
     }
 
