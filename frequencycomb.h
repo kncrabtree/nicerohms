@@ -35,7 +35,7 @@ public slots:
 
 
 protected:
-	bool d_pumpBeatPositive, d_signalBeatPositive, d_overrideNext;
+    bool d_pumpBeatPositive, d_signalBeatPositive, d_overrideNext;
     double d_currentDDSFreq, d_currentIdlerFreq, d_currentAOMFreq, d_currentCounterFreq;
 
 	int d_nextDeltaN;

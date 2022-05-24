@@ -1,4 +1,4 @@
-#-------------------------------------------------
+.#-------------------------------------------------
 #
 # Project created by QtCreator 2015-05-23T09:29:32
 #
@@ -48,7 +48,7 @@ DEFINES += NICEROHMS_GPIBCONTROLLER=1
 DEFINES += NICEROHMS_AOMSYNTH=1
 
 #Frequency Comb. 0 = Virtual, 1 = Menlo
-DEFINES += NICEROHMS_FREQCOMB=1
+DEFINES += NICEROHMS_FREQCOMB=0
 
 QMAKE_CXXFLAGS += -std=c++11
 

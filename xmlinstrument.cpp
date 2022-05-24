@@ -1,5 +1,5 @@
 #include "xmlinstrument.h"
-
+#include <QDebug>
 XmlInstrument::XmlInstrument(QString key, QString subKey,QObject *parent) :
     CommunicationProtocol(CommunicationProtocol::Custom,key,subKey,parent)
 {
@@ -21,12 +21,14 @@ QByteArray XmlInstrument::queryCmd(QString cmd)
 
 
     QSettings s(QSettings::SystemScope, QApplication::organizationName(), QApplication::applicationName());
+
     s.beginGroup(d_key);
+    QString ip= s.value(QString("uri").arg(d_key)).toString();
 
 
 
-    QUrl url(s.value(QString("URL"),QString("http://172.22.124.102:8123/RPC2")).toString());
-
+//    QUrl url(s.value(QString("URL"),QString("http://192.168.0.20:8123/RPC2")).toString());
+    QUrl url(s.value(QString("URL"),QString("http://%1:8123/RPC2").arg(ip)).toString());
     QByteArray userAgent = s.value(QString("User-Agent"),QString("NICER-OHMS Acquisition Software")).toByteArray();
 
     QByteArray host = s.value(QString("Host"),QString("")).toByteArray();
@@ -50,6 +52,7 @@ QByteArray XmlInstrument::queryCmd(QString cmd)
     loop.exec();
 
     QByteArray Reply = nReply->readAll();
+
 
     return Reply;
 }

@@ -375,6 +375,7 @@ void ScanConfigWidget::on_SignalRadioButton_clicked()
     ui->pumpLockRadioButton->setEnabled(true);
     ui->pumpToAOMRadioButton->setEnabled(true);
     ui->feedForwardRadioButton->setEnabled(true);
+    ui->label_5->setText("Pump");
 }
 
 void ScanConfigWidget::on_pumpRadioButton_clicked()
@@ -384,6 +385,7 @@ void ScanConfigWidget::on_pumpRadioButton_clicked()
     ui->pumpLockRadioButton->setEnabled(false);
     ui->pumpToAOMRadioButton->setEnabled(false);
     ui->feedForwardRadioButton->setEnabled(false);
+    ui->label_5->setText("Offset");
 }
 
 void ScanConfigWidget::on_UpPushButton_clicked()

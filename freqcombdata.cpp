@@ -100,7 +100,8 @@ double FreqCombData::calculatedIdlerFreq() const
         }
         else
         {
-            return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) - 2.0*data->aomFreq*1e6;
+            return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) + 2.0*data->aomFreq*1e6;
+            //return data->repRate*static_cast<double>(data->deltaN) + (data->pumpBeat - data->signalBeat) - 2.0*data->aomFreq*1e6;//orignal method
 
         }
 
@@ -188,6 +189,12 @@ void FreqCombData::setBeatSigns(bool pumpPositive, bool signalPositive)
 		data->signalBeat = fabs(data->signalBeat);
 	else
 		data->signalBeat = -fabs(data->signalBeat);
+    //quick hack, setting offset = pump beat. Currently, scans use one or the other, so basing
+    // pump offset on 'pump beat' bool. Should be changed if need pump and offset beat simultaneously
+    if(pumpPositive)
+        data->offsetBeat = fabs(data->offsetBeat);
+    else
+        data->offsetBeat = -fabs(data->offsetBeat);
 }
 
 int FreqCombData::setDeltaN(double idlerFreq, double aomFreq, double counterFreq)
@@ -212,14 +219,14 @@ int FreqCombData::setDeltaN(double idlerFreq, double aomFreq, double counterFreq
         }//changed to +pumpbeat - signalbeat + 2 counter
         else
         {
-            data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat + 2.0*aomFreq*1e6)/data->repRate);//check units aomfreq...changed to be in Hz
+            data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*aomFreq*1e6)/data->repRate);//check units aomfreq...changed to be in Hz
+            //data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat + 2.0*aomFreq*1e6)/data->repRate);//original with other AOM order
         }//changed to +pumpbeat - signalbeat + 2 aom
     }
     else
     {
-        qDebug() << "else set dN";
         data->deltaN = qRound((idlerFreq -data->signalBeat-data->offsetBeat)/data->repRate);
-        ;data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*aomFreq*1e6)/data->repRate);
+        data->deltaN = qRound((idlerFreq - data->pumpBeat + data->signalBeat - 2.0*aomFreq*1e6)/data->repRate);
     }//changed to +pump - signal -2aom
     return data->deltaN;
 }

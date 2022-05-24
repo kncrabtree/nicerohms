@@ -439,7 +439,11 @@ void HardwareManager::beginCombPoint(double shiftMHz)
     if(sigLock)
     {
         if(!pumpToAOM)
-            nextAomFreq = d.aomFreq()*1e6 - (shiftMHz*1e6)/2 + (30.5e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
+        {
+            nextAomFreq = d.aomFreq()*1e6 + (shiftMHz*1e6)/2 - (30.5e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;//now that aom subtracts
+            //nextAomFreq = d.aomFreq()*1e6 - (shiftMHz*1e6)/2 + (30.5e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;//original when AOM added
+        qDebug() << "nextAOM445:" << nextAomFreq;
+        }
         else
             nextAomFreq = d.aomFreq()*1e6 - shiftMHz*1e6/2 ;//when corrections sent to pump, just shift AOM by freq
     }
@@ -469,7 +473,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
             {
                 if(!pumpLock) //and AOM is not used to lock pump
                 {
-                    setCombOverrideDN(d.deltaN()-1);
+                    setCombOverrideDN(d.deltaN()+1);//changed from +1 due to taking negative AOM
                 }
             }
             else //is signal ff
@@ -493,7 +497,7 @@ void HardwareManager::beginCombPoint(double shiftMHz)
             {
                 if(!pumpLock)
                 {
-                    setCombOverrideDN(d.deltaN()+1);
+                    setCombOverrideDN(d.deltaN()-1);//Changed from +1 due to using other AOM diffraction
                 }
             }
             else
@@ -907,15 +911,15 @@ void HardwareManager::centerPump()
     QTime t;
     t.start();
 
-    while(((fabs(d.pumpBeat()) < 30.25e6 || fabs(d.pumpBeat()) > 30.75e6))&&useLoop)
+    while(((fabs(d.pumpBeat()) < 30.0e6 || fabs(d.pumpBeat()) > 31e6))&&useLoop)//originally 30.25 and 30.75
     {
         qDebug() << "\t loop " << i;
         QMetaObject::invokeMethod(p_freqComb,"readComb");
         d = getLastCombReading();
         prevAomFreq = d.aomFreq();
         nextAomFreq = prevAomFreq*1e6;
-
-        nextAomFreq += (30.5e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;
+        nextAomFreq -= (30.5e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;//now AOM subtracts f
+//        nextAomFreq += (30.5e6 - fabs(d.pumpBeat()))*p_freqComb->pumpSign()/2;//original when aom added f
         qDebug() << "\t pump beat << " << d.pumpBeat()/1e6;
         qDebug() << "\t next AOM " << nextAomFreq/1e6;
 
