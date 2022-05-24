@@ -31,7 +31,7 @@ public slots:
     void setCounterFreq(double f){d_currentCounterFreq = f;}
 	void setSignalBeat(bool pos){ d_signalBeatPositive = pos; }
     void setPumpBeat(bool pos){ d_pumpBeatPositive = pos; }
-    FreqCombData getLastMeasurement() const {d_nextDeltaN; return d_lastMeasurement; }
+    FreqCombData getLastMeasurement() const { return d_lastMeasurement; }
 
 
 protected:
@@ -49,7 +49,10 @@ protected:
 class MenloComb;
 typedef MenloComb FreqCombHardware;
 #else
+#ifndef VIRTUALFREQCOMB_H
 #include "virtualfreqcomb.h"
+#endif
+
 class VirtualFreqComb;
 typedef VirtualFreqComb FreqCombHardware;
 #endif

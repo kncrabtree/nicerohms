@@ -1,6 +1,8 @@
 #include "virtualcavitypzt.h"
 
 #include "virtualinstrument.h"
+#include <QRandomGenerator>
+
 
 VirtualCavityPZT::VirtualCavityPZT(QObject *parent) :
 	CavityPZTDriver(parent)
@@ -64,7 +66,8 @@ void VirtualCavityPZT::readPointData()
 
 double VirtualCavityPZT::readVoltage()
 {
-    double voltage = 50.0 + static_cast<double>((qrand()%2000)-1000)/1e3;
+    auto r = QRandomGenerator::global();
+    double voltage = 40.0 + r->generateDouble()*20;
     emit cavityPZTUpdate(voltage);
     return voltage;
 }

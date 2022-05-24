@@ -1,6 +1,7 @@
 #include "virtuallockin.h"
 
 #include "virtualinstrument.h"
+#include <QRandomGenerator>
 
 VirtualLockIn::VirtualLockIn(int num, QObject *parent) :
 	LockIn(num,parent)
@@ -53,8 +54,9 @@ void VirtualLockIn::readPointData()
 {
 	if(d_isActive)
 	{
-		double x = (static_cast<double>(qrand() % 2000)-1000.0)/100.0;
-		double y = (static_cast<double>(qrand() % 2000)-1000.0)/100.0;
+        auto r = QRandomGenerator::global();
+        double x = r->generateDouble()*20.0-10.0;
+        double y = r->generateDouble()*20.0-10.0;
 
 		QList<QPair<QString,QVariant>> out;
 		out.append(qMakePair(QString("%1X").arg(d_key),QVariant::fromValue(x)));

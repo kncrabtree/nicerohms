@@ -5,6 +5,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#include <math.h>
+
 Scan::Scan(ScanType t) : data(new ScanData)
 {
 	data->type = t;
@@ -293,28 +295,28 @@ void Scan::addHeaderItem(QString key, QVariant value, QString units)
 
 Scan::PointAction Scan::validateData(const QList<QPair<QString, QVariant> > l)
 {
-	//can check data and see if scan should be automatically aborted
-	//return false if the scan should abort
-	//example: abort if pressure is below 2.0
+    //can check data and see if scan should be automatically aborted
+    //return false if the scan should abort
+    //example: abort if pressure is below 2.0
     PointAction out = Continue;
     if(data->validationConditions.isEmpty())
         return out;
 
-	//I'm assuming that all QVariants can be converted to doubles
-	for(int i=0; i<l.size(); i++)
-	{
-		if(!l.at(i).second.canConvert(QVariant::Double))
-			continue;
+    //I'm assuming that all QVariants can be converted to doubles
+    for(int i=0; i<l.size(); i++)
+    {
+        if(!l.at(i).second.canConvert(QVariant::Double))
+            continue;
 
-		QString key = l.at(i).first;
-		bool ok = false;
-		double value = l.at(i).second.toDouble(&ok);
+        QString key = l.at(i).first;
+        bool ok = false;
+        double value = l.at(i).second.toDouble(&ok);
 
-		if(!ok)
-			continue;
+        if(!ok)
+            continue;
 
         if(data->validationConditions.contains(key))
-		{
+        {
             QList<PointValidation> validationList = data->validationConditions.values(key);
             for(int i=0; i<validationList.size(); i++)
             {
@@ -334,9 +336,9 @@ Scan::PointAction Scan::validateData(const QList<QPair<QString, QVariant> > l)
                         out = Remeasure;
                     }
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 
     return out;
 }
@@ -432,7 +434,7 @@ void Scan::finalSave()
 	//save keys for use in completer
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
 	QString keys = s.value(QString("knownValidationKeys"),QString("")).toString();
-	QStringList knownKeyList = keys.split(QChar(';'),QString::SkipEmptyParts);
+    QStringList knownKeyList = keys.split(QChar(';'),Qt::SkipEmptyParts);
 
 	auto it = data->scanData.constBegin();
 	while(it != data->scanData.constEnd())
@@ -473,11 +475,7 @@ void Scan::addValidationItem(QString key, double min, double max, Scan::PointAct
     v.max = max;
     v.action = action;
     v.precision = precision;
-
-    if(data->validationConditions.contains(key))
-        data->validationConditions.insertMulti(key,v);
-    else
-        data->validationConditions.insert(key,v);
+    data->validationConditions.insert(key,v);
 
 }
 

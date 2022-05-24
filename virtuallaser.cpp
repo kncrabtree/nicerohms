@@ -89,3 +89,8 @@ double VirtualLaser::setPosition(double target)
 	return readPosition();
 }
 
+
+
+void VirtualLaser::calibrate()
+{
+}

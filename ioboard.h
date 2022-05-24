@@ -46,7 +46,10 @@ typedef IOBoardU6 IOBoardHardware;
 #define NICEROHMS_IOB_OVERRIDE 2
 #define NICEROHMS_IOB_CV 0
 #else
+#ifndef VIRTUALIOBOARD_H
 #include "virtualioboard.h"
+#endif
+
 class VirtualIOBoard;
 typedef VirtualIOBoard IOBoardHardware;
 

@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QSettings>
 #include <QApplication>
+#include <math.h>
 
 LaserSlewAction::LaserSlewAction(QWidget *parent) :
     QWidgetAction(parent)

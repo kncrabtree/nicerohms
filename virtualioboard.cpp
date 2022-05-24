@@ -1,6 +1,7 @@
 #include "virtualioboard.h"
 
 #include "virtualinstrument.h"
+#include <QRandomGenerator>
 
 VirtualIOBoard::VirtualIOBoard(QObject *parent) :
 	IOBoard(parent)
@@ -106,12 +107,13 @@ void VirtualIOBoard::readPointData()
 {
 	QList<QPair<QString,QVariant>> analog;
 	QList<QPair<QString,QVariant>> digital;
+    auto rg = QRandomGenerator::global();
 
 	for(int i=0; i<d_analogConfig.size(); i++)
 	{
 		if(d_analogConfig.at(i).first)
 		{
-			double r = static_cast<double>((qrand()%20000)-10000)/10000.0;
+            double r = rg->generateDouble()*2.0-1.0;
 			switch (d_analogConfig.at(i).second) {
 			case NicerOhms::LJR10V:
 				analog.append(qMakePair(QString("ain%1").arg(i),r*10.0));
@@ -135,7 +137,7 @@ void VirtualIOBoard::readPointData()
 	{
 		if(d_digitalConfig.at(i).second)
 		{
-			bool b = qrand() % 2;
+            bool b = rg->bounded(1);
 			digital.append(qMakePair(QString("din%1").arg(d_digitalConfig.at(i).first),b));
 		}
 	}
@@ -146,7 +148,8 @@ void VirtualIOBoard::readPointData()
 
 bool VirtualIOBoard::readCavityLocked()
 {
-    bool on = qrand() % 100;
+    auto r = QRandomGenerator::global();
+    bool on = r->bounded(100);
 	emit lockState(on);
 	return on;
 }
@@ -166,3 +169,13 @@ void VirtualIOBoard::relock()
     emit relockComplete(true);
 }
 
+
+
+void VirtualIOBoard::relockPump()
+{
+}
+
+void VirtualIOBoard::holdIntegrator(bool hold)
+{
+    Q_UNUSED(hold)
+}

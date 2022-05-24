@@ -34,7 +34,7 @@ bool Bristol621::testConnection()
         return true;
     }
 
-    emit connected(false,QString('could not connect'));
+    emit connected(false,QString("could not connect"));
 
 
     readTimerInterval();

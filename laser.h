@@ -39,7 +39,10 @@ protected:
 class LaserMDT694B;
 typedef LaserMDT694B LaserHardware;
 #else
+#ifndef VIRTUALLASER_H
 #include "virtuallaser.h"
+#endif
+
 class VirtualLaser;
 typedef VirtualLaser LaserHardware;
 #endif

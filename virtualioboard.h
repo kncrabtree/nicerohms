@@ -12,25 +12,30 @@ public:
 
 	// HardwareObject interface
 public slots:
-	bool testConnection();
-	void initialize();
-	Scan prepareForScan(Scan scan);
-	void beginAcquisition();
-	void endAcquisition();
-	void readPointData();
-    void relock();
+    bool testConnection() override;
+    void initialize() override;
+    Scan prepareForScan(Scan scan) override;
+    void beginAcquisition() override;
+    void endAcquisition() override;
+    void readPointData() override;
+    void relock() override;
 
 	// IOBoard interface
 public slots:
-	bool readCavityLocked();
+    bool readCavityLocked() override;
 
 protected:
-	void setCavityPZTVoltage(double v);
-	void setCavityLockOverride(bool unlock);
+    void setCavityPZTVoltage(double v) override;
+    void setCavityLockOverride(bool unlock) override;
 
 private:
 	QList<QPair<bool,NicerOhms::LabJackRange>> d_analogConfig;
 	QList<QPair<int,bool>> d_digitalConfig;
+
+    // IOBoard interface
+public slots:
+    void relockPump() override;
+    void holdIntegrator(bool hold) override;
 };
 
 #endif // VIRTUALIOBOARD_H

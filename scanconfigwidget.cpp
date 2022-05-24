@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QApplication>
 #include <QMessageBox>
+#include <math.h>
 
 
 ScanConfigWidget::ScanConfigWidget(Scan::ScanType t, QWidget *parent) :
@@ -464,6 +465,7 @@ void ScanConfigWidget::on_pumpLockRadioButton_toggled(bool checked)
 
 void ScanConfigWidget::on_pumpRadioButton_toggled(bool checked)
 {
+    Q_UNUSED(checked)
     ui->pumpLockRadioButton->setChecked(false);
 }
 

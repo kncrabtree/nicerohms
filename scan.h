@@ -104,7 +104,7 @@ class ScanData : public QSharedData
 {
 public:
 	ScanData() : type(Scan::LaserScan), number(0), isInitialized(false), hardwareSuccess(true), aborted(false), completedPoints(0),
-        totalPoints(0), autoLockEnabled(false),  cavityMin(0.0), cavityMax(150.0), abortOnUnlock(false), pumpLockEnabled(false), counterMin(0.0), counterMax(0.0), scanDelay(0),
+        totalPoints(0), autoLockEnabled(false),  cavityMin(0.0), cavityMax(150.0), pumpLockEnabled(false), counterMin(0.0), counterMax(0.0), abortOnUnlock(false), scanDelay(0),
 		numDataPoints(0), redo(false), scanStart(0.0), scanStop(0.0), scanStep(0.0) {}
 
 	Scan::ScanType type;
@@ -136,7 +136,7 @@ public:
 	QString errorString;
 	QString endLogMessage;
 	NicerOhms::LogMessageCode endLogCode;
-    QMap<QString,Scan::PointValidation> validationConditions;
+    QMultiMap<QString,Scan::PointValidation> validationConditions;
     QList<QPair<bool,NicerOhms::LabJackRange>> ioboardAnalogConfig;
     QList<QPair<int,bool>> ioboardDigitalConfig;
 };

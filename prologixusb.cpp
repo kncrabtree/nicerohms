@@ -29,7 +29,7 @@ bool PrologixUSB::testConnection()
         return true;
     }
 
-    emit connected(false,QString('Unable to connect'));
+    emit connected(false,QString("Unable to connect"));
     return false;
 }
 
@@ -56,7 +56,7 @@ void PrologixUSB::endAcquisition()
 }
 void PrologixUSB::readAddress()
 {
-    int a = p_comm->queryCmd(QString("++addr\n")).left(1).toInt();
+    d_currentAddress = p_comm->queryCmd(QString("++addr\n")).left(1).toInt();
 }
 void PrologixUSB::setAddress(int a)
 {

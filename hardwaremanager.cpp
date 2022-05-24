@@ -15,6 +15,7 @@
 #include "frequencycomb.h"
 
 #include <QDebug>
+#include <math.h>
 
 HardwareManager::HardwareManager(QObject *parent) : QObject(parent)
 {
@@ -699,6 +700,8 @@ double HardwareManager::getCounterFrequency()
         out = p_counter->read();
     else
         QMetaObject::invokeMethod(p_counter,"read",Qt::BlockingQueuedConnection,Q_RETURN_ARG(double,out));
+
+    return out;
 }
 
 double HardwareManager::getAomFrequency()
@@ -908,7 +911,7 @@ void HardwareManager::centerPump()
     double nextAomFreq = prevAomFreq;
 
 
-    QTime t;
+    QElapsedTimer t;
     t.start();
 
     while(((fabs(d.pumpBeat()) < 30.0e6 || fabs(d.pumpBeat()) > 31e6))&&useLoop)//originally 30.25 and 30.75

@@ -1,4 +1,5 @@
 #include "wavemeterreadcontroller.h"
+#include <math.h>
 
 WavemeterReadController::WavemeterReadController(int numReads, QObject *parent) :
     QObject(parent), d_targetReads(numReads), d_readsComplete(0), d_freqMean(0.0), d_freqSumSq(0.0), d_aborted(false)

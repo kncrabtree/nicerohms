@@ -118,7 +118,7 @@ double LaserMDT694B::setPosition(double target)
     double offset = s.value(QString("%1/laserOffset").arg(d_key),0.0).toDouble();
     p_comm->writeCmd(QString("XV%1\r").arg(target + offset).toLatin1());
 
-    readPosition();
+    return readPosition();
 
 }
 

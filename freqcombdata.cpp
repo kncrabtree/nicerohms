@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QSettings>
 #include <QApplication>
+#include <math.h>
+
 FreqCombData::FreqCombData() : data(new FreqCombDataData)
 {
 

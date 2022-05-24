@@ -1,6 +1,7 @@
 #include "virtualwavemeter.h"
 
 #include "virtualinstrument.h"
+#include <QRandomGenerator>
 
 VirtualWavemeter::VirtualWavemeter(QObject *parent) :
 	Wavemeter(parent)
@@ -60,7 +61,8 @@ void VirtualWavemeter::readPointData()
 
 double VirtualWavemeter::read()
 {
-    d_currentFreq = 8.1723094e13 + static_cast<double>((qrand()%10000)-5000.0)*1e4;
+    auto r = QRandomGenerator::global();
+    d_currentFreq = 8.1723094e13 + r->generateDouble()*2e8-1e8;
     emit freqUpdate(d_currentFreq);
     return d_currentFreq;
 }

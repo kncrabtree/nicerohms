@@ -337,11 +337,11 @@ void ZoomPanPlot::zoom(QWheelEvent *we)
         int mousePosInt;
         if(c.type == QwtPlot::xBottom || c.type == QwtPlot::xTop)
         {
-            mousePosInt = we->pos().x();
+            mousePosInt = we->position().x();
             d_config.xDirty = true;
         }
         else
-            mousePosInt = we->pos().y();
+            mousePosInt = we->position().y();
 
         double mousePos = qBound(scaleMin,canvasMap(c.type).invTransform(mousePosInt),scaleMax);
 

@@ -25,7 +25,8 @@ void Rs232Instrument::initialize()
 }
 
 bool Rs232Instrument::testConnection()
-{https://www.google.com/search?q=qserialport+dataterminalready&ie=utf-8&oe=utf-8#q=qserialport+setdataterminalready+example
+{
+//https://www.google.com/search?q=qserialport+dataterminalready&ie=utf-8&oe=utf-8#q=qserialport+setdataterminalready+example
 
 
     if(d_sp->isOpen())

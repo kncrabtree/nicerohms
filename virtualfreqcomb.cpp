@@ -1,6 +1,7 @@
 #include "virtualfreqcomb.h"
 
 #include "virtualinstrument.h"
+#include <QRandomGenerator>
 
 VirtualFreqComb::VirtualFreqComb(QObject *parent) :
 	FrequencyComb(parent)
@@ -81,12 +82,13 @@ FreqCombData VirtualFreqComb::readComb()
 {
 	FreqCombData out;
 
+    auto r = QRandomGenerator::global();
 
 	//normally, we'd make the network request, and all these would be set by calling out.parseXml()
 	out.setRepRate((d_currentDDSFreq + 980e6)/10.0);
-	out.setOffsetBeat(30e6 + static_cast<double>((qrand() % 20000) - 10000)/1e4);
-	out.setPumpBeat(30e6 + static_cast<double>((qrand() % 2000000) - 1000000));
-	out.setSignalBeat(30e6 + static_cast<double>((qrand() % 2000000) - 1000000));
+    out.setOffsetBeat(30e6 + r->generateDouble()*2.0-1.0);
+    out.setPumpBeat(30e6 + r->generateDouble()*2e6-1e6);
+    out.setSignalBeat(30e6 + r->generateDouble()*2e6-1e6);
 	out.setRepRateLockVoltage(3.0);
 	out.setRepRateLocked(true);
 

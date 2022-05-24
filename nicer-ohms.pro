@@ -20,7 +20,8 @@ include(implementations.pri)
 
 SOURCES += main.cpp
 
-unix:!macx: LIBS += -lqwt
+
+unix:!macx: LIBS += -L/usr/local/qwt-6.1.6-svn/lib -lqwt
 LIBS    += -llabjackusb
 
 #Hardware configuration
@@ -28,24 +29,24 @@ LIBS    += -llabjackusb
 #Note: if you change the config, you need to rebuild the whole project!
 
 #Laser. 0 = virtual, 1 = PZT control via MDT694B
-DEFINES += NICEROHMS_LASER=1
+DEFINES += NICEROHMS_LASER=0
 
 #Lockins. 0 = virtual, 1 = Stanford SR530
 DEFINES += NICEROHMS_LOCKIN1=0 NICERHOMS_LOCKIN2=0
 
 #Wavemeter. 0 = virtual, 1 = Bristol 621
-DEFINES += NICEROHMS_WAVEMETER=1
+DEFINES += NICEROHMS_WAVEMETER=0
 
 #Cavity PZT Driver. 0 = virtual, 1 = MDT694B
-DEFINES += NICEROHMS_CAVITYPZT=1
+DEFINES += NICEROHMS_CAVITYPZT=0
 
 #IO Board. 0 = virtual, 1 = LabJack U6
-DEFINES += NICEROHMS_IOBOARD=1
+DEFINES += NICEROHMS_IOBOARD=0
 #Gpib controller. 0 = virtual, 1 = Prologix USB
-DEFINES += NICEROHMS_GPIBCONTROLLER=1
+DEFINES += NICEROHMS_GPIBCONTROLLER=0
 
 #AOMSynth. 0 = Virtual, 1 = AOM control via 8657A
-DEFINES += NICEROHMS_AOMSYNTH=1
+DEFINES += NICEROHMS_AOMSYNTH=0
 
 #Frequency Comb. 0 = Virtual, 1 = Menlo
 DEFINES += NICEROHMS_FREQCOMB=0

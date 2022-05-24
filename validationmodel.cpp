@@ -298,7 +298,7 @@ QWidget *CompleterLineEditDelegate::createEditor(QWidget *parent, const QStyleOp
 	QLineEdit *le = new QLineEdit(parent);
 	
 	QSettings s(QSettings::SystemScope,QApplication::organizationName(),QApplication::applicationName());
-	QStringList knownKeys = s.value(QString("knownValidationKeys"),QString("")).toString().split(QChar(';'),QString::SkipEmptyParts);
+    QStringList knownKeys = s.value(QString("knownValidationKeys"),QString("")).toString().split(QChar(';'),Qt::SkipEmptyParts);
 	if(!knownKeys.isEmpty())
 	{
 		QCompleter *comp = new QCompleter(knownKeys,le);

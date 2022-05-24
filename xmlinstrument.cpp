@@ -3,7 +3,6 @@
 XmlInstrument::XmlInstrument(QString key, QString subKey,QObject *parent) :
     CommunicationProtocol(CommunicationProtocol::Custom,key,subKey,parent)
 {
-    initialize();
 }
 
 XmlInstrument::~XmlInstrument()
@@ -60,7 +59,6 @@ QByteArray XmlInstrument::queryCmd(QString cmd)
 void XmlInstrument::initialize()
 {
     d_xc = new QNetworkAccessManager(this);
-    testConnection();
 }
 
 bool XmlInstrument::testConnection()
@@ -70,5 +68,6 @@ bool XmlInstrument::testConnection()
 
 bool XmlInstrument::writeCmd(QString cmd)
 {
-return false;
+    Q_UNUSED(cmd)
+    return false;
 }

@@ -28,7 +28,7 @@ void LogHandler::logMessage(const QString text, const NicerOhms::LogMessageCode 
     if(type == NicerOhms::LogDebug)
         return;
 
-	QString out;
+    QString out;
     out.append(QString("<span style=\"font-size:7pt\">%1</span> ").arg(timeStamp));
 
 	switch(type)

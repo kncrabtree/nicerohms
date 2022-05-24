@@ -12,20 +12,24 @@ public:
 
 	// HardwareObject interface
 public slots:
-	bool testConnection();
-	void initialize();
-	Scan prepareForScan(Scan scan);
-	void beginAcquisition();
-	void endAcquisition();
-	void readPointData();
+    bool testConnection() override;
+    void initialize() override;
+    Scan prepareForScan(Scan scan) override;
+    void beginAcquisition() override;
+    void endAcquisition() override;
+    void readPointData() override;
 
 	// Laser interface
 public slots:
-	double readPosition();
-	double estimateFrequency();
+    double readPosition() override;
+    double estimateFrequency() override;
 
 protected:
-	double setPosition(double target);
+    double setPosition(double target) override;
+
+    // Laser interface
+protected:
+    void calibrate() override;
 };
 
 #endif // VIRTUALLASER_H
