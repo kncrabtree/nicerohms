@@ -1,0 +1,32 @@
+unix:!macx: LIBS += -L/usr/local/qwt-6.1.6-svn/lib -lqwt
+
+#Hardware configuration
+#Set the following variables to select hardware implementations
+#Note: if you change the config, you need to rebuild the whole project!
+
+#Laser. 0 = virtual, 1 = PZT control via MDT694B
+LASER=0
+
+#Lockins. Enter a space-separated list of up to 5 lockins. 0 = virtual, 1 = Stanford SR530
+LOCKINS=0 0
+
+#Wavemeter. 0 = virtual, 1 = Bristol 621
+WAVEMETER=0
+
+#Cavity PZT Driver. 0 = virtual, 1 = MDT694B
+CAVITYPZT=0
+
+#IO Board. 0 = virtual, 1 = LabJack U6
+IOBOARD=0
+
+#Gpib controller. 0 = virtual, 1 = Prologix USB
+GPIBCONTROLLER=0
+
+#AOMSynth. 0 = Virtual, 1 = AOM control via 8657A
+AOMSYNTH=0
+
+#Frequency Comb. 0 = Virtual, 1 = Menlo
+FREQCOMB=0
+
+#Frequency Counter. 0 = Virtual, 1 = FC8150
+FREQCOUNTER=0

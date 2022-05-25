@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include <gui/mainwindow.h>
 #include <QApplication>
 #include <QFile>
 #include <QMessageBox>
@@ -12,7 +12,7 @@
 #include <signal.h>
 #endif
 
-#include "datastructs.h"
+#include <data/datastructs.h>
 
 int main(int argc, char *argv[])
 {
