@@ -1,2 +1,4 @@
 *.pro.user
 *.tar.gz
+*.pro.user*
+config/config.pri
